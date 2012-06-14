@@ -40,7 +40,7 @@ public class MultiVarTween extends Tween {
 	 * @param	duration	Duration of the tween.
 	 * @param	ease		Optional easer function.
 	 */
-	public void tween(Object object, Map<String, Float> values, float duration, OnEaseCallback easeFunction) {
+	public void tween(Object object, Map<String, Object> values, float duration, OnEaseCallback easeFunction) {
 		mObject = object;
 		mVars.clear();
 		mStart.clear();
@@ -49,11 +49,22 @@ public class MultiVarTween extends Tween {
 		mEase = easeFunction;
 		for (String p : values.keySet()) {
 			try {
-				Field f = object.getClass().getField(p);
-				float a = f.getFloat(object);
-				mVars.add(p);
-				mStart.add(a);
-				mRange.add(values.get(p) - a);
+				Field f = object.getClass().getDeclaredField(p);
+				Object v = values.get(p);
+				if (v instanceof Float) {
+					float a = f.getFloat(object);
+					mVars.add(p);
+					mStart.add(a);
+					mRange.add((Float)v - a);
+				} else if (v instanceof Integer) {
+					int a = f.getInt(object);
+					mVars.add(p);
+					mStart.add((float)a);
+					mRange.add((float)((Integer)v - (float)a));
+				} else {
+					Log.e(TAG, "Cannot tween type: \"" + f.getType().toString() + "\".");
+				}
+				
 			}catch (NoSuchFieldException e) {
 				Log.e(TAG, "The Object does not have the property\"" + p + "\", or it is not accessible.");
 				continue;
@@ -72,9 +83,15 @@ public class MultiVarTween extends Tween {
 		super.update();
 		int i = mVars.size();
 		while (i-- > 0) {
-			float value = mStart.get(i) + mRange.get(i) * mT;
 			try {
-				mObject.getClass().getField(mVars.get(i)).setFloat(mObject, value);
+				Object v = mStart.get(i);
+				float value = (Float)v + mRange.get(i) * mT;
+				Field f = mObject.getClass().getDeclaredField(mVars.get(i));
+				if (float.class.equals(f.getType())) {
+					f.setFloat(mObject, value);
+				} else if (int.class.equals(f.getType())) {
+					f.setInt(mObject, (int)value);
+				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {

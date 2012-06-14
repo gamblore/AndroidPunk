@@ -808,7 +808,7 @@ public class FP {
 		return null;
 	}
 	
-	public static MultiVarTween tween(Object object, Map<String, Float> values, float duration) {
+	public static MultiVarTween tween(Object object, Map<String, Object> values, float duration) {
 		return tween(object, values, duration, null);
 	}
 	/**
@@ -826,7 +826,7 @@ public class FP {
 	 * Example: FP.tween(object, { x: 500, y: 350 }, 2.0, { ease: easeFunction, complete: onComplete } );
 	 */
 	
-	public static MultiVarTween tween(Object object, Map<String, Float> values, float duration, Map<String, Object> options) {
+	public static MultiVarTween tween(Object object, Map<String, Object> values, float duration, Map<String, Object> options) {
 		int type = Tween.ONESHOT;
 		OnCompleteCallback complete = null;
 		OnEaseCallback ease = null;
