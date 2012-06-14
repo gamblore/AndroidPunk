@@ -1,22 +1,37 @@
 package net.androidpunk;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Random;
+import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import net.androidpunk.Tween.OnCompleteCallback;
+import net.androidpunk.Tween.OnEaseCallback;
+import net.androidpunk.debug.Console;
+import net.androidpunk.flashcompat.SoundTransform;
+import net.androidpunk.flashcompat.Sprite;
+import net.androidpunk.tweens.misc.MultiVarTween;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-
-import net.androidpunk.flashcompat.SoundTransform;
-import net.androidpunk.flashcompat.Sprite;
-
-import java.io.Console;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import android.util.Log;
 
 public class FP {
 
+	private static final String TAG = "FP";
+	
     /**
      * The FlashPunk major version.
      */
@@ -104,6 +119,8 @@ public class FP {
      */
     public static boolean focused = true;
     
+    private static final float HSV[] = new float[3];
+    
     // World information.
     private static World mWorld;
     private static World mGoto;
@@ -117,9 +134,6 @@ public class FP {
     public static long renderTime;
     public static long gameTime;
     public static long javaTime;
-    
-    // Bitmap storage.
-    private static Map<String,Bitmap> mBitmap = new HashMap<String,Bitmap>();
 
     // Pseudo-random number generation (the seed is set in Engine's constructor).
     private static long mSeed;
@@ -623,4 +637,280 @@ public class FP {
         return (int)(((double)mSeed / Integer.MAX_VALUE) * amount);
     }
     
+    /**
+	 * Returns the next item after current in the list of options.
+	 * @param	current		The currently selected item (must be one of the options).
+	 * @param	options		An array of all the items to cycle through.
+	 * @param	loop		If true, will jump to the first item after the last item is reached.
+	 * @return	The next item in the list.
+	 */
+	public static Object next(Object current, Object[] options, boolean loop) {
+		
+		for (int i = 0; i < options.length; i++) {
+			if (options[i].equals(current)) {
+				if (loop) {
+					return options[i+1 % options.length];
+				} else {
+					return options[Math.max(i + 1, options.length - 1)];
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the item previous to the current in the list of options.
+	 * @param	current		The currently selected item (must be one of the options).
+	 * @param	options		An array of all the items to cycle through.
+	 * @param	loop		If true, will jump to the last item after the first is reached.
+	 * @return	The previous item in the list.
+	 */
+	public static Object prev(Object current, Object[] options, boolean loop) {
+		
+		for (int i = 0; i < options.length; i++) {
+			if (options[i].equals(current)) {
+				if (loop) {
+					return options[(i-1 + options.length) % options.length];
+				} else {
+					return options[Math.max(i - 1, 0)];
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Swaps the current item between a and b. Useful for quick state/string/value swapping.
+	 * @param	current		The currently selected item.
+	 * @param	a			Item a.
+	 * @param	b			Item b.
+	 * @return	Returns a if current is b, and b if current is a.
+	 */
+	public static Object swap(Object current, Object a, Object b) {
+		return (current == a) ? b : a;
+	}
+
+	
+	/**
+	 * Creates a color value by combining the chosen RGB values.
+	 * @param	R		The red value of the color, from 0 to 255.
+	 * @param	G		The green value of the color, from 0 to 255.
+	 * @param	B		The blue value of the color, from 0 to 255.
+	 * @return	The color uint.
+	 */
+	public static int getColorRGB(int r, int g, int b) {
+		return Color.rgb(r, g, b);
+	}
+	
+	/**
+	 * Creates a color value with the chosen HSV values.
+	 * @param	h		The hue of the color (from 0 to 1).
+	 * @param	s		The saturation of the color (from 0 to 1).
+	 * @param	v		The value of the color (from 0 to 1).
+	 * @return	The color uint.
+	 */
+	public static int getColorHSV(float h, float s, float v) {
+		
+		HSV[0] = h;
+		HSV[1] = s;
+		HSV[2] = v;
+		return Color.HSVToColor(HSV);
+	}
+	
+	/**
+	 * Finds the red factor of a color.
+	 * @param	color		The color to evaluate.
+	 * @return	A uint from 0 to 255.
+	 */
+	public static int getRed(int color) {
+		return Color.red(color);
+	}
+	
+	/**
+	 * Finds the green factor of a color.
+	 * @param	color		The color to evaluate.
+	 * @return	A uint from 0 to 255.
+	 */
+	public static int getGreen(int color) {
+		return Color.green(color);
+	}
+	
+	/**
+	 * Finds the blue factor of a color.
+	 * @param	color		The color to evaluate.
+	 * @return	A uint from 0 to 255.
+	 */
+	public static int getBlue(int color) {
+		return Color.blue(color);
+	}
+	
+	/**
+	 * Sets a time flag.
+	 * @return	Time elapsed (in milliseconds) since the last time flag was set.
+	 */
+	public static long timeFlag() {
+		long t = System.currentTimeMillis();
+		long e = t - mTime;
+		mTime = t;
+		return e;
+	}
+	
+	/**
+	 * The global Console object.
+	 */
+	public static Console getConsole() {
+		if (mConsole == null) 
+			mConsole = new Console();
+		return mConsole;
+	}
+	
+	/**
+	 * Logs data to the console.
+	 * @param	...data		The data parameters to log, can be variables, objects, etc. Parameters will be separated by a space (" ").
+	 */
+	public static void log(Object... data) {
+		if (mConsole != null) {
+			if (data.length > 1) {
+				int i = 0;
+				String s = "";
+				while (i < data.length)
+				{
+					if (i > 0)
+						s += " ";
+					s += data[i++].toString();
+				}
+				mConsole.log(s);
+			} else {
+				mConsole.log(data[0].toString());
+			}
+		}
+	}
+	
+	/**
+	 * Loads the file as an XML object.
+	 * @param	file		The embedded file to load.
+	 * @return	An XML object representing the file.
+	 */
+	public static Document getXML(Context c, int resId) {
+		InputStream is = c.getResources().openRawResource(resId);
+		DocumentBuilderFactory builderfactory = DocumentBuilderFactory.newInstance();
+		Document d;
+		try {
+			d = builderfactory.newDocumentBuilder().parse(is);
+			return d;
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static MultiVarTween tween(Object object, Map<String, Float> values, float duration) {
+		return tween(object, values, duration, null);
+	}
+	/**
+	 * Tweens numeric public properties of an Object. Shorthand for creating a MultiVarTween tween, starting it and adding it to a Tweener.
+	 * @param	object		The object containing the properties to tween.
+	 * @param	values		An object containing key/value pairs of properties and target values.
+	 * @param	duration	Duration of the tween.
+	 * @param	options		An object containing key/value pairs of the following optional parameters:
+	 * 						type		Tween type.
+	 * 						complete	Optional completion callback function.
+	 * 						ease		Optional easer function.
+	 * 						tweener		The Tweener to add this Tween to.
+	 * @return	The added MultiVarTween object.
+	 * 
+	 * Example: FP.tween(object, { x: 500, y: 350 }, 2.0, { ease: easeFunction, complete: onComplete } );
+	 */
+	
+	public static MultiVarTween tween(Object object, Map<String, Float> values, float duration, Map<String, Object> options) {
+		int type = Tween.ONESHOT;
+		OnCompleteCallback complete = null;
+		OnEaseCallback ease = null;
+		Tweener tweener = FP.getWorld();
+		
+		if (object instanceof Tweener)  
+			tweener = (Tweener)object;
+		if (options != null){
+			try {
+			if (options.containsKey("type")) 
+				type = (Integer)options.get("type");
+			if (options.containsKey("complete")) 
+				complete = (OnCompleteCallback) options.get("complete");
+			if (options.containsKey("ease")) 
+				ease = (OnEaseCallback)options.get("ease");
+			if (options.containsKey("tweener")) 
+				tweener = (Tweener)options.get("tweener");
+			} catch (ClassCastException e) {
+				Log.e(TAG, "Bad cast in tween");
+			}
+		}
+		MultiVarTween tween = new MultiVarTween(complete,type);
+		tween.tween(object, values, duration, ease);
+		tweener.addTween(tween);
+		return tween;
+	} 
+	
+	public static int[] frames(int from, int to) {
+		return frames(from, to, 0);
+	}
+	
+	/**
+	 * Gets an array of frame indices.
+	 * @param	from	Starting frame.
+	 * @param	to		Ending frame.
+	 * @param	skip	Skip amount every frame (eg. use 1 for every 2nd frame).
+	 */
+	public static int[] frames(int from, int to, int skip) {
+		int index = 0;
+		skip ++;
+		int a[] = new int[(int)(Math.abs(to - from) / skip)];
+		if (from < to) {
+			while (from <= to) {
+				a[index++] = from;
+				from += skip;
+			}
+		} else {
+			while (from >= to) {
+				a[index++] = from;
+				from -= skip;
+			}
+		}
+		return a;
+	}
+	
+	/**
+	 * Shuffles the elements in the array.
+	 * @param	a		The Object to shuffle (an Array or Vector).
+	 */
+	public static void shuffle(Object[] a) {
+		int i = a.length;
+		int j;
+		Object t;
+		
+		while (--i > 0) {
+			t = a[i];
+			a[i] = a[j = FP.rand(i + 1)];
+			a[j] = t;
+		}
+	}
+	
+	/**
+	 * Shuffles the elements in the array.
+	 * @param	a		The Object to shuffle (an Array or Vector).
+	 */
+	public static void shuffle(Vector<Object> a) {
+		int i = a.size();
+		int j;
+		Object t;
+		
+		while (--i > 0) {
+			t = a.get(i);
+			a.add(i, a.get(j = FP.rand(i + 1)));
+			a.add(j, t);
+		}
+	}
 }

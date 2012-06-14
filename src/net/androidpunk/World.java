@@ -1,5 +1,5 @@
 package net.androidpunk;
 
-public class World {
+public class World extends Tweener {
 
 }

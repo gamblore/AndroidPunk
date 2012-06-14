@@ -1,11 +1,12 @@
 package net.androidpunk;
 
+import net.androidpunk.flashcompat.Sprite;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-
-import net.androidpunk.flashcompat.Sprite;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 
 public class Screen {
 
@@ -48,27 +49,203 @@ public class Screen {
         mCurrent = 0;
     }
     
+    /**
+	 * Swaps screen buffers.
+	 */
+	public void swap() {
+		mCurrent = 1 - mCurrent;
+		FP.buffer = mBitmap[mCurrent];
+	}
+	
+	/**
+	 * Refreshes the screen.
+	 */
+	public void refresh() {
+		// refreshes the screen
+		Canvas c = new Canvas(FP.buffer);
+		Paint p = new Paint();
+		p.setStyle(Style.FILL);
+		p.setColor(mColor);
+		c.drawRect(FP.bounds, p);
+	}
+	
+	/** @private Re-applies transformation matrix. */
+	public void update() {
+		float values[] = new float[9];
+		mMatrix.getValues(values);
+		values[3] = values[2] = 0;
+		values[0] = mScaleX * mScale;
+		values[4] = mScaleY * mScale;
+		values[2] = -mOriginX * values[0];
+		values[5] = -mOriginY * values[4];
+		mMatrix.setValues(values);
+		if (mAngle != 0) {
+			mMatrix.postRotate(mAngle);
+		}
+		mMatrix.getValues(values);
+		values[2] += mOriginX * mScaleX * mScale + mX;
+		values[5] += mOriginY * mScaleY * mScale + mY;
+		mMatrix.setValues(values);
+		mSprite.transform.matrix = mMatrix;
+	}
+	
+	/**
+	 * Refresh color of the screen.
+	 */
+	public int getColor() {
+		return mColor;
+	}
+	
+	/**
+	 * Refresh color of the screen.
+	 */
+	public void setColor(int color) {
+		mColor = color;
+	}
+	
+	/**
+	 * X offset of the screen.
+	 */
+	public int getX() {
+		return mX;
+	}
+	
+	/**
+	 * X offset of the screen.
+	 */
+	public void setX(int x) {
+		if (mX == x) 
+			return;
+		mX = x;
+		update();
+	}
+	
+	/**
+	 * Y offset of the screen.
+	 */
+	public int getY() {
+		return mY;
+	}
+	/**
+	 * Y offset of the screen.
+	 */
+	public void setY(int y) {
+		if (mY == y) 
+			return;
+		mY = y;
+		update();
+	}
+	
+	/**
+	 * X origin of transformations.
+	 */
+	public int getOriginX() {
+		return mOriginX;
+	}
+	/**
+	 * X origin of transformations.
+	 */
+	public void setOriginX(int originX) {
+		if (mOriginX == originX) 
+			return;
+		mOriginX = originX;
+		update();
+	}
+	
+	/**
+	 * Y origin of transformations.
+	 */
+	public int getOriginY() {
+		return mOriginY;
+	}
+	/**
+	 * Y origin of transformations.
+	 */
+	public void setOriginY(int originY) {
+		if (mOriginY == originY) 
+			return;
+		mOriginY = originY;
+		update();
+	}
+	
+	/**
+	 * Scale factor of the screen. Final scale is scaleX * scale by scaleY * scale, so
+	 * you can use this factor to scale the screen both horizontally and vertically.
+	 */
     public float getScale() {
         return mScale;
     }
     
+    /**
+	 * Scale factor of the screen. Final scale is scaleX * scale by scaleY * scale, so
+	 * you can use this factor to scale the screen both horizontally and vertically.
+	 */
     public void setScale(float scale) {
         mScale = scale;
     }
     
+    /**
+	 * X scale of the screen.
+	 */
     public float getScaleX() {
         return mScaleX;
     }
     
+    /**
+	 * X scale of the screen.
+	 */
     public void setScaleX(float scale) {
         mScaleX = scale;
     }
     
+    /**
+	 * Y scale of the screen.
+	 */
     public float getScaleY() {
         return mScaleY;
     }
     
+    /**
+	 * Y scale of the screen.
+	 */
     public void setScaleY(float scale) {
         mScaleY = scale;
     }
+    
+    /**
+	 * Rotation of the screen, in degrees.
+	 */
+	public float getAngle() {
+		return mAngle * FP.DEG; 
+	}
+	
+	public void setAngle(float angle)
+	{
+		if (mAngle == angle * FP.RAD)
+			return;
+		mAngle = angle * FP.RAD;
+		update();
+	}
+	
+	/**
+	 * Width of the screen.
+	 */
+	public int getWidth() {
+		return mWidth; 
+	}
+
+	/**
+	 * Height of the screen.
+	 */
+	public int getHeight() {
+		return mHeight; 
+	}
+	
+	/**
+	 * Captures the current screen as an Image object.
+	 * @return	A new Image object.
+	 */
+	public Bitmap capture() {
+		return mBitmap[mCurrent].copy(Config.ARGB_8888, false);
+	}
 }
