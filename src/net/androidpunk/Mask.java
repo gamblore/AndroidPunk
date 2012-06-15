@@ -1,6 +1,10 @@
 package net.androidpunk;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Rect;
 
 import net.androidpunk.masks.CollideCallback;
 import net.androidpunk.masks.MaskList;
@@ -19,7 +23,7 @@ public class Mask {
      */
     public MaskList list;
     
-    public final Map<Class, CollideCallback> mCheck = new HashMap<Class, CollideCallback>();
+    public final Map<Class<?>, CollideCallback> mCheck = new HashMap<Class<?>, CollideCallback>();
     
     public Mask() {
         mCheck.put(Mask.class, new CollideCallback() {
@@ -37,6 +41,47 @@ public class Mask {
                 return collideMaskList((MaskList) m);
             }
         });
+    }
+    
+    protected boolean hitTest(Bitmap bm, Point firstPoint, int alphaThreshold, Point p) {
+        int alpha = Color.alpha(bm.getPixel(p.x, p.y));
+        return alpha > alphaThreshold;
+    }
+    
+    protected boolean hitTest(Bitmap bm, Point firstPoint, int alphaThreshold, Rect r) {
+        int pixels[] = new int[r.width() * r.height()];
+        int alpha;
+        bm.getPixels(pixels, 0, r.width(), r.left, r.top, r.width(), r.height());
+        for (int i = 0; i < pixels.length; i++) {
+            alpha = Color.alpha(pixels[i]);
+            if (alpha > alphaThreshold) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    protected boolean hitTest(Bitmap bm, Point firstPoint, int alphaThreshold, Bitmap bm2, Point secondPoint, int secondAlphaThreshold) {
+        int alpha1, alpha2;
+        int pixel1, pixel2;
+        int fheight = bm.getHeight() - firstPoint.y;
+        int fwidth = bm.getWidth() - firstPoint.x;
+        for (int y = 0; y < fheight ; y++) {
+        	for (int x = 0; x < fwidth; x++) {
+        		try {
+        			pixel1 = bm.getPixel(x+firstPoint.x, y+firstPoint.y);
+        			pixel2 = bm2.getPixel(x+secondPoint.x, y+secondPoint.y);
+        			alpha1 = Color.alpha(pixel1);
+        			alpha2 = Color.alpha(pixel2);
+        			if (alpha1 > 0 && alpha2 > 0) {
+        				return true;
+        			}
+        		} catch (IllegalArgumentException e) {  
+        			break;
+        		}
+        	}
+        }
+        return false;
     }
     
     public boolean collide(Mask mask) {

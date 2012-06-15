@@ -2,7 +2,7 @@ package net.androidpunk;
 
 import android.util.Log;
 
-public class Tweener {
+public class Tweener extends Positionable {
 	
 	private static final String TAG = "Tweener";
 	
@@ -32,7 +32,7 @@ public class Tweener {
 	 */
 	public boolean autoClear = false;
 	
-	private Tween mTween;
+	protected Tween mTween;
 	
 	/**
 	 * Updates the Tween container.

@@ -2,6 +2,7 @@ package net.androidpunk;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
@@ -20,13 +21,13 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class FP {
 
@@ -123,13 +124,13 @@ public class FP {
     
     // World information.
     private static World mWorld;
-    private static World mGoto;
+    protected static World mGoto;
 
     // Console information.
-    private static Console mConsole;
+    protected static Console mConsole;
 
     // Time information.
-    private static long mTime;
+    protected static long mTime;
     public static long updateTime;
     public static long renderTime;
     public static long gameTime;
@@ -152,13 +153,15 @@ public class FP {
     public static Engine engine;
 
     // Global objects used for rendering, collision, etc.
-    public static Point point = new Point();
-    public static Point point2 = new Point();
-    public static Point zero = new Point();
-    public static Rect rect = new Rect();
-    public static Matrix matrix = new Matrix();
+    public static final  Point point = new Point();
+    public static final Point point2 = new Point();
+    public static final Point zero = new Point();
+    public static final Rect rect = new Rect();
+    public static final Matrix matrix = new Matrix();
     public static Sprite sprite = new Sprite();
     public static Entity entity;
+    
+    public static Resources resources;
     
     /**
      * Resize the screen.
@@ -808,7 +811,7 @@ public class FP {
 		return null;
 	}
 	
-	public static MultiVarTween tween(Object object, Map<String, Object> values, float duration) {
+	public static MultiVarTween tween(Object object, Map<String, Number> values, float duration) {
 		return tween(object, values, duration, null);
 	}
 	/**
@@ -826,7 +829,56 @@ public class FP {
 	 * Example: FP.tween(object, { x: 500, y: 350 }, 2.0, { ease: easeFunction, complete: onComplete } );
 	 */
 	
-	public static MultiVarTween tween(Object object, Map<String, Object> values, float duration, Map<String, Object> options) {
+	public static Map<String, Number> tweenmap(String k1, Number v1) {
+		return tweenmap(k1, v1, null, null, null, null, null, null, null, null);
+	}
+	
+	public static Map<String, Number> tweenmap(String k1, Number v1, String k2, Number v2) {
+		return tweenmap(k1,v1,k2,v2, null, null, null, null, null, null);
+	}
+	
+	public static Map<String, Number> tweenmap(String k1, Number v1, String k2, Number v2,  String k3, Number v3) {
+		return tweenmap(k1,v1,k2,v2,k3,v3, null, null, null, null);
+	}
+	
+	public static Map<String, Number> tweenmap(String k1, Number v1, String k2, Number v2, String k3, Number v3,  String k4, Number v4) {
+		return tweenmap(k1,v1,k2,v2,k3,v3,k4,v4, null, null);
+	}
+	
+	public static Map<String, Number> tweenmap(String k1, Number v1, String k2, Number v2,
+											String k3, Number v3, String k4, Number v4,
+											String k5, Number v5) {
+		Map<String, Number> theMap = new HashMap<String, Number>();
+		
+		if (k5 != null) 
+			theMap.put(k5, v5);
+		if (k4 != null) 
+			theMap.put(k4, v4);
+		if (k3 != null) 
+			theMap.put(k3, v3);
+		if (k2 != null) 
+			theMap.put(k2, v2);
+		if (k1 != null) 
+			theMap.put(k1, v1);
+		
+		return theMap;
+	}
+	
+	public static class TweenOptions {
+		int type;
+		OnCompleteCallback complete;
+		OnEaseCallback ease;
+		Tweener tweener;
+		
+		public TweenOptions(int theType, OnCompleteCallback theComplete, OnEaseCallback theEase, Tweener theTweener) {
+			type = theType;
+			complete = theComplete;
+			ease = theEase;
+			tweener = theTweener;
+		}
+	}
+	
+	public static MultiVarTween tween(Object object, Map<String, Number> values, float duration, TweenOptions options) {
 		int type = Tween.ONESHOT;
 		OnCompleteCallback complete = null;
 		OnEaseCallback ease = null;
@@ -835,18 +887,10 @@ public class FP {
 		if (object instanceof Tweener)  
 			tweener = (Tweener)object;
 		if (options != null){
-			try {
-			if (options.containsKey("type")) 
-				type = (Integer)options.get("type");
-			if (options.containsKey("complete")) 
-				complete = (OnCompleteCallback) options.get("complete");
-			if (options.containsKey("ease")) 
-				ease = (OnEaseCallback)options.get("ease");
-			if (options.containsKey("tweener")) 
-				tweener = (Tweener)options.get("tweener");
-			} catch (ClassCastException e) {
-				Log.e(TAG, "Bad cast in tween");
-			}
+			type = options.type;
+			complete = options.complete;
+			ease = options.ease;
+			tweener = options.tweener;
 		}
 		MultiVarTween tween = new MultiVarTween(complete,type);
 		tween.tween(object, values, duration, ease);

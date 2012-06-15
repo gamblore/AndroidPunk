@@ -2,11 +2,11 @@ package net.androidpunk;
 
 public class Tween {
 	
-	public abstract class OnCompleteCallback {
+	public static abstract class OnCompleteCallback {
 		public abstract void completed();
 	}
 	
-	public abstract class OnEaseCallback {
+	public static abstract class OnEaseCallback {
 		public abstract float ease(float t);
 	}
 	/**

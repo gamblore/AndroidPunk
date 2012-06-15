@@ -13,7 +13,7 @@ public class Graphic {
     /**
      * If the graphic should render.
      */
-    public boolean visiable = true;
+    public boolean visible = true;
     
     /**
      * X offset.

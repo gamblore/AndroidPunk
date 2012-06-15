@@ -88,24 +88,6 @@ public class Grid extends Hitbox {
         
     }
     
-    private boolean hitTest(Bitmap bm, Point firstPoint, int alphaThreshold, Point p) {
-        int alpha = Color.alpha(bm.getPixel(p.x, p.y));
-        return alpha > alphaThreshold;
-    }
-    
-    private boolean hitTest(Bitmap bm, Point firstPoint, int alphaThreshold, Rect r) {
-        int pixels[] = new int[r.width() * r.height()];
-        int alpha;
-        bm.getPixels(pixels, 0, r.width(), r.left, r.top, r.width(), r.height());
-        for (int i = 0; i < pixels.length; i++) {
-            alpha = Color.alpha(pixels[i]);
-            if (alpha > alphaThreshold) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     /** @private Collide against an Entity. */
     private boolean collideMask(Mask other) {
         mRect.left = other.parent.x - other.parent.originX - parent.x + parent.originX;
@@ -139,8 +121,36 @@ public class Grid extends Hitbox {
     
     /** @private Collides against a Pixelmask. */
     private boolean collidePixelMask(PixelMask other) {
-        //TODO Implement pixelmask for this
-        return false;
+    	int x1 = other.parent.x + other.mX - parent.x - mX;
+		int y1 = other.parent.y + other.mY - parent.y - mY;
+		int x2 = ((x1 + other.getWidth() - 1) / mTile.width());
+		int y2 = ((y1 + other.getHeight() - 1) / mTile.height());
+    	
+		mPoint.x = x1;
+		mPoint.y = y1;
+		x1 /= mTile.width();
+		y1 /= mTile.height();
+		mRect.left = x1 * mTile.width();
+		mRect.top = y1 * mTile.height();
+		mRect.right = mRect.left + mTile.width();
+		mRect.bottom = mRect.top + mTile.height();
+		int xx = x1;
+		while (y1 <= y2) {
+			while (x1 <= x2) {
+				if (mData.getPixel(x1, y1) > 0) {
+					if (hitTest(other.mData, mPoint, 1, mTile)) 
+						return true;
+				}
+				x1++;
+				mRect.offset(mTile.width(), 0);
+			}
+			x1 = xx;
+			y1++;
+			mRect.left = x1 * mTile.width();
+			mRect.right = mRect.left + mTile.width();
+			mRect.offset(0, mTile.height());
+		}
+		return false;
     }
     
     private boolean collideGrid(Grid other) {

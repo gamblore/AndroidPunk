@@ -1,12 +1,14 @@
 package net.androidpunk;
 
 import net.androidpunk.flashcompat.Sprite;
+import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.view.MotionEvent;
 
 public class Screen {
 
@@ -23,6 +25,10 @@ public class Screen {
     private float mAngle = 0;
     private int mColor = 0xff202020;
     
+    private MotionEvent mInput;
+    
+    private int[] mXInput = new int[2];
+    private int[] mYInput = new int[2];
     
     /**
      * Initialise buffers to current screen size.
@@ -67,6 +73,13 @@ public class Screen {
 		p.setStyle(Style.FILL);
 		p.setColor(mColor);
 		c.drawRect(FP.bounds, p);
+	}
+	
+	/**
+	 * Redraws the screen.
+	 */
+	public void redraw() {
+		// TODO refresh the buffers
 	}
 	
 	/** @private Re-applies transformation matrix. */
@@ -241,6 +254,33 @@ public class Screen {
 		return mHeight; 
 	}
 	
+	public int[] getTouchX() {
+		for (int i = 0; i < mInput.getPointerCount() && i < 2; i++) {
+			mXInput[i] = (int)mInput.getX(i);
+		}
+		return mXInput;
+	}
+	
+	public int[] getTouchY() {
+		for (int i = 0; i < mInput.getPointerCount() && i < 2; i++) {
+			mYInput[i] = (int)mInput.getY(i);
+		}
+		return mYInput;
+	}
+	
+	protected void setMotionEvent(MotionEvent me) {
+		if (me.getActionMasked() == MotionEvent.ACTION_DOWN || me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+			Input.mouseDown = true;
+			Input.mouseUp = false;
+			Input.mousePressed = true;
+		}
+		if (me.getActionMasked() == MotionEvent.ACTION_UP) {
+			Input.mouseDown = false;
+			Input.mouseUp = true;
+			Input.mouseReleased = true;
+		}
+	}
+	
 	/**
 	 * Captures the current screen as an Image object.
 	 * @return	A new Image object.
@@ -248,4 +288,5 @@ public class Screen {
 	public Bitmap capture() {
 		return mBitmap[mCurrent].copy(Config.ARGB_8888, false);
 	}
+	
 }
