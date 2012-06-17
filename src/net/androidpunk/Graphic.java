@@ -79,7 +79,7 @@ public class Graphic {
      * @param camera The camera offset.
      */
     public void render(Bitmap target, Point point, Point camera) {
-        
+    	
     }
     
     protected void setOnAssign(OnAssignToEntityCallback func) { 

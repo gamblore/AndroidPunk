@@ -165,7 +165,7 @@ public class Draw {
 	 */
 	public static void linePlus(int x1, int y1, int x2, int y2, int color, int alpha, float thick) {
 		
-		Paint p = new Paint();
+		Paint p = FP.paint;
 		p.setStyle(Style.STROKE);
 		p.setStrokeWidth(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, thick, FP.resources.getDisplayMetrics()));
 		p.setColor(color);
@@ -195,7 +195,7 @@ public class Draw {
 	 * @param	thick	The thickness of the line.
 	 */
 	public static void rect(int x, int y, int width, int height, int color, int alpha) {
-		Paint p = new Paint();
+		Paint p = FP.paint;
 		p.setStyle(Style.FILL);
 		p.setColor(color);
 		p.setAlpha(alpha);
@@ -279,7 +279,7 @@ public class Draw {
 	 */
 	public static void circlePlus(int x, int y, float radius, int color, int alpha, boolean fill, float thick) {
 		
-		Paint p = new Paint();
+		Paint p = FP.paint;
 		if (fill)
 			p.setStyle(Style.FILL);
 		else 
@@ -308,7 +308,7 @@ public class Draw {
 	 * @param	alpha		Alpha of the hitbox.
 	 */
 	public static void hitbox(Entity e, boolean outline, int color, int alpha) {
-		Paint p = new Paint();
+		Paint p = FP.paint;
 		if (outline)
 			p.setStyle(Style.STROKE);
 		else 

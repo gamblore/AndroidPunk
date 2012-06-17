@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -159,6 +160,7 @@ public class FP {
     public static final Rect rect = new Rect();
     public static final Matrix matrix = new Matrix();
     public static Sprite sprite = new Sprite();
+    public static final Paint paint = new Paint();
     public static Entity entity;
     
     public static Resources resources;
