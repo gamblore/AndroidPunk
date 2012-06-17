@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import android.graphics.Point;
@@ -31,9 +32,9 @@ public class World extends Tweener {
 	// Render information.
 	private boolean mLayerSort;
 	Vector<Integer> mLayerList = new Vector<Integer>();
-	Vector<Integer> mLayerCount = new Vector<Integer>();
-	Vector<Entity> mRenderFirst = new Vector<Entity>();
-	Vector<Entity> mRenderLast = new Vector<Entity>();
+	Map<Integer, Integer> mLayerCount = new HashMap<Integer, Integer>();
+	Map<Integer, Entity> mRenderFirst = new HashMap<Integer, Entity>();
+	Map<Integer, Entity> mRenderLast = new HashMap<Integer, Entity>();
 	/*
 	private var mRenderFirst:Array = [];
 	private var mRenderLast:Array = [];
@@ -264,11 +265,11 @@ public class World extends Tweener {
 		if (e.mRenderNext != null) 
 			e.mRenderNext.mRenderPrev = e.mRenderPrev;
 		else
-			mRenderFirst.set(e.getLayer(), e.mRenderPrev);
+			mRenderFirst.put(e.getLayer(), e.mRenderPrev);
 		// place at the start
 		e.mRenderNext = mRenderFirst.get(e.getLayer());
 		e.mRenderNext.mRenderPrev = e;
-		mRenderFirst.set(e.getLayer(), e);
+		mRenderFirst.put(e.getLayer(), e);
 		e.mRenderPrev = null;
 		return true;
 	}
@@ -286,11 +287,11 @@ public class World extends Tweener {
 		if (e.mRenderPrev != null) 
 			e.mRenderPrev.mRenderNext = e.mRenderNext;
 		else 
-			mRenderFirst.set(e.getLayer(), e.mRenderNext);
+			mRenderFirst.put(e.getLayer(), e.mRenderNext);
 		// place at the end
 		e.mRenderPrev = mRenderLast.get(e.getLayer());
 		e.mRenderPrev.mRenderNext = e;
-		mRenderLast.set(e.getLayer(), e);
+		mRenderLast.put(e.getLayer(), e);
 		e.mRenderNext = null;
 		return true;
 	}
@@ -308,7 +309,7 @@ public class World extends Tweener {
 		if (e.mRenderNext != null) 
 			e.mRenderNext.mRenderPrev = e.mRenderPrev;
 		else 
-			mRenderLast.set(e.getLayer(), e.mRenderPrev);
+			mRenderLast.put(e.getLayer(), e.mRenderPrev);
 		// shift towards the front
 		e.mRenderNext = e.mRenderPrev;
 		e.mRenderPrev = e.mRenderPrev.mRenderPrev;
@@ -316,7 +317,7 @@ public class World extends Tweener {
 		if (e.mRenderPrev != null) 
 			e.mRenderPrev.mRenderNext = e;
 		else 
-			mRenderFirst.set(e.getLayer(), e);
+			mRenderFirst.put(e.getLayer(), e);
 		return true;
 	}
 	
@@ -333,7 +334,7 @@ public class World extends Tweener {
 		if (e.mRenderPrev != null)
 			e.mRenderPrev.mRenderNext = e.mRenderNext;
 		else 
-			mRenderFirst.set(e.getLayer(), e.mRenderNext);
+			mRenderFirst.put(e.getLayer(), e.mRenderNext);
 		// shift towards the back
 		e.mRenderPrev = e.mRenderNext;
 		e.mRenderNext = e.mRenderNext.mRenderNext;
@@ -341,7 +342,7 @@ public class World extends Tweener {
 		if (e.mRenderNext != null)
 			e.mRenderNext.mRenderPrev = e;
 		else 
-			mRenderLast.set(e.getLayer(), e);
+			mRenderLast.put(e.getLayer(), e);
 		return true;
 	}
 	
@@ -675,6 +676,8 @@ public class World extends Tweener {
 	 * @return	How many Entities are on the layer.
 	 */
 	public int layerCount(int layer) {
+		if (layer >= mLayerCount.size())
+			return 0;
 		Integer i = mLayerCount.get(layer);
 		if (i == null) 
 			return 0;
@@ -724,7 +727,8 @@ public class World extends Tweener {
 	 * @return	The Entity.
 	 */
 	public Entity layerLast(int layer) {
-		if (mUpdateFirst == null)
+
+		if (mUpdateFirst == null || layer >= mRenderLast.size())
 			return null;
 		return mRenderLast.get(layer);
 	}
@@ -733,7 +737,7 @@ public class World extends Tweener {
 	 * The Entity that will be rendered first by the World.
 	 */
 	public Entity getFarthest() {
-		if (mUpdateFirst == null)
+		if (mUpdateFirst == null || mLayerList.size() == 0)
 			return null;
 		return mRenderLast.get(mLayerList.lastElement());
 	}
@@ -742,7 +746,7 @@ public class World extends Tweener {
 	 * The Entity that will be rendered last by the world.
 	 */
 	public Entity getNearest() {
-		if (mUpdateFirst == null)
+		if (mUpdateFirst == null || mLayerList.size() == 0)
 			return null;
 		return mRenderFirst.get(mLayerList.firstElement());
 	}
@@ -751,7 +755,7 @@ public class World extends Tweener {
 	 * The layer that will be rendered first by the World.
 	 */
 	public int getLayerFarthest() {
-		if (mUpdateFirst == null)
+		if (mUpdateFirst == null || mLayerList.size() == 0)
 			return 0;
 		return mLayerList.get(mLayerList.lastElement());
 	}
@@ -760,7 +764,7 @@ public class World extends Tweener {
 	 * The layer that will be rendered last by the World.
 	 */
 	public int getLayerNearest() {
-		if (mUpdateFirst == null)
+		if (mUpdateFirst == null || mLayerList.size() == 0)
 			return 0;
 		return mLayerList.get(0);
 	}
@@ -793,6 +797,8 @@ public class World extends Tweener {
 	 * @return	The same array, populated.
 	 */
 	public void getLayer(int layer, Vector<Entity> into) {
+		if (layer >= mRenderLast.size())
+			return;
 		Entity e = mRenderLast.get(layer);
 		while (e != null) {
 			into.add(e);
@@ -892,21 +898,22 @@ public class World extends Tweener {
 	/** @private Adds Entity to the render list. */
 	protected void addRender(Entity e) {
 		Entity f = mRenderFirst.get(e.getLayer());
+		
 		if (f != null) {
 			// Append entity to existing layer.
 			e.mRenderNext = f;
 			f.mRenderPrev = e;
-			mLayerCount.set(e.getLayer(), mLayerCount.get(e.getLayer()+1));
+			mLayerCount.put(e.getLayer(), mLayerCount.get(e.getLayer()+1));
 		} else {
 			// Create new layer with entity.
-			
-			mRenderLast.set(e.getLayer(), e);
-			mLayerList.set(mLayerList.size()-1, e.getLayer());
+			mRenderLast.put(e.getLayer(), e);
+			mRenderLast.put(e.getLayer(), e);
+			mLayerList.add(e.getLayer());
 			mLayerSort = true;
 			e.mRenderNext = null;
-			mLayerCount.set(e.getLayer(), 1);
+			mLayerCount.put(e.getLayer(), 1);
 		}
-		mRenderFirst.set(e.getLayer(), e);
+		mRenderFirst.put(e.getLayer(), e);
 		e.mRenderPrev = null;
 	}
 
@@ -915,18 +922,18 @@ public class World extends Tweener {
 		if (e.mRenderNext != null) 
 			e.mRenderNext.mRenderPrev = e.mRenderPrev;
 		else 
-			mRenderLast.set(e.getLayer(), e.mRenderPrev);
+			mRenderLast.put(e.getLayer(), e.mRenderPrev);
 		if (e.mRenderPrev != null) 
 			e.mRenderPrev.mRenderNext = e.mRenderNext;
 		else {
 			// Remove this entity from the layer.
-			mRenderFirst.set(e.getLayer(), e.mRenderNext);
+			mRenderFirst.put(e.getLayer(), e.mRenderNext);
 			if (e.mRenderNext == null) {
 				// Remove the layer from the layer list if this was the last entity.
 				mLayerList.remove((Integer)e.getLayer());
 			}
 		}
-		mLayerCount.set(e.getLayer(), mLayerCount.get(e.getLayer())-1);
+		mLayerCount.put(e.getLayer(), mLayerCount.get(e.getLayer())-1);
 		e.mRenderNext = e.mRenderPrev = null;
 	}
 

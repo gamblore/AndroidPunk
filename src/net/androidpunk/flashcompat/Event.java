@@ -9,7 +9,16 @@ public class Event {
 		public abstract void event();
 	}
 	
+	/**
+	 * When the surface is ready to draw.
+	 */
 	public static final int ADDED_TO_STAGE = 1;
+	/**
+	 * Screen has refreshed.
+	 */
 	public static final int ENTER_FRAME = 2;
+	/**
+	 * When a timer fires.
+	 */
 	public static final int TIMER = 3;
 }

@@ -5,6 +5,15 @@ import android.graphics.Point;
 
 public class Graphic {
 
+	public interface OnAssignToEntityCallback {
+		public void assigned(Entity e);
+	}
+    
+	private static final OnAssignToEntityCallback NULL_CALLBACK = new OnAssignToEntityCallback() {
+		@Override
+		public void assigned(Entity e) { }
+	};
+	
     /**
      * If the graphic should update.
      */
@@ -45,11 +54,10 @@ public class Graphic {
     public boolean relative = true;
     
     protected final Point mPoint = new Point();
-    protected OnAssignToEntityCallback mAssign = null;
+    protected OnAssignToEntityCallback mAssign = NULL_CALLBACK;
     
-    public interface OnAssignToEntityCallback {
-        public void assigned(Entity e);
-    }
+    
+	
     
     /**
      * Constructor.

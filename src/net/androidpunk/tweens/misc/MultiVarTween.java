@@ -49,26 +49,27 @@ public class MultiVarTween extends Tween {
 		mEase = easeFunction;
 		for (String p : values.keySet()) {
 			try {
-				Field f = object.getClass().getDeclaredField(p);
+				Field f = object.getClass().getField(p);
+				
 				Number v = values.get(p);
 				float startValue;
 				float destValue = v.floatValue();
 				
-				if (float.class.equals(f.getType())) {
+				if (Float.TYPE.equals(f.getType())) {
 					startValue = f.getFloat(object);
-				} else if (int.class.equals(f.getType())) {
+				} else if (Integer.TYPE.equals(f.getType())) {
 					startValue = f.getInt(object);
 				} else {
 					Log.e(TAG, "Cannot tween type: \"" + f.getType().toString() + "\".");
 					return;
 				}
-				
+				Log.d(TAG, "Start value: " + startValue + "");
 				mVars.add(p);
 				mStart.add(startValue);
 				mRange.add(destValue - startValue);
 				
 			}catch (NoSuchFieldException e) {
-				Log.e(TAG, "The Object does not have the property\"" + p + "\", or it is not accessible.");
+				Log.e(TAG, "The Object does not have the property \"" + p + "\", or it is not accessible.");
 				continue;
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
@@ -86,14 +87,17 @@ public class MultiVarTween extends Tween {
 		int i = mVars.size();
 		while (i-- > 0) {
 			try {
+				
 				Float v = mStart.get(i);
 				float value = v + mRange.get(i) * mT;
-				Field f = mObject.getClass().getDeclaredField(mVars.get(i));
-				if (float.class.equals(f.getType())) {
+				Log.d(TAG, "Setting \""+ mVars.get(i)+"\" value: " + value + "");
+				Field f = mObject.getClass().getField(mVars.get(i));
+				if (Float.TYPE.equals(f.getType())) {
 					f.setFloat(mObject, value);
-				} else if (int.class.equals(f.getType())) {
+				} else if (Integer.TYPE.equals(f.getType())) {
 					f.setInt(mObject, (int)value);
 				}
+				
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {

@@ -30,6 +30,17 @@ public class Screen {
     private int[] mXInput = new int[2];
     private int[] mYInput = new int[2];
     
+    public Screen() {
+		// create screen buffers
+		mBitmap[0] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
+		mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
+		
+		FP.buffer = mBitmap[0];
+		mWidth = FP.width;
+		mHeight = FP.height;
+		update();
+	}
+    
     /**
      * Initialise buffers to current screen size.
      */

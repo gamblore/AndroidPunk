@@ -91,17 +91,14 @@ public class Engine {
 
 			// start game loop
 			mRate = 1000 / FP.assignedFrameRate;
-			if (FP.fixed)
-			{
+			if (FP.fixed) {
 				// fixed framerate
 				mSkip = mRate * maxFrameSkip;
 				mLast = mPrev = System.currentTimeMillis();
 				mTimer = new Timer(tickRate);
 				addEventListener(onTimer);
 				mTimer.start();
-			}
-			else
-			{
+			} else {
 				// nonfixed framerate
 				mLast = System.currentTimeMillis();
 				addEventListener(onEnterFrame);
@@ -197,7 +194,8 @@ public class Engine {
 			FP.updateTime = mTime - mUpdateTime;
 
 			// render loop
-			if (!paused) render();
+			if (!paused) 
+				render();
 
 			// update timer
 			mTime = FP.javaTime = System.currentTimeMillis();
@@ -252,18 +250,19 @@ public class Engine {
 		if (FP.mGoto == null) 
 			return;
 		World world = FP.getWorld();
-		world.end();
-		world.updateLists();
-
-		if (world != null && world.autoClear && world.mTween != null) 
-			world.clearTweens();
-		
-		FP.setWorld(FP.mGoto);
+		if(world != null) { 
+			world.end();
+			world.updateLists();
+			if (world.autoClear && world.mTween != null)
+				world.clearTweens();
+		}
+	
+		FP.mWorld = FP.mGoto;
 		FP.mGoto = null;
-		FP.camera = world.camera;
-		world.updateLists();
-		world.begin();
-		world.updateLists();
+		FP.camera = FP.mWorld.camera;
+		FP.mWorld.updateLists();
+		FP.mWorld.begin();
+		FP.mWorld.updateLists();
 	}
 	
 	/**

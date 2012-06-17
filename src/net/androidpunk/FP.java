@@ -30,6 +30,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 
 public class FP {
 
@@ -125,7 +126,7 @@ public class FP {
     private static final float HSV[] = new float[3];
     
     // World information.
-    private static World mWorld;
+    protected static World mWorld;
     protected static World mGoto;
 
     // Console information.
@@ -962,5 +963,9 @@ public class FP {
 			a.add(i, a.get(j = FP.rand(i + 1)));
 			a.add(j, t);
 		}
+	}
+	
+	public static Bitmap getBitmap(int resId) {
+		return ((BitmapDrawable)FP.resources.getDrawable(resId)).getBitmap();
 	}
 }
