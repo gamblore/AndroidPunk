@@ -26,6 +26,8 @@ public class CanvasGraphic extends Graphic {
 	protected Bitmap mBuffer;
 	protected int mWidth;
 	protected int mHeight;
+	protected int mMaxWidth = 4000;
+	protected int mMaxHeight = 4000;
 
 	// Color tinting information.
 	private int mColor;
@@ -33,7 +35,7 @@ public class CanvasGraphic extends Graphic {
 
 	// Global objects.
 	private Rect mRect = new Rect();
-	private Canvas mGraphics = FP.sprite.graphics;
+	private Canvas mCanvas = FP.canvas;
 	private Paint mPaint = FP.paint;
 
 	/**
@@ -58,8 +60,8 @@ public class CanvasGraphic extends Graphic {
 		if (mTint != null) {
 			mPaint.setColorFilter(mTint);
 		}
-		mGraphics.setBitmap(target);
-		mGraphics.drawBitmap(mBuffer, mPoint.x, mPoint.y, mPaint);
+		mCanvas.setBitmap(target);
+		mCanvas.drawBitmap(mBuffer, mPoint.x, mPoint.y, mPaint);
 	}
 	
 	/**
@@ -79,15 +81,15 @@ public class CanvasGraphic extends Graphic {
 	 * @param	src		Optional area of the source image to draw from. If null, the entire BitmapData will be drawn.
 	 */
 	public void draw(int x, int y, Bitmap source, Rect src) {
-		mGraphics.setBitmap(mBuffer);
+		mCanvas.setBitmap(mBuffer);
 		if (src != null) {
 			mRect.left = x;
 			mRect.top = y;
 			mRect.right = x + src.width();
 			mRect.bottom = y + src.height();
-			mGraphics.drawBitmap(source, src, mRect, null);
+			mCanvas.drawBitmap(source, src, mRect, null);
 		} else {
-			mGraphics.drawBitmap(mBuffer, x, y, null);
+			mCanvas.drawBitmap(mBuffer, x, y, null);
 		}
 	}
 	
@@ -105,11 +107,11 @@ public class CanvasGraphic extends Graphic {
 	 * @param	color		Fill color.
 	 */
 	public void fill(Rect rect, int color) {
-		mGraphics.setBitmap(mBuffer);
+		mCanvas.setBitmap(mBuffer);
 		mPaint.reset();
 		mPaint.setColor(color);
 		mPaint.setStyle(Style.FILL);
-		mGraphics.drawRect(rect, mPaint);
+		mCanvas.drawRect(rect, mPaint);
 	}
 
 	/**
@@ -118,11 +120,11 @@ public class CanvasGraphic extends Graphic {
 	 * @param	texture		Fill texture.
 	 */
 	public void fillTexture(Rect rect, Bitmap texture) {
-		mGraphics.setBitmap(mBuffer);
+		mCanvas.setBitmap(mBuffer);
 		mPaint.reset();
 		mPaint.setShader(new BitmapShader(texture, TileMode.REPEAT, TileMode.REPEAT));
 		
-		mGraphics.drawRect(rect, mPaint);
+		mCanvas.drawRect(rect, mPaint);
 	}
 	
 	/**

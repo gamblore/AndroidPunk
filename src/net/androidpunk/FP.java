@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -161,9 +162,12 @@ public class FP {
     public static final Matrix matrix = new Matrix();
     public static Sprite sprite = new Sprite();
     public static final Paint paint = new Paint();
+    public static final Canvas canvas = new Canvas();
     public static Entity entity;
     
     public static Resources resources;
+        
+    public static final float MATRIX_VALUES[] = new float[9];
     
     /**
      * Resize the screen.

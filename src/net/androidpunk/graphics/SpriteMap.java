@@ -43,7 +43,7 @@ public class SpriteMap extends Image {
 	private Map<String, Anim> mAnims;
 	private Anim mAnim;
 	private int mIndex;
-	private int mFrame;
+	protected int mFrame;
 	private float mTimer = 0;
 	
 	

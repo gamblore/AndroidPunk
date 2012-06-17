@@ -123,26 +123,26 @@ public class Image extends Graphic {
 			return;
 		}
 		
-		float[] values = new float[9];
 		
 		// a(0) c(1) tx(2)
 		// b(3) d(4) ty(5)
 		// u(6) v(7) w(8)
-		mMatrix.getValues(values);
+		mMatrix.reset();
+		mMatrix.getValues(FP.MATRIX_VALUES);
 		
 		// render with transformation
-		values[3] = values[1] = 0;
-		values[0] = scaleX * scale;
-		values[4] = scaleY * scale;
-		values[2] = -originX * values[0];
-		values[5] = -originY * values[4];
-		mMatrix.setValues(values);
+		FP.MATRIX_VALUES[3] = FP.MATRIX_VALUES[1] = 0;
+		FP.MATRIX_VALUES[0] = scaleX * scale;
+		FP.MATRIX_VALUES[4] = scaleY * scale;
+		FP.MATRIX_VALUES[2] = -originX * FP.MATRIX_VALUES[0];
+		FP.MATRIX_VALUES[5] = -originY * FP.MATRIX_VALUES[4];
+		mMatrix.setValues(FP.MATRIX_VALUES);
 		if (angle != 0) 
 			mMatrix.postRotate((float)(angle*FP.RAD));
 		
-		mMatrix.getValues(values);
-		values[2] += originX * mPoint.x;
-		values[5] += originY * mPoint.y;
+		mMatrix.getValues(FP.MATRIX_VALUES);
+		FP.MATRIX_VALUES[2] += originX * mPoint.x;
+		FP.MATRIX_VALUES[5] += originY * mPoint.y;
 		c.drawBitmap(mBitmap, mMatrix, null);
 	}
 	
@@ -275,13 +275,12 @@ public class Image extends Graphic {
 		}
 		mSource = Bitmap.createBitmap(mSource.getWidth(), mSource.getHeight(), Config.ARGB_8888);
 		mFlip = temp;
-		float values[] = new float[9];
-		for (int i = 0; i < 3; i++) {
-			values[i + i * 3] = 1;
-		}
-		values[0] = -1;
-		values[2] = mSource.getWidth();
-		FP.matrix.setValues(values);
+		
+		FP.matrix.reset();
+		FP.matrix.getValues(FP.MATRIX_VALUES);
+		FP.MATRIX_VALUES[0] = -1;
+		FP.MATRIX_VALUES[2] = mSource.getWidth();
+		FP.matrix.setValues(FP.MATRIX_VALUES);
 		Canvas c = new Canvas(mSource);
 		c.drawBitmap(temp, FP.matrix, null);
 		updateBuffer();

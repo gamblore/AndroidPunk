@@ -23,7 +23,7 @@ public class Draw {
 	
 	private static Bitmap mTarget;
 	private static Point mCamera;
-	private static Canvas mGraphics = FP.sprite.graphics; 
+	private static Canvas mCanvas = FP.canvas; 
 	private static Rect mRect = FP.rect;
 	
 	public static void setTarget(Bitmap target) {
@@ -172,27 +172,41 @@ public class Draw {
 		p.setAlpha((int)(alpha));
 		p.setAntiAlias(true);
 		
-		mGraphics.drawLine(x1 - mCamera.x, y1 - mCamera.y, x2 - mCamera.x, y2 - mCamera.y, p);
+		mCanvas.drawLine(x1 - mCamera.x, y1 - mCamera.y, x2 - mCamera.x, y2 - mCamera.y, p);
 	}
 	
+	/**
+	 * Draws a filled white rectangle.
+	 * @param	x			X position of the rectangle.
+	 * @param	y			Y position of the rectangle.
+	 * @param	width		Width of the rectangle.
+	 * @param	height		Height of the rectangle.
+	 */
 	public static void rect(int x, int y, int width, int height) {
 		rect(x, y, width, height, 0xffffffff, 255);
 	}
 	
+	/**
+	 * Draws a filled rectangle.
+	 * @param	x			X position of the rectangle.
+	 * @param	y			Y position of the rectangle.
+	 * @param	width		Width of the rectangle.
+	 * @param	height		Height of the rectangle.
+	 * @param	color		Color of the rectangle.
+	 */
 	public static void rect(int x, int y, int width, int height, int color) {
 		rect(x, y, width, height, color, 255);
 	}
 	
 	
 	/**
-	 * Draws a smooth, antialiased line with optional alpha and thickness.
-	 * @param	x1		Starting x position.
-	 * @param	y1		Starting y position.
-	 * @param	x2		Ending x position.
-	 * @param	y2		Ending y position.
-	 * @param	color	Color of the line.
-	 * @param	alpha	Alpha of the line.
-	 * @param	thick	The thickness of the line.
+	 * Draws a filled rectangle.
+	 * @param	x			X position of the rectangle.
+	 * @param	y			Y position of the rectangle.
+	 * @param	width		Width of the rectangle.
+	 * @param	height		Height of the rectangle.
+	 * @param	color		Color of the rectangle.
+	 * @param	alpha		Alpha of the rectangle.
 	 */
 	public static void rect(int x, int y, int width, int height, int color, int alpha) {
 		Paint p = FP.paint;
@@ -204,7 +218,7 @@ public class Draw {
 		mRect.top = y - mCamera.y;
 		mRect.right = mRect.left + width;
 		mRect.bottom = mRect.top + height;
-		mGraphics.drawRect(mRect, p);
+		mCanvas.drawRect(mRect, p);
 	}
 	
 	
@@ -288,7 +302,7 @@ public class Draw {
 		p.setAlpha(alpha);
 		p.setAntiAlias(true);
 		
-		mGraphics.drawCircle(x - mCamera.x, y - mCamera.y, radius, p);
+		mCanvas.drawCircle(x - mCamera.x, y - mCamera.y, radius, p);
 	}
 	
 	public static void hitbox(Entity e) {
@@ -321,7 +335,7 @@ public class Draw {
 		mRect.top = e.y - e.originY - mCamera.y;
 		mRect.right = mRect.left + e.width;
 		mRect.bottom = mRect.top + e.height;
-		mGraphics.drawRect(mRect, p);
+		mCanvas.drawRect(mRect, p);
 	}
 	
 	public static void graphic(Graphic g) {
