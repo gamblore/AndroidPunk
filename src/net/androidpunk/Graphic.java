@@ -10,7 +10,6 @@ public class Graphic {
 	}
     
 	private static final OnAssignToEntityCallback NULL_CALLBACK = new OnAssignToEntityCallback() {
-		@Override
 		public void assigned(Entity e) { }
 	};
 	

@@ -80,14 +80,12 @@ public class PunkActivity extends Activity implements Callback {
 		mGameThread.start();
 	}
 
-	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		mScreenRect.set(0, 0, width, height);
 		Engine.fire(Event.ADDED_TO_STAGE);
 		mStarted = true;
 	}
 
-	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
 			mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, 60, false);
@@ -106,7 +104,6 @@ public class PunkActivity extends Activity implements Callback {
 		}
 	}
 
-	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mRunning = false;
 		mStarted = false;
