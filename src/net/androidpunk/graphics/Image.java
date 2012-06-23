@@ -63,6 +63,7 @@ public class Image extends Graphic {
 	private int mColor = 0xffffffff;
 	protected ColorFilter mTint;
 	private ColorFilter mColorTransform;
+	private Rect mRect = FP.rect;
 	private Matrix mMatrix = FP.matrix;
 
 	// Flipped image information.
@@ -206,16 +207,18 @@ public class Image extends Graphic {
 	 * Updates the image buffer.
 	 */
 	public void updateBuffer(boolean clearBefore) {
+		PAINT.reset();
 		if (mSource == null)
 			return;
 		Canvas c = new Canvas(mBuffer);
 		if (clearBefore) {
-			PAINT.setColor(0xff000000);
+			PAINT.setColor(0x00000000);
 			c.drawRect(mBufferRect, PAINT);
 		}
 		if (mTint != null)
 			PAINT.setColorFilter(mTint);
-		c.drawBitmap(mSource, mSourceRect.left, mSourceRect.top, PAINT);
+		mRect.set(0,0,mSourceRect.width(), mSourceRect.height());
+		c.drawBitmap(mSource, mSourceRect, mRect, PAINT);
 	}
 	
 	/**

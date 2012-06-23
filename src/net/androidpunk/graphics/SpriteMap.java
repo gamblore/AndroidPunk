@@ -1,5 +1,6 @@
 package net.androidpunk.graphics;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import net.androidpunk.FP;
@@ -40,7 +41,7 @@ public class SpriteMap extends Image {
 	private int mColumns;
 	private int mRows;
 	private int mFrameCount;
-	private Map<String, Anim> mAnims;
+	private final Map<String, Anim> mAnims = new HashMap<String, Anim>();
 	private Anim mAnim;
 	private int mIndex;
 	protected int mFrame;
@@ -104,13 +105,15 @@ public class SpriteMap extends Image {
 	@Override 
 	public void updateBuffer(boolean clearBefore) {
 		// get position of the current frame
+		mRect = getClipRect();
 		mRect.offsetTo(0, 0);
 		int newX = (mRect.width() * mFrame);
+		// Happens in constructor call which does not have mWidth member.
+		int width = mSource.getWidth();
 		if (!mFlipped) {
-			
-			mRect.offset(newX % mWidth, (int)((int)(newX / mWidth) * mRect.height()));
+			mRect.offset(newX % width, (int)((int)(newX / width) * mRect.height()));
 		} else { 
-			mRect.offset((mWidth - mRect.width()) - (newX % mWidth), (int)(newX * mRect.height()));
+			mRect.offset((width - mRect.width()) - (newX % width), (int)(newX * mRect.height()));
 		}
 
 		// update the buffer
