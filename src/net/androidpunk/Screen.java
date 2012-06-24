@@ -7,16 +7,23 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Paint.Style;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class Screen {
 
+	private static final String TAG = "Screen";
+	
     // Screen information.
     private Sprite mSprite = new Sprite();
-    private Bitmap[] mBitmap = new Bitmap[2];
+    private Bitmap mBitmap;
     private int mCurrent = 0;
     private Matrix mMatrix = new Matrix();
+    
+    private Canvas mCanvas = FP.canvas;
+    private Paint mPaint = FP.paint;
     
     private int mX, mY, mWidth, mHeight, mOriginX, mOriginY;
     private float mScaleX = 1;
@@ -25,72 +32,55 @@ public class Screen {
     private float mAngle = 0;
     private int mColor = 0xff202020;
     
-    private MotionEvent mInput;
+    private static MotionEvent mInput = null;
     
     private int[] mXInput = new int[2];
     private int[] mYInput = new int[2];
     
+	private final Point mPoints[] = new Point[] { new Point(), new Point(), new Point(), new Point(), new Point() };
+    
     public Screen() {
 		// create screen buffers
-		mBitmap[0] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
-		mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
+		mBitmap = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
+		//mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
 		
-		FP.buffer = mBitmap[0];
+		FP.buffer = mBitmap;
 		mWidth = FP.width;
 		mHeight = FP.height;
 		update();
+		
 	}
     
     /**
      * Initialise buffers to current screen size.
      */
     public void resize() {
-              
+        mBitmap.recycle(); 
         // create screen buffers
-        mBitmap[0] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
-        mBitmap[1] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
+        mBitmap = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
+        //mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
         
-        Canvas c = new Canvas();
-        for (int i = 0; i < mBitmap.length; i++) {
-            c.setBitmap(mBitmap[i]);
-            c.drawColor(mColor);
-        }
+        Log.d(TAG, String.format("Screen created %dx%d", mBitmap.getWidth(), mBitmap.getHeight()));
+
+        mCanvas.setBitmap(mBitmap);
+        mCanvas.drawColor(mColor);
         
         //TODO FIGURE OUT WHAT SPRITE DOES?
         //mSprite.addChild(mBitmap[0]).visible = true;
         //mSprite.addChild(mBitmap[1]).visible = false;
         
-        FP.buffer = mBitmap[0];
+        FP.buffer = mBitmap;
         mWidth = FP.width;
         mHeight = FP.height;
         mCurrent = 0;
     }
-    
-    /**
-	 * Swaps screen buffers.
-	 */
-	public void swap() {
-		mCurrent = 1 - mCurrent;
-		FP.buffer = mBitmap[mCurrent];
-	}
 	
 	/**
 	 * Refreshes the screen.
 	 */
 	public void refresh() {
 		// refreshes the screen
-		Canvas c = new Canvas(FP.buffer);
-		Paint p = new Paint();
-		p.setStyle(Style.FILL);
-		p.setColor(mColor);
-		c.drawRect(FP.bounds, p);
-	}
-	
-	/**
-	 * Redraws the screen.
-	 */
-	public void redraw() {
-		// TODO refresh the buffers
+		FP.buffer.eraseColor(mColor);
 	}
 	
 	/** @private Re-applies transformation matrix. */
@@ -279,16 +269,32 @@ public class Screen {
 		return mYInput;
 	}
 	
-	protected void setMotionEvent(MotionEvent me) {
+	public int getTouchesCount() {
+		return (mInput != null) ? Math.min(mInput.getPointerCount(), 5) : 0; 
+	}
+	
+	public Point[] getTouches() {
+		if (mInput != null) {
+			for (int i = 0; i < mInput.getPointerCount() && i < 5; i++) {
+				mPoints[i].x = (int)mInput.getX(i);
+				mPoints[i].y = (int)mInput.getY(i);
+			}
+		}
+		return mPoints;
+	}
+	
+	public static void setMotionEvent(MotionEvent me) {
 		if (me.getActionMasked() == MotionEvent.ACTION_DOWN || me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
 			Input.mouseDown = true;
 			Input.mouseUp = false;
 			Input.mousePressed = true;
 		}
+		mInput = me;
 		if (me.getActionMasked() == MotionEvent.ACTION_UP) {
 			Input.mouseDown = false;
 			Input.mouseUp = true;
 			Input.mouseReleased = true;
+			mInput = null;
 		}
 	}
 	
@@ -297,7 +303,7 @@ public class Screen {
 	 * @return	A new Image object.
 	 */
 	public Bitmap capture() {
-		return mBitmap[mCurrent].copy(Config.ARGB_8888, false);
+		return mBitmap.copy(Config.ARGB_8888, false);
 	}
 	
 }

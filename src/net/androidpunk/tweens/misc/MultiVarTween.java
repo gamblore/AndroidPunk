@@ -90,7 +90,7 @@ public class MultiVarTween extends Tween {
 				
 				Float v = mStart.get(i);
 				float value = v + mRange.get(i) * mT;
-				Log.d(TAG, "Setting \""+ mVars.get(i)+"\" value: " + value + "");
+				//Log.d(TAG, "Setting \""+ mVars.get(i)+"\" value: " + value + "");
 				Field f = mObject.getClass().getField(mVars.get(i));
 				if (Float.TYPE.equals(f.getType())) {
 					f.setFloat(mObject, value);

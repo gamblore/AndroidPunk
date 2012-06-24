@@ -7,9 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class Entity extends Tweener {
 
+	private static final String TAG = "Entity";
+	
     /**
      * If the Entity should render.
      */
@@ -85,16 +88,16 @@ public class Entity extends Tweener {
     public Entity() {
         this(0,0, null, null);
     }
-    public Entity(float x, float y) {
+    public Entity(int x, int y) {
         this(x, y, null, null);
     }
-    public Entity(float x, float y, Graphic graphic) {
+    public Entity(int x, int y, Graphic graphic) {
         this(x, y, graphic, null);
     }
     
-    public Entity(float x, float y, Graphic graphic, Mask mask) {
-        mX = x;
-        mY = y;
+    public Entity(int x, int y, Graphic graphic, Mask mask) {
+        this.x = x;
+        this.y = y;
         if (graphic != null) { 
             mGraphic = graphic;
             mGraphic.mAssign.assigned(this);
@@ -142,6 +145,7 @@ public class Entity extends Tweener {
 			mCamera.x = FP.camera.x;
 			mCamera.y = FP.camera.y;
 			mGraphic.render(renderTarget != null ? renderTarget : FP.buffer, mPoint, mCamera);
+			//Log.d(TAG, "Entity rendered to " + FP.buffer.toString());
 		}
 	}
 	
@@ -499,6 +503,7 @@ public class Entity extends Tweener {
     	if (g != null) { 
             mGraphic = g;
             mGraphic.mAssign.assigned(this);
+            mGraphic.active = true;
         }
     }
     

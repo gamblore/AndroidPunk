@@ -1,5 +1,6 @@
 package net.androidpunk.utils;
 
+import android.graphics.Point;
 import net.androidpunk.FP;
 
 public class Input {
@@ -36,6 +37,22 @@ public class Input {
 	 */
 	public static int[] getMouseY() {
 		return FP.screen.getTouchY();
+	}
+	
+	/**
+	 * Gets the number of pointers on the screen.
+	 * @return The number of points
+	 */
+	public static int getTouchesCount() {
+		return FP.screen.getTouchesCount();
+	}
+	
+	/**
+	 * Gets the points of contact with the screen.
+	 * @return An array of points use getTouchesCount() to find the size;
+	 */
+	public static Point[] getTouches() {
+		return FP.screen.getTouches();
 	}
 	
 	/** @private Called by Engine to update the input. */

@@ -24,7 +24,7 @@ public class Tweener extends Positionable {
 	/**
 	 * If the tween should update.
 	 */
-	public boolean active;
+	public boolean active = true;
 	
 	/**
 	 * If the Tweener should clear on removal. For Entities, this is when they are

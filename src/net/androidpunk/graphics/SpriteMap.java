@@ -35,7 +35,6 @@ public class SpriteMap extends Image {
 	public float rate = 1;
 	
 	// Spritemap information.
-	protected Rect mRect;
 	protected int mWidth;
 	protected int mHeight;
 	private int mColumns;
@@ -75,17 +74,17 @@ public class SpriteMap extends Image {
 	 */
 	public SpriteMap(Bitmap source, int frameWidth, int frameHeight, OnAnimationEndCallback callback) {
 		super(source, new Rect(0, 0, frameWidth, frameHeight));
-		mRect = getClipRect();
+		Rect clipRect = getClipRect();
 		
 		if (frameWidth == 0)
-			mRect.right = source.getWidth();
+			clipRect.right = source.getWidth();
 		if (frameHeight == 0)
-			mRect.bottom = source.getHeight();
+			clipRect.bottom = source.getHeight();
 		
 		mWidth = source.getWidth();
 		mHeight = source.getHeight();
-		mColumns = mWidth / mRect.width();
-		mRows = mHeight / mRect.height();
+		mColumns = mWidth / clipRect.width();
+		mRows = mHeight / clipRect.height();
 		mFrameCount = mColumns * mRows;
 		this.callback = callback;
 		updateBuffer();
@@ -96,7 +95,7 @@ public class SpriteMap extends Image {
 	 * Updates the spritemap's buffer without clearing.
 	 */
 	public void updateBuffer() {
-		updateBuffer(false);
+		updateBuffer(true);
 	}
 	
 	/**
@@ -105,17 +104,19 @@ public class SpriteMap extends Image {
 	@Override 
 	public void updateBuffer(boolean clearBefore) {
 		// get position of the current frame
-		mRect = getClipRect();
-		mRect.offsetTo(0, 0);
-		int newX = (mRect.width() * mFrame);
+		Rect clipRect = getClipRect();
+		int newX = (clipRect.width() * mFrame);
+		
 		// Happens in constructor call which does not have mWidth member.
 		int width = mSource.getWidth();
+		
 		if (!mFlipped) {
-			mRect.offset(newX % width, (int)((int)(newX / width) * mRect.height()));
+			clipRect.offsetTo(newX % width, (int)((int)(newX / width) * clipRect.height()));
 		} else { 
-			mRect.offset((width - mRect.width()) - (newX % width), (int)(newX * mRect.height()));
+			clipRect.offsetTo((width - clipRect.width()) - (newX % width), (int)(newX * clipRect.height()));
 		}
 
+		//Log.d(TAG, String.format("Clipped to %s, frame %d", clipRect.toShortString(), mIndex));
 		// update the buffer
 		super.updateBuffer(clearBefore);
 	}
@@ -127,7 +128,7 @@ public class SpriteMap extends Image {
 			mTimer += (FP.fixed ? mAnim.mFrameRate : mAnim.mFrameRate * FP.elapsed) * rate;
 			if (mTimer >= 1) {
 				while (mTimer >= 1) {
-					mTimer--;
+					mTimer -= 1;
 					mIndex++;
 					if (mIndex == mAnim.mFrameCount) {
 						if (mAnim.mLoop) {
@@ -272,6 +273,8 @@ public class SpriteMap extends Image {
 		if (mFrame == frame) 
 			return;
 		mFrame = frame;
+		Log.d(TAG, "Setting frame to "+ frame);
+
 		updateBuffer();
 	}
 	

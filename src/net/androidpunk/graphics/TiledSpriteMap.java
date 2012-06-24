@@ -58,7 +58,7 @@ public class TiledSpriteMap extends SpriteMap {
 	
 	/** @private Updates the buffer. */
 	public void updateBuffer() {
-		updateBuffer(false);
+		updateBuffer(true);
 	}
 	
 	/** @private Updates the buffer. */

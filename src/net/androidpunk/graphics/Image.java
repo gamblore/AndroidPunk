@@ -65,16 +65,23 @@ public class Image extends Graphic {
 	private ColorFilter mColorTransform;
 	private Rect mRect = FP.rect;
 	private Matrix mMatrix = FP.matrix;
+	private final Canvas mCanvas = FP.canvas;
+	private Paint mPaint = FP.paint;
+
 
 	// Flipped image information.
 	protected boolean mFlipped;
 	private Bitmap mFlip;
 	private Map<String, Integer> mFlips;
 	
-	private static final Paint PAINT = new Paint();
+	/**
+	 * Constructor with a clip rect of the whole image.
+	 * @param	source		Source image.
+	 */
 	public Image(Bitmap source) {
 		this(source, null);
 	}
+	
 	/**
 	 * Constructor.
 	 * @param	source		Source image.
@@ -87,13 +94,14 @@ public class Image extends Graphic {
 			return;
 		}
 		
-		mSourceRect = new Rect(0,0,mSource.getWidth(),mSource.getHeight());
 		if (clipRect != null){
-			if (clipRect.width() > 0)
-				clipRect.right = mSourceRect.width();
-			if (clipRect.height() > 0)
-				clipRect.bottom = mSourceRect.height();
+			if (clipRect.width() == 0)
+				clipRect.right = mSource.getWidth();
+			if (clipRect.height() == 0)
+				clipRect.bottom = mSource.getHeight();
 			mSourceRect = clipRect;
+		} else {
+			mSourceRect = new Rect(0, 0, mSource.getWidth(), mSource.getHeight());
 		}
 		
 		createBuffer();
@@ -113,17 +121,20 @@ public class Image extends Graphic {
 		if (mBuffer == null) 
 			return;
 
-		Canvas c = new Canvas(target);
+		mCanvas.setBitmap(target);
 		// determine drawing location
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 
 		// render without transformation
+		/*
 		if (angle == 0 && scaleX * scale == 1 && scaleY * scale == 1) {
-			c.drawBitmap(mBitmap, point.x, point.y, null);
+			mRect.set(mPoint.x, mPoint.y, mPoint.x + mBufferRect.width(), mPoint.y + mBufferRect.height());
+			Log.d(TAG, String.format("Drawing buffer from %s to %s", mBufferRect.toShortString(), mRect.toShortString()));
+			mCanvas.drawBitmap(mBitmap, mBufferRect, mRect, null);
 			return;
 		}
-		
+		*/
 		
 		// a(0) c(1) tx(2)
 		// b(3) d(4) ty(5)
@@ -137,14 +148,45 @@ public class Image extends Graphic {
 		FP.MATRIX_VALUES[4] = scaleY * scale;
 		FP.MATRIX_VALUES[2] = -originX * FP.MATRIX_VALUES[0];
 		FP.MATRIX_VALUES[5] = -originY * FP.MATRIX_VALUES[4];
-		mMatrix.setValues(FP.MATRIX_VALUES);
-		if (angle != 0) 
+		if (angle != 0) {
+			mMatrix.setValues(FP.MATRIX_VALUES);
 			mMatrix.postRotate((float)(angle*FP.RAD));
+			mMatrix.getValues(FP.MATRIX_VALUES);
+		}
+		FP.MATRIX_VALUES[2] += originX + mPoint.x;
+		FP.MATRIX_VALUES[5] += originY + mPoint.y;
+		mMatrix.setValues(FP.MATRIX_VALUES);
 		
-		mMatrix.getValues(FP.MATRIX_VALUES);
-		FP.MATRIX_VALUES[2] += originX * mPoint.x;
-		FP.MATRIX_VALUES[5] += originY * mPoint.y;
-		c.drawBitmap(mBitmap, mMatrix, null);
+		mCanvas.drawBitmap(mBitmap, mMatrix, null);
+	}
+	
+	/**
+	 * Updates the image buffer.
+	 */
+	public void updateBuffer() {
+		updateBuffer(true);
+	}
+	
+	/**
+	 * Updates the image buffer.
+	 */
+	public void updateBuffer(boolean clearBefore) {
+		
+		mPaint.reset();
+		if (mSource == null)
+			return;
+		
+		mCanvas.setBitmap(mBuffer);
+		
+		if (clearBefore) {
+			mBuffer.eraseColor(0);
+		}
+		if (mTint != null)
+			mPaint.setColorFilter(mTint);
+		
+		mCanvas.drawBitmap(mSource, mSourceRect, mBufferRect, mPaint);
+		
+		//Log.d(TAG, "Image "+ mSourceRect.toShortString() + " rendering into " + mBufferRect.toShortString());
 	}
 	
 	/**
@@ -166,9 +208,9 @@ public class Image extends Graphic {
 	public static Image createRect(int width, int height, int color) {
 		Bitmap source = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		Canvas c = new Canvas(source);
-		PAINT.setColor(color);
-		PAINT.setStyle(Style.FILL);
-		c.drawRect(0, 0, width, height, PAINT);
+		FP.paint.setColor(color);
+		FP.paint.setStyle(Style.FILL);
+		c.drawRect(0, 0, width, height, FP.paint);
 		return new Image(source);
 	}
 	
@@ -190,35 +232,10 @@ public class Image extends Graphic {
 		Bitmap source = Bitmap.createBitmap(radius * 2, radius *2, Config.ARGB_8888);
 		Canvas c = new Canvas(source);
 		c.drawColor(0);
-		PAINT.setColor(color);
-		PAINT.setStyle(Style.FILL);
-		c.drawCircle(radius, radius, radius, PAINT);
+		FP.paint.setColor(color);
+		FP.paint.setStyle(Style.FILL);
+		c.drawCircle(radius, radius, radius, FP.paint);
 		return new Image(source);
-	}
-	
-	/**
-	 * Updates the image buffer.
-	 */
-	public void updateBuffer() {
-		updateBuffer(false);
-	}
-	
-	/**
-	 * Updates the image buffer.
-	 */
-	public void updateBuffer(boolean clearBefore) {
-		PAINT.reset();
-		if (mSource == null)
-			return;
-		Canvas c = new Canvas(mBuffer);
-		if (clearBefore) {
-			PAINT.setColor(0x00000000);
-			c.drawRect(mBufferRect, PAINT);
-		}
-		if (mTint != null)
-			PAINT.setColorFilter(mTint);
-		mRect.set(0,0,mSourceRect.width(), mSourceRect.height());
-		c.drawBitmap(mSource, mSourceRect, mRect, PAINT);
 	}
 	
 	/**

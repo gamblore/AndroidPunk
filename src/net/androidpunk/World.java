@@ -4,12 +4,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import android.graphics.Point;
+import android.util.Log;
 
 public class World extends Tweener {
+	
+	
+	private static final String TAG = "World";
+	
 	/**
 	 * If the render() loop is performed.
 	 */
@@ -76,8 +80,7 @@ public class World extends Tweener {
 		// update the entities
 		Entity e = mUpdateFirst;
 		while (e != null){
-			if (e.active)
-			{
+			if (e.active) {
 				if (e.mTween != null)
 					e.updateTweens();
 				e.update();

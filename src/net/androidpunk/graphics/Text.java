@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.Paint.Style;
 
 /**
  * Used for drawing text using embedded fonts.
@@ -19,9 +20,10 @@ public class Text extends Image {
 	// Text information.
 	private int mWidth;
 	private int mHeight;
-	private Paint mPaint;
+	private Paint mPaint = FP.paint;
 	private String mText;
 	private int mSize;
+	private int mColor = 0xffffffff;
 	
 	
 	public Text(String text, int x, int y) {
@@ -38,11 +40,7 @@ public class Text extends Image {
 	 */
 	public Text(String text, int x, int y, int width, int height) {
 		super(init(text, x, y, width, height));
-		mPaint = new Paint();
-		mPaint.setTextSize(Text.size);
-		mPaint.setColor(0xffffffff);
-		mPaint.setAntiAlias(true);
-		mPaint.setTextAlign(Align.LEFT);
+		
 		mText = text;
 		mSize = Text.size;
 		updateBuffer();
@@ -50,7 +48,7 @@ public class Text extends Image {
 		this.y = y;
 	}
 	
-	private static Bitmap init( String text, int x, int y, int width, int height) {
+	private static Bitmap init(String text, int x, int y, int width, int height) {
 		Paint p = FP.paint;
 		p.reset();
 		p.setTextSize(Text.size);
@@ -71,12 +69,27 @@ public class Text extends Image {
 	/** @private Updates the drawing buffer. */
 	@Override 
 	public void updateBuffer(boolean clearBefore) {
-		FP.canvas.setBitmap(getSource());
-		mPaint.setTextSize(mSize);
-		mWidth = (int)(mPaint.measureText(mText));
+		if (mBuffer == null || mText == null)
+			return;
+		
+		Paint p = FP.paint;
+		p.reset();
+		p.setStyle(Style.STROKE);
+		p.setColor(mColor);
+		p.setTextSize(mSize);
+		p.setAntiAlias(true);
+		p.setTextAlign(Align.LEFT);
+		
+		mWidth = (int)(p.measureText(mText));
 		mHeight = (int)(mSize);
-		FP.canvas.drawColor(0);
-		FP.canvas.drawText(mText, 0, 0, mPaint);
+		
+		// Create a new bitmap for this text
+		Bitmap newBm = Bitmap.createBitmap(mWidth, mHeight, Config.ARGB_8888);
+		mSource.recycle();
+		mSource = newBm;
+		mBufferRect.set(0, 0, mWidth, mHeight);
+		FP.canvas.setBitmap(getSource());
+		FP.canvas.drawText(mText, 0, 0, p);
 		super.updateBuffer(clearBefore);
 	}
 	
@@ -128,4 +141,12 @@ public class Text extends Image {
 	 */
 	@Override 
 	public int getHeight() { return mHeight; }
+	
+	public int getColor() { return mColor; }
+	public void setColor(int value) {
+		if (mColor == value) 
+			return;
+		mColor = value;
+		updateBuffer();
+	}
 }

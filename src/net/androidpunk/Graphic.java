@@ -55,9 +55,6 @@ public class Graphic {
     protected final Point mPoint = new Point();
     protected OnAssignToEntityCallback mAssign = NULL_CALLBACK;
     
-    
-	
-    
     /**
      * Constructor.
      */
@@ -69,16 +66,8 @@ public class Graphic {
      * Updates the graphic
      */
     public void update() {
-        update(0.03f);
     }
-    
-    /**
-     * Updates the graphic
-     * @param delta time that has passed in seconds.
-     */
-    public void update(float delta) {
-        
-    }
+
     /**
      * Renders the graphic to the screen buffer.
      * @param target the bitmap to draw into

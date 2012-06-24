@@ -56,7 +56,7 @@ public class TiledImage extends Image {
 	/** @private Updates the buffer. */
 	@Override 
 	public void updateBuffer() {
-		updateBuffer(false);
+		updateBuffer(true);
 	}
 	
 	/** @private Updates the buffer. */

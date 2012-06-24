@@ -31,6 +31,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.TypedValue;
 
 public class FP {
 
@@ -104,7 +105,7 @@ public class FP {
     public static Bitmap buffer;
     
     /**
-     * A rectangle representing the size of the screen.
+     * A rectangle representing the target size of the screen.
      */
     public static Rect bounds;
     
@@ -184,6 +185,10 @@ public class FP {
         FP.bounds.bottom = height;
         FP.screen.resize();
     }
+    
+    public static float dip(float dip) { 
+		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics());
+	}
     
     public static World getWorld() {
         return mWorld;
@@ -818,24 +823,6 @@ public class FP {
 		return null;
 	}
 	
-	public static MultiVarTween tween(Object object, Map<String, Number> values, float duration) {
-		return tween(object, values, duration, null);
-	}
-	/**
-	 * Tweens numeric public properties of an Object. Shorthand for creating a MultiVarTween tween, starting it and adding it to a Tweener.
-	 * @param	object		The object containing the properties to tween.
-	 * @param	values		An object containing key/value pairs of properties and target values.
-	 * @param	duration	Duration of the tween.
-	 * @param	options		An object containing key/value pairs of the following optional parameters:
-	 * 						type		Tween type.
-	 * 						complete	Optional completion callback function.
-	 * 						ease		Optional easer function.
-	 * 						tweener		The Tweener to add this Tween to.
-	 * @return	The added MultiVarTween object.
-	 * 
-	 * Example: FP.tween(object, { x: 500, y: 350 }, 2.0, { ease: easeFunction, complete: onComplete } );
-	 */
-	
 	public static Map<String, Number> tweenmap(String k1, Number v1) {
 		return tweenmap(k1, v1, null, null, null, null, null, null, null, null);
 	}
@@ -885,6 +872,24 @@ public class FP {
 		}
 	}
 	
+	public static MultiVarTween tween(Object object, Map<String, Number> values, float duration) {
+		return tween(object, values, duration, null);
+	}
+	/**
+	 * Tweens numeric public properties of an Object. Shorthand for creating a MultiVarTween tween, starting it and adding it to a Tweener.
+	 * @param	object		The object containing the properties to tween.
+	 * @param	values		An object containing key/value pairs of properties and target values.
+	 * @param	duration	Duration of the tween.
+	 * @param	options		An object containing key/value pairs of the following optional parameters:
+	 * 						type		Tween type.
+	 * 						complete	Optional completion callback function.
+	 * 						ease		Optional easer function.
+	 * 						tweener		The Tweener to add this Tween to.
+	 * @return	The added MultiVarTween object.
+	 * 
+	 * Example: FP.tween(object, { x: 500, y: 350 }, 2.0, { ease: easeFunction, complete: onComplete } );
+	 */
+	
 	public static MultiVarTween tween(Object object, Map<String, Number> values, float duration, TweenOptions options) {
 		int type = Tween.ONESHOT;
 		OnCompleteCallback complete = null;
@@ -899,7 +904,7 @@ public class FP {
 			ease = options.ease;
 			tweener = options.tweener;
 		}
-		MultiVarTween tween = new MultiVarTween(complete,type);
+		MultiVarTween tween = new MultiVarTween(complete, type);
 		tween.tween(object, values, duration, ease);
 		tweener.addTween(tween);
 		return tween;

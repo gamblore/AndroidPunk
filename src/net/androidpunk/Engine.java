@@ -1,5 +1,6 @@
 package net.androidpunk;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import net.androidpunk.flashcompat.Event;
@@ -8,8 +9,11 @@ import net.androidpunk.flashcompat.Timer;
 import net.androidpunk.utils.Draw;
 import net.androidpunk.utils.Input;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class Engine {
+	
+	private static final String TAG = "Engine";
 	
 	/**
 	 * If the game should stop updating/rendering.
@@ -33,11 +37,12 @@ public class Engine {
 	
 	private float mDelta = 0;
 	private long mTime;
-	private float mLast;
+	private long mLast;
+	private long mPrev;
 	private Timer mTimer;
 	private float mRate;
 	private float mSkip;
-	private float mPrev;
+	
 
 	// Debug timing information.
 	private long mUpdateTime;
@@ -50,29 +55,43 @@ public class Engine {
 	private long mFrameListSum = 0;
 	private Vector<Long> mFrameList = new Vector<Long>();
 	
-	public static final Vector<Timer> TIMERS = new Vector<Timer>(); 
+	public static final Vector<Timer> TIMERS = new Vector<Timer>();
 	
+	public static final Vector<Integer> mPendingEvents = new Vector<Integer>();
 	public static final Vector<OnEventListener> mEventListeners = new Vector<OnEventListener>();
 	
+	public static void checkEvents() {
+		synchronized (mPendingEvents) {
+			Iterator<Integer> it = mPendingEvents.iterator();
+			while (it.hasNext()) {
+				int event = it.next();
+				if (event == Event.TIMER) {
+					for (OnEventListener l : mEventListeners) {
+						if (l.type == Event.TIMER) {
+							l.event();
+						}
+					}
+				} else if (event == Event.ADDED_TO_STAGE) {
+					for (OnEventListener l : mEventListeners) {
+						if (l.type == Event.ADDED_TO_STAGE) {
+							l.event();
+						}
+					}
+				} else if (event == Event.ENTER_FRAME) {
+					for (OnEventListener l : mEventListeners) {
+						if (l.type == Event.ENTER_FRAME) {
+							l.event();
+						}
+					}
+				}
+				it.remove();
+			}
+		}
+	}
+	
 	public static void fire(int event) {
-		if (event == Event.TIMER) {
-			for (OnEventListener l : mEventListeners) {
-				if (l.type == Event.TIMER) {
-					l.event();
-				}
-			}
-		} else if (event == Event.ADDED_TO_STAGE) {
-			for (OnEventListener l : mEventListeners) {
-				if (l.type == Event.ADDED_TO_STAGE) {
-					l.event();
-				}
-			}
-		} else if (event == Event.ENTER_FRAME) {
-			for (OnEventListener l : mEventListeners) {
-				if (l.type == Event.ENTER_FRAME) {
-					l.event();
-				}
-			}
+		synchronized (mPendingEvents) {
+			mPendingEvents.add(event);
 		}
 	}
 	
@@ -103,6 +122,8 @@ public class Engine {
 				mLast = System.currentTimeMillis();
 				addEventListener(onEnterFrame);
 			}
+			
+			FP.screen.resize();
 		}
 	};
 	
@@ -112,6 +133,7 @@ public class Engine {
 			// update timer
 			mTime = System.currentTimeMillis();
 			mDelta += (mTime - mLast);
+			//Log.d(TAG, String.format("Delta %f millis this frame %d to hit rate %f", mDelta, (mTime - mLast), mRate));
 			mLast = mTime;
 
 			// quit if a frame hasn't passed
@@ -172,10 +194,12 @@ public class Engine {
 			mTime = mGameTime = System.currentTimeMillis();
 			FP.javaTime = mTime - FP.javaTime;
 			mUpdateTime = mTime;
-			FP.elapsed = (mTime - mLast) / 1000;
+			FP.elapsed = (mTime - mLast) / 1000.0f;
 			if (FP.elapsed > maxElapsed) 
 				FP.elapsed = maxElapsed;
 			FP.elapsed *= FP.rate;
+			
+			//Log.d(TAG, String.format("Elapsed %f millis delta millis %d to hit rate %f", FP.elapsed, (mTime - mLast), mRate));
 			mLast = mTime;
 
 			// update console
@@ -263,6 +287,7 @@ public class Engine {
 		FP.mWorld.updateLists();
 		FP.mWorld.begin();
 		FP.mWorld.updateLists();
+		FP.mWorld.active = true;
 	}
 	
 	/**
@@ -296,13 +321,11 @@ public class Engine {
 			mFrameLast = t;
 
 		// render loop
-		FP.screen.swap();
 		Draw.resetTarget();
 		FP.screen.refresh();
 		World world = FP.getWorld();
 		if (world.visible)
 			world.render();
-		FP.screen.redraw();
 
 		// more timing stuff
 		t = System.currentTimeMillis();

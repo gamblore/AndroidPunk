@@ -27,7 +27,7 @@ public class Tween {
 	/**
 	 * If the tween should update.
 	 */
-	public boolean active;
+	public boolean active = false;
 
 	/**
 	 * Tween completion callback.
