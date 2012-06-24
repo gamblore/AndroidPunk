@@ -12,6 +12,7 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -24,7 +25,7 @@ public class Image extends Graphic {
 	/**
 	 * Rotation of the image, in degrees.
 	 */
-	public double angle = 0;
+	public float angle = 0;
 
 	/**
 	 * Scale of the image, effects both x and y scale.
@@ -56,13 +57,11 @@ public class Image extends Graphic {
 	protected Rect mSourceRect;
 	protected Bitmap mBuffer;
 	protected Rect mBufferRect;
-	private Bitmap mBitmap;
 	
 	// Color and alpha information.
 	private int mAlpha = 255;
 	private int mColor = 0xffffffff;
 	protected ColorFilter mTint;
-	private ColorFilter mColorTransform;
 	private Rect mRect = FP.rect;
 	private Matrix mMatrix = FP.matrix;
 	private final Canvas mCanvas = FP.canvas;
@@ -72,7 +71,6 @@ public class Image extends Graphic {
 	// Flipped image information.
 	protected boolean mFlipped;
 	private Bitmap mFlip;
-	private Map<String, Integer> mFlips;
 	
 	/**
 	 * Constructor with a clip rect of the whole image.
@@ -112,7 +110,7 @@ public class Image extends Graphic {
 	protected void createBuffer() {
 		mBuffer = Bitmap.createBitmap(mSourceRect.width(), mSourceRect.height(), Config.ARGB_8888);
 		mBufferRect = new Rect(0, 0, mBuffer.getWidth(), mBuffer.getHeight());
-		mBitmap = mBuffer;
+		centerOrigin();
 	}
 
 	/** @private Renders the image. */
@@ -131,33 +129,54 @@ public class Image extends Graphic {
 		if (angle == 0 && scaleX * scale == 1 && scaleY * scale == 1) {
 			mRect.set(mPoint.x, mPoint.y, mPoint.x + mBufferRect.width(), mPoint.y + mBufferRect.height());
 			Log.d(TAG, String.format("Drawing buffer from %s to %s", mBufferRect.toShortString(), mRect.toShortString()));
-			mCanvas.drawBitmap(mBitmap, mBufferRect, mRect, null);
+			mCanvas.drawBitmap(mBuffer, mBufferRect, mRect, null);
 			return;
 		}
 		*/
 		
+		setMatrix();
+		/*
 		// a(0) c(1) tx(2)
 		// b(3) d(4) ty(5)
 		// u(6) v(7) w(8)
 		mMatrix.reset();
-		mMatrix.getValues(FP.MATRIX_VALUES);
+		float sX = scaleX * scale;
+		float sY = scaleY * scale;
+		mMatrix.postScale(sX, sY);
+		mMatrix.postTranslate(-originX * sX, -originY * sY);
+		//mMatrix.getValues(FP.MATRIX_VALUES);
 		
 		// render with transformation
-		FP.MATRIX_VALUES[3] = FP.MATRIX_VALUES[1] = 0;
-		FP.MATRIX_VALUES[0] = scaleX * scale;
-		FP.MATRIX_VALUES[4] = scaleY * scale;
-		FP.MATRIX_VALUES[2] = -originX * FP.MATRIX_VALUES[0];
-		FP.MATRIX_VALUES[5] = -originY * FP.MATRIX_VALUES[4];
+		//FP.MATRIX_VALUES[3] = FP.MATRIX_VALUES[1] = 0;
+		//FP.MATRIX_VALUES[0] = scaleX * scale;
+		//FP.MATRIX_VALUES[4] = scaleY * scale;
+		//FP.MATRIX_VALUES[2] = -originX * FP.MATRIX_VALUES[0];
+		//FP.MATRIX_VALUES[5] = -originY * FP.MATRIX_VALUES[4];
 		if (angle != 0) {
-			mMatrix.setValues(FP.MATRIX_VALUES);
+			//mMatrix.setValues(FP.MATRIX_VALUES);
 			mMatrix.postRotate((float)(angle*FP.RAD));
-			mMatrix.getValues(FP.MATRIX_VALUES);
+			//mMatrix.getValues(FP.MATRIX_VALUES);
 		}
-		FP.MATRIX_VALUES[2] += originX + mPoint.x;
-		FP.MATRIX_VALUES[5] += originY + mPoint.y;
-		mMatrix.setValues(FP.MATRIX_VALUES);
+		mMatrix.postTranslate(originX + mPoint.x, originY + mPoint.y);
+		//FP.MATRIX_VALUES[2] += originX + mPoint.x;
+		//FP.MATRIX_VALUES[5] += originY + mPoint.y;
+		//mMatrix.setValues(FP.MATRIX_VALUES);
+		*/
+		mCanvas.drawBitmap(mBuffer, mMatrix, null);
 		
-		mCanvas.drawBitmap(mBitmap, mMatrix, null);
+		//mCanvas.drawBitmap(mSource, 0, 0, null);
+	}
+	
+	private void setMatrix() {
+		mMatrix.reset();
+		float sX = scaleX * scale;
+		float sY = scaleY * scale;
+		mMatrix.postScale(sX, sY);
+		mMatrix.postTranslate(-originX * sX, -originY * sY);
+		if (angle != 0) {
+			mMatrix.postRotate(angle);
+		}
+		mMatrix.postTranslate(originX + mPoint.x, originY + mPoint.y);
 	}
 	
 	/**
@@ -176,7 +195,7 @@ public class Image extends Graphic {
 		if (mSource == null)
 			return;
 		
-		mCanvas.setBitmap(mBuffer);
+		
 		
 		if (clearBefore) {
 			mBuffer.eraseColor(0);
@@ -184,7 +203,12 @@ public class Image extends Graphic {
 		if (mTint != null)
 			mPaint.setColorFilter(mTint);
 		
-		mCanvas.drawBitmap(mSource, mSourceRect, mBufferRect, mPaint);
+		mCanvas.setBitmap(mBuffer);
+		if (mSourceRect.equals(mBufferRect)) {
+			mCanvas.drawBitmap(mSource, 0, 0, mPaint);
+		} else {
+			mCanvas.drawBitmap(mSource, mSourceRect, mBufferRect, mPaint);
+		}
 		
 		//Log.d(TAG, "Image "+ mSourceRect.toShortString() + " rendering into " + mBufferRect.toShortString());
 	}
@@ -292,17 +316,24 @@ public class Image extends Graphic {
 			mSource = mFlip;
 			mFlip = temp;
 			updateBuffer();
+			return;
 		}
 		mSource = Bitmap.createBitmap(mSource.getWidth(), mSource.getHeight(), Config.ARGB_8888);
 		mFlip = temp;
 		
 		FP.matrix.reset();
-		FP.matrix.getValues(FP.MATRIX_VALUES);
-		FP.MATRIX_VALUES[0] = -1;
-		FP.MATRIX_VALUES[2] = mSource.getWidth();
-		FP.matrix.setValues(FP.MATRIX_VALUES);
-		Canvas c = new Canvas(mSource);
-		c.drawBitmap(temp, FP.matrix, null);
+		FP.matrix.setScale(-1, 1);
+		FP.matrix.postTranslate(mSource.getWidth(), 0);
+		
+		
+		//FP.matrix.getValues(FP.MATRIX_VALUES);
+		//FP.MATRIX_VALUES[0] = -1;
+		//FP.MATRIX_VALUES[2] = mSource.getWidth();
+		//FP.matrix.setValues(FP.MATRIX_VALUES);
+		
+		mCanvas.setBitmap(mSource);
+		
+		mCanvas.drawBitmap(temp, FP.matrix, null);
 		updateBuffer();
 	}
 	

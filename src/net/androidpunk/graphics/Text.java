@@ -6,12 +6,15 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.util.Log;
 
 /**
  * Used for drawing text using embedded fonts.
  */
 public class Text extends Image {
 
+	private static final String TAG = "Text";
+	
 	/**
 	 * The font size to assign to new Text objects.
 	 */
@@ -20,7 +23,6 @@ public class Text extends Image {
 	// Text information.
 	private int mWidth;
 	private int mHeight;
-	private Paint mPaint = FP.paint;
 	private String mText;
 	private int mSize;
 	private int mColor = 0xffffffff;
@@ -63,7 +65,7 @@ public class Text extends Image {
 	
 	/** @private Updates the drawing buffer. */
 	public void updateBuffer() {
-		updateBuffer(false);
+		updateBuffer(true);
 	}
 	
 	/** @private Updates the drawing buffer. */
@@ -74,7 +76,7 @@ public class Text extends Image {
 		
 		Paint p = FP.paint;
 		p.reset();
-		p.setStyle(Style.STROKE);
+		p.setStyle(Style.FILL);
 		p.setColor(mColor);
 		p.setTextSize(mSize);
 		p.setAntiAlias(true);
@@ -88,8 +90,10 @@ public class Text extends Image {
 		mSource.recycle();
 		mSource = newBm;
 		mBufferRect.set(0, 0, mWidth, mHeight);
-		FP.canvas.setBitmap(getSource());
-		FP.canvas.drawText(mText, 0, 0, p);
+		getClipRect().set(mBufferRect);
+		FP.canvas.setBitmap(mSource);
+		FP.canvas.drawText(mText, 0, -p.ascent(), p);
+		Log.d(TAG, String.format("Updated text buffer says %s %dx%d %s", mText, newBm.getWidth(), newBm.getHeight(), getClipRect().toShortString()));
 		super.updateBuffer(clearBefore);
 	}
 	

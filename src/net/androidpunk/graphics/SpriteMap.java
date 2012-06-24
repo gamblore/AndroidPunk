@@ -110,11 +110,7 @@ public class SpriteMap extends Image {
 		// Happens in constructor call which does not have mWidth member.
 		int width = mSource.getWidth();
 		
-		if (!mFlipped) {
-			clipRect.offsetTo(newX % width, (int)((int)(newX / width) * clipRect.height()));
-		} else { 
-			clipRect.offsetTo((width - clipRect.width()) - (newX % width), (int)(newX * clipRect.height()));
-		}
+		clipRect.offsetTo(newX % width, (int)((int)(newX / width) * clipRect.height()));
 
 		//Log.d(TAG, String.format("Clipped to %s, frame %d", clipRect.toShortString(), mIndex));
 		// update the buffer

@@ -59,11 +59,13 @@ public class MultiVarTween extends Tween {
 					startValue = f.getFloat(object);
 				} else if (Integer.TYPE.equals(f.getType())) {
 					startValue = f.getInt(object);
+				} else if (Double.TYPE.equals(f.getType())) {
+					startValue = (float)f.getDouble(object);
 				} else {
 					Log.e(TAG, "Cannot tween type: \"" + f.getType().toString() + "\".");
 					return;
 				}
-				Log.d(TAG, "Start value: " + startValue + "");
+				//Log.d(TAG, "Start value: " + startValue + "");
 				mVars.add(p);
 				mStart.add(startValue);
 				mRange.add(destValue - startValue);
@@ -96,6 +98,8 @@ public class MultiVarTween extends Tween {
 					f.setFloat(mObject, value);
 				} else if (Integer.TYPE.equals(f.getType())) {
 					f.setInt(mObject, (int)value);
+				} else if (Double.TYPE.equals(f.getType())) {
+					f.setDouble(mObject, value);
 				}
 				
 			} catch (IllegalArgumentException e) {

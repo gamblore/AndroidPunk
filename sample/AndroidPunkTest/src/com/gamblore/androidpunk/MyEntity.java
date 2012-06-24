@@ -31,6 +31,7 @@ public class MyEntity extends Entity {
 
 		TweenOptions options = new TweenOptions(LOOPING, null, null, this);
 		tween = FP.tween(this, FP.tweenmap("x", 845), 5.0f, options);
+		//tween = FP.tween(getGraphic(), FP.tweenmap("angle", 360), 2.0f, options);
 	}
 
 	@Override
