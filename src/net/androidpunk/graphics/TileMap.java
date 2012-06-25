@@ -86,15 +86,22 @@ public class TileMap extends CanvasGraphic {
 			column /= mTile.width();
 			row /= mTile.height();
 		}
+		Log.d(TAG, String.format("%d becomes index %d column %d row %d", index, index % mSetCount, column % mColumns, row % mRows));
 		index %= mSetCount;
 		column %= mColumns;
 		row %= mRows;
+		
 		int newX = (index % mSetColumns) * mTile.width();
 		int newY = (int)(index / mSetColumns) * mTile.height();
 		mTile.offsetTo(newX, newY);
 		
 		mMap.setPixel(column, row, index);
-		draw(column * mTile.width(), row * mTile.height(), mSet, mTile);
+		if (index < 0) {
+			clearTile(column, row);
+		} else {
+			draw(column * mTile.width(), row * mTile.height(), mSet, mTile);
+		}
+		
 	}
 	
 	/**
@@ -237,15 +244,20 @@ public class TileMap extends CanvasGraphic {
 		String col[];
 		int cols;
 		int x, y;
+		int xp;
 		for (y = 0; y < rows; y ++) {
+			xp = 0;
 			if ("".equals(row[y])) 
 				continue;
 			col = row[y].split(columnSep);
 			cols = col.length;
 			for (x = 0; x < cols; x ++)
 			{
-				if ("".equals(col[x])) continue;
-				setTile(x, y, Integer.parseInt(col[x]));
+				if ("".equals(col[x])) {
+					xp--;
+					continue;
+				}
+				setTile(x+xp, y, Integer.parseInt(col[x]));
 			}
 		}
 	}
@@ -263,17 +275,18 @@ public class TileMap extends CanvasGraphic {
 	* @param rowSep			The string that separates each row of tiles, default is "\n".
 	*/
 	public String saveToString(String columnSep, String rowSep) {
-		String s = "";
+		StringBuilder s = new StringBuilder(mRows*mColumns);
 		int x, y;
 		for (y = 0; y < mRows; y ++) {
 			for (x = 0; x < mColumns; x ++) {
-				s += String.valueOf(getTile(x, y));
+				s.append(String.valueOf(getTile(x, y)));
 				if (x != mColumns - 1) 
-					s += columnSep;
+					s.append(columnSep);
 			}
-			if (y != mRows - 1) s += rowSep;
+			if (y != mRows - 1) 
+				s.append(rowSep);
 		}
-		return s;
+		return s.toString();
 	}
 	
 	/**

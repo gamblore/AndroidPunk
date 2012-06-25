@@ -168,6 +168,7 @@ public class FP {
     public static Entity entity;
     
     public static Resources resources;
+    public static Context context;
         
     public static final float MATRIX_VALUES[] = new float[9];
     
@@ -806,8 +807,8 @@ public class FP {
 	 * @param	file		The embedded file to load.
 	 * @return	An XML object representing the file.
 	 */
-	public static Document getXML(Context c, int resId) {
-		InputStream is = c.getResources().openRawResource(resId);
+	public static Document getXML(int resId) {
+		InputStream is = FP.context.getResources().openRawResource(resId);
 		DocumentBuilderFactory builderfactory = DocumentBuilderFactory.newInstance();
 		Document d;
 		try {

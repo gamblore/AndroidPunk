@@ -25,6 +25,8 @@ public class Grid extends Hitbox {
     private Rect mTile;
     private Rect mRect = FP.rect;
     private Point mPoint = FP.point;
+    private Canvas mCanvas = FP.canvas;
+    private Paint mPaint = FP.paint;
     
     public Grid(int width, int height, int tileWidth, int tileHeight) {
         this(width, height, tileWidth, tileHeight, 0, 0);
@@ -87,6 +89,175 @@ public class Grid extends Hitbox {
         });
         
     }
+    
+    /**
+	 * Sets the value of the tile to solid.
+	 * @param	column		Tile column.
+	 * @param	row			Tile row.
+	 */
+    public void setTile(int column, int row) {
+    	setTile(column, row, true);
+    }
+    /**
+	 * Sets the value of the tile.
+	 * @param	column		Tile column.
+	 * @param	row			Tile row.
+	 * @param	solid		If the tile should be solid.
+	 */
+	public void setTile(int column, int row, boolean solid) {
+		if (usePositions) {
+			column /= mTile.width();
+			row /= mTile.height();
+		}
+		mData.setPixel(column, row, solid ? 0xffffffff : 0);
+	}
+
+	/**
+	 * Makes the tile non-solid.
+	 * @param	column		Tile column.
+	 * @param	row			Tile row.
+	 */
+	public void clearTile(int column, int row) {
+		setTile(column, row, false);
+	}
+
+	/**
+	 * Gets the value of a tile.
+	 * @param	column		Tile column.
+	 * @param	row			Tile row.
+	 * @return	tile value.
+	 */
+	public boolean getTile(int column, int row) {
+		if (usePositions) {
+			column /= mTile.width();
+			row /= mTile.height();
+		}
+		return mData.getPixel(column, row) != 0;
+	}
+
+	/**
+	 * Sets the value of a rectangle region of tiles.
+	 * @param	column		First column.
+	 * @param	row			First row.
+	 * @param	width		Columns to fill.
+	 * @param	height		Rows to fill.
+	 * @param	fill		Value to fill.
+	 */
+	public void setRect(int column , int row, int width, int height, boolean solid)
+	{
+		if (usePositions) {
+			column /= mTile.width();
+			row /= mTile.height();
+			width /= mTile.width();
+			height /= mTile.height();
+		}
+		mRect.set(column, row, column + width, row + height);
+		mCanvas.setBitmap(mData);
+		mPaint.reset();
+		mPaint.setColor(solid ? 0xffffffff : 0);
+		mCanvas.drawRect(mRect, mPaint);
+	}
+
+	/**
+	 * Makes the rectangular region of tiles non-solid.
+	 * @param	column		First column.
+	 * @param	row			First row.
+	 * @param	width		Columns to fill.
+	 * @param	height		Rows to fill.
+	 */
+	public void clearRect(int column, int row, int width, int height) {
+		setRect(column, row, width, height, false);
+	}
+
+	/**
+	* Loads the grid data from a string. Using "," and "\n" as columnSep and rowSep.
+	* @param str			The string data, which is a set of tile values (0 or 1) separated by the columnSep and rowSep strings.
+	*/
+	public void loadFromString(String str) {
+		loadFromString(str, ",", "\n");
+	}
+	/**
+	* Loads the grid data from a string.
+	* @param str			The string data, which is a set of tile values (0 or 1) separated by the columnSep and rowSep strings.
+	* @param columnSep		The string that separates each tile value on a row, default is ",".
+	* @param rowSep			The string that separates each row of tiles, default is "\n".
+	*/
+	public void loadFromString(String str, String columnSep, String rowSep) {
+		String row[] = str.split(rowSep);
+		int rows = row.length;
+		String col[];
+		int cols;
+		int x, y;
+		// for empty string indexing
+		int xp = 0;
+		for (y = 0; y < rows; y ++) {
+			xp = 0;
+			if ("".equals(row[y]))
+				continue;
+			
+			col = row[y].split(columnSep);
+			
+			cols = col.length;
+			for (x = 0; x < cols; x ++) {
+				if ("".equals(col[x])) {
+					xp--;
+					continue;
+				}
+				setTile(x+xp, y, Integer.parseInt(col[x]) > 0);
+			}
+		}
+	}
+
+	/**
+	* Saves the grid data to a string. Using "," and "\n" as columnSep and rowSep
+	*/
+	public String saveToString() {
+		return saveToString(",", "\n");
+	}
+	/**
+	* Saves the grid data to a string.
+	* @param columnSep		The string that separates each tile value on a row, default is ",".
+	* @param rowSep			The string that separates each row of tiles, default is "\n".
+	*/
+	public String saveToString(String columnSep, String rowSep) {
+		StringBuilder s = new StringBuilder();
+		int x, y;
+		for (y = 0; y < mRows; y ++) {
+			for (x = 0; x < mColumns; x ++)
+			{
+				s.append(getTile(x, y) ? "1" : "0");
+				if (x != mColumns - 1) s.append(columnSep);
+			}
+			if (y != mRows - 1)
+				s.append(rowSep);
+		}
+		return s.toString();
+	}
+
+	/**
+	 * The tile width.
+	 */
+	public int getTileWidth() { return mTile.width(); }
+
+	/**
+	 * The tile height.
+	 */
+	public int getTileHeight() { return mTile.height(); }
+
+	/**
+	 * How many columns the grid has
+	 */
+	public int getColumns() { return mColumns; }
+
+	/**
+	 * How many rows the grid has.
+	 */
+	public int getRows() { return mRows; }
+
+	/**
+	 * The grid data.
+	 */
+	public Bitmap getData() { return mData; }
     
     /** @private Collide against an Entity. */
     private boolean collideMask(Mask other) {

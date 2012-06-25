@@ -6,6 +6,7 @@ import net.androidpunk.FP.TweenOptions;
 import net.androidpunk.Tween;
 import net.androidpunk.graphics.SpriteMap;
 import net.androidpunk.utils.Input;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.util.Log;
 
@@ -18,14 +19,15 @@ public class MyEntity extends Entity {
 	public MyEntity() {
 		super();
 		
-		SpriteMap map = new SpriteMap(FP.getBitmap(R.drawable.ogmo), (int) FP.dip(30), (int) FP.dip(30));
+		Bitmap ogmo = FP.getBitmap(R.drawable.ogmo);
+		SpriteMap map = new SpriteMap(ogmo, (int) ogmo.getWidth()/6, (int) ogmo.getHeight());
 		map.add("Walking", new int[] {0, 1, 2, 3, 4 ,5}, 20);
 		map.play("Walking");
 		setGraphic(map);
 		//setGraphic(new Image(FP.getBitmap(R.drawable.ogmo), new Rect(45,0,90,45)));
 		
-		x = -45;
-		y = FP.screen.getHeight() - 45;
+		x = -ogmo.getWidth();
+		y = FP.screen.getHeight() - ogmo.getHeight();
 
 		//setGraphic(new Image(FP.getBitmap(R.drawable.ic_launcher)));
 

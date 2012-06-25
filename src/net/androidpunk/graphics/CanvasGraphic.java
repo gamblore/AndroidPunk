@@ -83,13 +83,10 @@ public class CanvasGraphic extends Graphic {
 	public void draw(int x, int y, Bitmap source, Rect src) {
 		mCanvas.setBitmap(mBuffer);
 		if (src != null) {
-			mRect.left = x;
-			mRect.top = y;
-			mRect.right = x + src.width();
-			mRect.bottom = y + src.height();
+			mRect.set(x, y, x + src.width(), y + src.height());
 			mCanvas.drawBitmap(source, src, mRect, null);
 		} else {
-			mCanvas.drawBitmap(mBuffer, x, y, null);
+			mCanvas.drawBitmap(source, x, y, null);
 		}
 	}
 	

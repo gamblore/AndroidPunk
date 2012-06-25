@@ -56,6 +56,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		FP.resources = getResources();
+		FP.context = this;
 		setContentView(R.layout.main);
 		
 		mSurfaceView = (SurfaceView) findViewById(R.id.surface_view);
