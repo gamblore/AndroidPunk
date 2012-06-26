@@ -49,9 +49,14 @@ public class Mask {
     }
     
     protected boolean hitTest(Bitmap bm, Point firstPoint, int alphaThreshold, Rect r) {
-        int pixels[] = new int[r.width() * r.height()];
+    	Rect checkRect = FP.rect;
+    	checkRect.left = Math.max(0, r.left);
+    	checkRect.top = Math.max(0, r.top);
+    	checkRect.right = Math.min(checkRect.left + r.width(), bm.getWidth());
+    	checkRect.bottom = Math.min(checkRect.top + r.height(), bm.getHeight());
+        int pixels[] = new int[checkRect.width() * checkRect.height()];
         int alpha;
-        bm.getPixels(pixels, 0, r.width(), r.left, r.top, r.width(), r.height());
+        bm.getPixels(pixels, 0, checkRect.width(), checkRect.left, checkRect.top, checkRect.width(), checkRect.height());
         for (int i = 0; i < pixels.length; i++) {
             alpha = Color.alpha(pixels[i]);
             if (alpha > alphaThreshold) {

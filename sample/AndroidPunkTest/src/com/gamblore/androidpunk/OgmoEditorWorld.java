@@ -1,5 +1,6 @@
 package com.gamblore.androidpunk;
 
+import net.androidpunk.Engine;
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
@@ -21,6 +22,8 @@ public class OgmoEditorWorld extends World {
 
 	private static final String TAG = "MyWorld";
 	
+	private int mCurrentLevelRes = 0;
+	
 	private Entity mLevel = new Entity();
 	private Ogmo mOgmo = null;
 	private PlayerStart mPlayerStart = null;
@@ -28,6 +31,7 @@ public class OgmoEditorWorld extends World {
 	
 	public OgmoEditorWorld(int resId) {
 		parseOgmoEditorLevel(resId);
+		mCurrentLevelRes = resId;
 	}
 
 	private void parseOgmoEditorLevel(int resId) {
@@ -99,7 +103,15 @@ public class OgmoEditorWorld extends World {
 		}
 		
 		if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
+			if (mCurrentLevelRes == R.raw.intro_1) {
+				FP.setWorld(new OgmoEditorWorld(R.raw.jumping_2));
+			} else if (mCurrentLevelRes == R.raw.jumping_2) {
+				FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
+			}
 			remove(mOgmo);
+			mOgmo = null;
+		}
+		if (mOgmo != null && mOgmo.y > FP.screen.getHeight()) {
 			mOgmo = null;
 		}
 	}
