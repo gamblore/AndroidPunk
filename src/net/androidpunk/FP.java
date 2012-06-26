@@ -74,14 +74,14 @@ public class FP {
     public static boolean timeInFrames;
     
     /**
-     * The framerate assigned to the stage.
+     * The framerate of the stage.
      */
     public static float frameRate;
     
     /**
      * The framerate assigned to the stage.
      */
-    public static float assignedFrameRate;
+    public static float assignedFrameRate = 60;
     
     /**
      * Time elapsed since the last frame (in seconds).

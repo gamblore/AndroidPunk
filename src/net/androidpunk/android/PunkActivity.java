@@ -120,7 +120,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
-			mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, 60, FP.fixed);
+			mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {

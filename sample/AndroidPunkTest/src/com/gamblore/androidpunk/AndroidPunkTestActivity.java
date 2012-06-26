@@ -6,10 +6,17 @@ import android.os.Bundle;
 
 public class AndroidPunkTestActivity extends PunkActivity {
 	static {
-		PunkActivity.static_width = 800;
-		PunkActivity.static_height = 480;
-		PunkActivity.engine_class = Main.class;
-		//FP.fixed = true;
+        // This is how big the screen is targeted for, it will resize the display
+        // to meet the device's size.
+        PunkActivity.static_width = 800; 
+        PunkActivity.static_height = 480;
+        
+        // Set this to a class that extends Engine
+        PunkActivity.engine_class = Main.class; 
+        
+        // If you want fixed time between frames set these. Value is in frames per second. 
+        //FP.fixed = true;
+        //FP.assignedFrameRate = 30
 	}
 	
     /** Called when the activity is first created. */
