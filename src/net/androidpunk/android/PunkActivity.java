@@ -147,7 +147,8 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	}
 
 	public boolean onTouch(View v, MotionEvent event) {
-		Screen.setMotionEvent(event);
+		if (mStarted)
+			FP.screen.setMotionEvent(event);
 		return true;
 	}
 

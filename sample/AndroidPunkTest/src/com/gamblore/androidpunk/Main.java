@@ -10,14 +10,11 @@ public class Main extends Engine {
 	
 	public Main(int width, int height, float frameRate, boolean fixed) {
 		super(width, height, frameRate, fixed);
-		FP.setWorld(new MyWorld());
+		FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
 	}
 
 	@Override
 	public void init() {
 		Log.d(TAG, "At init!");
 	}
-	
-	
-
 }

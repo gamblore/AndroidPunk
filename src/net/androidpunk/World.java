@@ -906,7 +906,7 @@ public class World extends Tweener {
 			// Append entity to existing layer.
 			e.mRenderNext = f;
 			f.mRenderPrev = e;
-			mLayerCount.put(e.getLayer(), mLayerCount.get(e.getLayer()+1));
+			mLayerCount.put(e.getLayer(), mLayerCount.get(e.getLayer()) +1);
 		} else {
 			// Create new layer with entity.
 			mRenderLast.put(e.getLayer(), e);
@@ -936,7 +936,7 @@ public class World extends Tweener {
 				mLayerList.remove((Integer)e.getLayer());
 			}
 		}
-		mLayerCount.put(e.getLayer(), mLayerCount.get(e.getLayer())-1);
+		mLayerCount.put(e.getLayer(), mLayerCount.get(e.getLayer()) -1);
 		e.mRenderNext = e.mRenderPrev = null;
 	}
 

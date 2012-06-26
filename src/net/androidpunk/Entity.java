@@ -72,7 +72,7 @@ public class Entity extends Tweener {
     protected Entity mTypeNext;
     
     // Collision information.
-    private Mask HITBOX = new Mask();
+    private final Mask HITBOX = new Mask();
     private Mask mMask;
     private float mX;
     private float mY;
@@ -167,7 +167,7 @@ public class Entity extends Tweener {
 		mX = this.x; mY = this.y;
 		this.x = x; this.y = y;
 
-		if (mMask != null) {
+		if (mMask == null) {
 			while (e != null) {
 				if (x - originX + width > e.x - e.originX
 				&& y - originY + height > e.y - e.originY
@@ -192,10 +192,8 @@ public class Entity extends Tweener {
 			&& y - originY + height > e.y - e.originY
 			&& x - originX < e.x - e.originX + e.width
 			&& y - originY < e.y - e.originY + e.height
-			&& e.collidable && e != this)
-			{
-				if (mMask.collide(e.mMask != null ? e.mMask : e.HITBOX))
-				{
+			&& e.collidable && e != this) {
+				if (mMask.collide(e.mMask != null ? e.mMask : e.HITBOX)) {
 					this.x = (int)mX; this.y = (int)mY;
 					return e;
 				}
@@ -521,6 +519,15 @@ public class Entity extends Tweener {
     	return g;
     }
 
+    /**
+	 * Sets the Entity's hitbox properties.
+	 * @param	width		Width of the hitbox.
+	 * @param	height		Height of the hitbox.
+	 */
+    public void setHitbox(int width, int height) {
+    	setHitbox(width, height, 0, 0);
+    }
+    
 	/**
 	 * Sets the Entity's hitbox properties.
 	 * @param	width		Width of the hitbox.

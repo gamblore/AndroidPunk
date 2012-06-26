@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <OgmoVersion>2.0.0.40</OgmoVersion>
-  <Name>Jumper</Name>
+  <Name>JumperMobile</Name>
   <BackgroundColor A="255" R="125" G="160" B="255" />
   <GridColor A="255" R="255" G="240" B="90" />
   <LevelDefaultSize>
@@ -13,32 +13,21 @@
     <Height>480</Height>
   </LevelMinimumSize>
   <LevelMaximumSize>
-    <Width>1600</Width>
-    <Height>960</Height>
-  </LevelMaximumSize>
-  <Filename>C:\Users\ametcalf\workspace\AndroidPunk\sample\AndroidPunkTest\OgmoEditorProject\Ogmo.oep</Filename>
-  <AngleMode>Radians</AngleMode>
-  <CameraEnabled>true</CameraEnabled>
-  <CameraSize>
     <Width>800</Width>
+    <Height>480</Height>
+  </LevelMaximumSize>
+  <Filename>C:\Users\ametcalf\workspace\AndroidPunk\sample\AndroidPunkTest\OgmoEditorProject\JumperMobile.oep</Filename>
+  <AngleMode>Degrees</AngleMode>
+  <CameraEnabled>false</CameraEnabled>
+  <CameraSize>
+    <Width>640</Width>
     <Height>480</Height>
   </CameraSize>
   <ExportCameraPosition>false</ExportCameraPosition>
-  <LevelValueDefinitions />
+  <LevelValueDefinitions>
+    <ValueDefinition xsi:type="StringValueDefinition" Name="Name" Default="" MaxChars="-1" MultiLine="false" />
+  </LevelValueDefinitions>
   <LayerDefinitions>
-    <LayerDefinition xsi:type="GridLayerDefinition">
-      <Name>Collisions</Name>
-      <Grid>
-        <Width>32</Width>
-        <Height>32</Height>
-      </Grid>
-      <ScrollFactor>
-        <X>1</X>
-        <Y>1</Y>
-      </ScrollFactor>
-      <Color A="255" R="0" G="0" B="0" />
-      <ExportMode>Bitstring</ExportMode>
-    </LayerDefinition>
     <LayerDefinition xsi:type="TileLayerDefinition">
       <Name>Tiles</Name>
       <Grid>
@@ -51,11 +40,24 @@
       </ScrollFactor>
       <ExportMode>CSV</ExportMode>
     </LayerDefinition>
-    <LayerDefinition xsi:type="EntityLayerDefinition">
-      <Name>Entities</Name>
+    <LayerDefinition xsi:type="GridLayerDefinition">
+      <Name>Grid</Name>
       <Grid>
         <Width>32</Width>
         <Height>32</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <Color A="255" R="0" G="0" B="0" />
+      <ExportMode>Bitstring</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="EntityLayerDefinition">
+      <Name>Objects</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
       </Grid>
       <ScrollFactor>
         <X>1</X>
@@ -65,17 +67,8 @@
   </LayerDefinitions>
   <Tilesets>
     <Tileset>
-      <Name>Grass</Name>
+      <Name>grass_tiles</Name>
       <FilePath>..\res\drawable-hdpi\grass_tiles.png</FilePath>
-      <TileSize>
-        <Width>32</Width>
-        <Height>32</Height>
-      </TileSize>
-      <TileSep>0</TileSep>
-    </Tileset>
-    <Tileset>
-      <Name>Cement</Name>
-      <FilePath>..\res\drawable-hdpi\grey_cement.png</FilePath>
       <TileSize>
         <Width>32</Width>
         <Height>32</Height>
@@ -84,17 +77,32 @@
     </Tileset>
   </Tilesets>
   <EntityDefinitions>
-    <EntityDefinition Name="Ogmo" Limit="1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+    <EntityDefinition Name="PlayerStart" Limit="1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
       <Size>
-        <Width>30</Width>
-        <Height>30</Height>
+        <Width>32</Width>
+        <Height>32</Height>
       </Size>
       <Origin>
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Rectangle" ImagePath="..\..\AndroidPunk\sample\AndroidPunkTest\res\drawable-hdpi\ogmo.png" Tiled="false">
+      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
         <RectColor A="255" R="255" G="0" B="0" />
+      </ImageDefinition>
+      <ValueDefinitions />
+      <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
+    </EntityDefinition>
+    <EntityDefinition Name="Exit" Limit="1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+      <Size>
+        <Width>64</Width>
+        <Height>64</Height>
+      </Size>
+      <Origin>
+        <X>0</X>
+        <Y>0</Y>
+      </Origin>
+      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+        <RectColor A="255" R="0" G="128" B="255" />
       </ImageDefinition>
       <ValueDefinitions />
       <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />

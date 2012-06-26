@@ -86,7 +86,7 @@ public class TileMap extends CanvasGraphic {
 			column /= mTile.width();
 			row /= mTile.height();
 		}
-		Log.d(TAG, String.format("%d becomes index %d column %d row %d", index, index % mSetCount, column % mColumns, row % mRows));
+		
 		index %= mSetCount;
 		column %= mColumns;
 		row %= mRows;

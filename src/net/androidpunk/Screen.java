@@ -1,5 +1,7 @@
 package net.androidpunk;
 
+import java.util.Vector;
+
 import net.androidpunk.flashcompat.Sprite;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
@@ -8,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Paint.Style;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -38,6 +39,8 @@ public class Screen {
     private int[] mYInput = new int[2];
     
 	private final Point mPoints[] = new Point[] { new Point(), new Point(), new Point(), new Point(), new Point() };
+	
+	private final Vector<Integer> mPointIndices = new Vector<Integer>();
     
     public Screen() {
 		// create screen buffers
@@ -270,27 +273,54 @@ public class Screen {
 	}
 	
 	public int getTouchesCount() {
-		return (mInput != null) ? Math.min(mInput.getPointerCount(), 5) : 0; 
+		return (mInput != null) ? Math.min(mPointIndices.size(), 5) : 0; 
 	}
 	
 	public Point[] getTouches() {
 		if (mInput != null) {
+			int index = 0;
+			
+			for (Integer id : mPointIndices) {
+				for(int i = 0; i < mInput.getPointerCount(); i++) {
+					if (mInput.getPointerId(i) == id) {
+						mPoints[index].x = (int)mInput.getX(i);
+						mPoints[index].y = (int)mInput.getY(i);
+						index++;
+						break;
+					}
+				}
+			}
+			/*
 			for (int i = 0; i < mInput.getPointerCount() && i < 5; i++) {
 				mPoints[i].x = (int)mInput.getX(i);
 				mPoints[i].y = (int)mInput.getY(i);
 			}
+			*/
 		}
 		return mPoints;
 	}
 	
-	public static void setMotionEvent(MotionEvent me) {
-		if (me.getActionMasked() == MotionEvent.ACTION_DOWN || me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+	public void setMotionEvent(MotionEvent me) {
+		if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
+			mPointIndices.add(me.getPointerId(0));
 			Input.mouseDown = true;
 			Input.mouseUp = false;
 			Input.mousePressed = true;
 		}
+		if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+			int id = me.getPointerId(me.getActionIndex());
+			//Log.d(TAG, "Adding " + id);
+			mPointIndices.add(id);
+		}
+		if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
+			int id = me.getPointerId(me.getActionIndex());
+			//Log.d(TAG, "Removing " + id);
+			mPointIndices.remove((Integer)id);
+		}
+		
 		mInput = me;
 		if (me.getActionMasked() == MotionEvent.ACTION_UP) {
+			mPointIndices.clear();
 			Input.mouseDown = false;
 			Input.mouseUp = true;
 			Input.mouseReleased = true;

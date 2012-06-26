@@ -923,8 +923,8 @@ public class FP {
 	 */
 	public static int[] frames(int from, int to, int skip) {
 		int index = 0;
-		skip ++;
-		int a[] = new int[(int)(Math.abs(to - from) / skip)];
+		skip++;
+		int a[] = new int[(int)(Math.abs(to - from) / skip) + 1];
 		if (from < to) {
 			while (from <= to) {
 				a[index++] = from;

@@ -269,7 +269,6 @@ public class SpriteMap extends Image {
 		if (mFrame == frame) 
 			return;
 		mFrame = frame;
-		Log.d(TAG, "Setting frame to "+ frame);
 
 		updateBuffer();
 	}
