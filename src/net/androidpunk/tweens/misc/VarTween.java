@@ -55,6 +55,17 @@ public class VarTween extends Tween {
 	}
 	
 	/**
+	 * Tweens a numeric public property linearly.
+	 * @param	object		The object containing the property.
+	 * @param	property	The name of the property (eg. "x").
+	 * @param	to			Value to tween to.
+	 * @param	duration	Duration of the tween.
+	 */
+	public void tween(Object object, String property, float to, float duration) {
+		tween(object, property, to, duration, null);
+	}
+	
+	/**
 	 * Tweens a numeric public property.
 	 * @param	object		The object containing the property.
 	 * @param	property	The name of the property (eg. "x").
