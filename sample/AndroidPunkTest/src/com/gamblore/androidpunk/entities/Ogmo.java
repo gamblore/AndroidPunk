@@ -11,6 +11,7 @@ import android.graphics.PointF;
 import android.util.Log;
 import android.view.VelocityTracker;
 
+import com.gamblore.androidpunk.Main;
 import com.gamblore.androidpunk.R;
 
 public class Ogmo extends Entity {
@@ -71,13 +72,18 @@ public class Ogmo extends Entity {
 		if (collide("level", (int) (x + deltax), y) != null) {
 			mCanJump = true;
 			mVelocity.x = 0;
+			if (!Main.mBonk.getPlaying())
+				Main.mBonk.loop(1);
 		} else { 
+			Main.mBonk.stopLooping();
 			x += deltax;
 		}
 		// TODO make this better.
 		if (collide("level", x, (int) (y + deltay)) != null) {
 			if (mVelocity.y >= 0) {
 				mCanJump = true;
+			} else {
+				Main.mBonk.play();
 			}
 			mVelocity.y = 0;
 		} else {

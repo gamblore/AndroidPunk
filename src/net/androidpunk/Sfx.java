@@ -22,10 +22,11 @@ public class Sfx {
 	private static float GLOBAL_VOLUME = 1.0f;
 	private static float GLOBAL_PAN = 0.0f;
 	
-	public static final SoundPool SOUND_POOL = new SoundPool(32,AudioManager.STREAM_MUSIC, 0);
+	public static final SoundPool SOUND_POOL = new SoundPool(64, AudioManager.STREAM_MUSIC, 0);
 	public static final Vector<Sfx> SOUNDS = new Vector<Sfx>();
 	
-	private int mSoundIndex;
+	private int mSoundId;
+	private int mStreamId;
 	
 	// Sound infromation.
 	private float mVolume = 1.0f;
@@ -66,8 +67,8 @@ public class Sfx {
 	 */
 	public Sfx(int resId, OnCompleteCallback completeFunction) {
 		complete = completeFunction;
-		mSoundIndex = SOUND_POOL.load(FP.context, resId, 1);
-		if (mSoundIndex > 0) {
+		mSoundId = SOUND_POOL.load(FP.context, resId, 1);
+		if (mSoundId > 0) {
 			SOUNDS.add(this);
 		}
 	}
@@ -89,8 +90,8 @@ public class Sfx {
 	 */
 	public Sfx(AssetFileDescriptor assetFd, OnCompleteCallback completeFunction) {
 		complete = completeFunction;
-		mSoundIndex = SOUND_POOL.load(assetFd, 1);
-		if (mSoundIndex > 0) {
+		mSoundId = SOUND_POOL.load(assetFd, 1);
+		if (mSoundId > 0) {
 			SOUNDS.add(this);
 		}
 	}
@@ -112,8 +113,8 @@ public class Sfx {
 	 */
 	public Sfx(String path, OnCompleteCallback completeFunction) {
 		complete = completeFunction;
-		mSoundIndex = SOUND_POOL.load(path, 1);
-		if (mSoundIndex > 0) {
+		mSoundId = SOUND_POOL.load(path, 1);
+		if (mSoundId > 0) {
 			SOUNDS.add(this);
 		}
 	}
@@ -127,7 +128,9 @@ public class Sfx {
 		left = leftPan(vol, pan);
 		right = rightPan(vol, pan);
 		
-		SOUND_POOL.play(mSoundIndex, left, right, 0, 0, 1.0f);
+		SOUND_POOL.stop(mStreamId);
+		mStreamId = SOUND_POOL.play(mSoundId, left, right, 0, loop, 1.0f);
+		
 		mPlayed = true;
 	}
 	
@@ -190,11 +193,20 @@ public class Sfx {
 	}
 	
 	/**
+	 * Will set the sound to stop looping after this last playout.
+	 */
+	public void stopLooping() {
+		SOUND_POOL.setLoop(mStreamId, 0);
+		mLooping = false;
+	}
+	
+	/**
 	 * Stops the sound if it is currently playing.
 	 * @return
 	 */
 	public boolean stop() {
-		SOUND_POOL.pause(mSoundIndex);
+		SOUND_POOL.pause(mStreamId);
+		mLooping = false;
 		return true;
 	}
 	
@@ -202,7 +214,7 @@ public class Sfx {
 	 * Resumes the sound from the position stop() was called on it.
 	 */
 	public void resume() {
-		SOUND_POOL.resume(mSoundIndex);
+		SOUND_POOL.resume(mStreamId);
 	}
 	
 	/**
@@ -219,7 +231,7 @@ public class Sfx {
 		if (mVolume == value) 
 			return;
 		mVolume = value;
-		SOUND_POOL.setVolume(mSoundIndex, leftPan(mVolume, mPan), rightPan(mVolume, mPan));
+		SOUND_POOL.setVolume(mStreamId, leftPan(mVolume, mPan), rightPan(mVolume, mPan));
 	}
 	
 	/**
@@ -238,7 +250,7 @@ public class Sfx {
 		if (mPan == value) 
 			return;
 		mPan = value;
-		SOUND_POOL.setVolume(mSoundIndex, leftPan(mVolume, mPan), rightPan(mVolume, mPan));
+		SOUND_POOL.setVolume(mStreamId, leftPan(mVolume, mPan), rightPan(mVolume, mPan));
 	}
 	
 	/**
@@ -252,7 +264,7 @@ public class Sfx {
 	public boolean getPlaying() { return mLooping && mPlayed; }
 	
 	public void release() {
-		SOUND_POOL.unload(mSoundIndex);
+		SOUND_POOL.unload(mStreamId);
 		SOUNDS.remove(this);
 	}
 }

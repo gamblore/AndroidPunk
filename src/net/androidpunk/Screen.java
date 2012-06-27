@@ -278,7 +278,7 @@ public class Screen {
 			int index = 0;
 			
 			for (Integer id : mPointIndices) {
-				for(int i = 0; i < mInput.getPointerCount(); i++) {
+				for(int i = 0; i < mInput.getPointerCount() && index < mPoints.length; i++) {
 					if (mInput.getPointerId(i) == id) {
 						mPoints[index].x = (int)mInput.getX(i);
 						mPoints[index].y = (int)mInput.getY(i);
