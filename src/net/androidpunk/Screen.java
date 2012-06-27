@@ -2,7 +2,6 @@ package net.androidpunk;
 
 import java.util.Vector;
 
-import net.androidpunk.flashcompat.Sprite;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -18,7 +17,6 @@ public class Screen {
 	private static final String TAG = "Screen";
 	
     // Screen information.
-    private Sprite mSprite = new Sprite();
     private Bitmap mBitmap;
     private int mCurrent = 0;
     private Matrix mMatrix = new Matrix();
@@ -103,7 +101,6 @@ public class Screen {
 		values[2] += mOriginX * mScaleX * mScale + mX;
 		values[5] += mOriginY * mScaleY * mScale + mY;
 		mMatrix.setValues(values);
-		mSprite.transform.matrix = mMatrix;
 	}
 	
 	/**

@@ -13,7 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.androidpunk.debug.Console;
 import net.androidpunk.flashcompat.OnCompleteCallback;
 import net.androidpunk.flashcompat.OnEaseCallback;
-import net.androidpunk.flashcompat.Sprite;
 import net.androidpunk.tweens.misc.MultiVarTween;
 
 import org.w3c.dom.Document;
@@ -160,7 +159,6 @@ public class FP {
     public static final Point zero = new Point();
     public static final Rect rect = new Rect();
     public static final Matrix matrix = new Matrix();
-    public static Sprite sprite = new Sprite();
     public static final Paint paint = new Paint();
     public static final Canvas canvas = new Canvas();
     public static Entity entity;
