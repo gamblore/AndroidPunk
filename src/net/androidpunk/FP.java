@@ -10,10 +10,9 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.androidpunk.Tween.OnCompleteCallback;
-import net.androidpunk.Tween.OnEaseCallback;
 import net.androidpunk.debug.Console;
-import net.androidpunk.flashcompat.SoundTransform;
+import net.androidpunk.flashcompat.OnCompleteCallback;
+import net.androidpunk.flashcompat.OnEaseCallback;
 import net.androidpunk.flashcompat.Sprite;
 import net.androidpunk.tweens.misc.MultiVarTween;
 
@@ -147,7 +146,6 @@ public class FP {
     // Volume control.
     private static float mVolume = 1.0f;
     private static float mPan = 0.0f;
-    private static SoundTransform mSoundTransform = new SoundTransform();
 
     // Used for rad-to-deg and deg-to-rad conversion.
     public static final float DEG = (float)(-180.0 / Math.PI);
@@ -225,13 +223,20 @@ public class FP {
     /**
      * Global volume factor for all sounds, a value from 0 to 1.
      */
-    public static void setVolume(float value)
-    {
+    public static float getVolume() {
+    	return mVolume;
+    }
+    
+    /**
+     * Global volume factor for all sounds, a value from 0 to 1.
+     */
+    public static void setVolume(float value) {
         if (value < 0) 
             value = 0;
         if (mVolume == value) 
             return;
-        mSoundTransform.volume = mVolume = value;
+        
+        Sfx.setMasterVolume(mVolume = value);
     }
     
     /**
@@ -241,6 +246,9 @@ public class FP {
         return mPan; 
     }
     
+    /**
+     * Global panning factor for all sounds, a value from -1 to 1.
+     */
     public static void setPan(float value)
     {
         if (value < -1) 
@@ -250,7 +258,7 @@ public class FP {
         if (mPan == value)
             return;
         
-        mSoundTransform.pan = mPan = value;
+        Sfx.setMasterPan(mPan = value);
     }
     
     /**

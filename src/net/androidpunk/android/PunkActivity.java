@@ -5,13 +5,16 @@ import java.lang.reflect.InvocationTargetException;
 import net.androidpunk.Engine;
 import net.androidpunk.FP;
 import net.androidpunk.R;
-import net.androidpunk.Screen;
+import net.androidpunk.Sfx;
 import net.androidpunk.flashcompat.Event;
 import net.androidpunk.flashcompat.Timer;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -43,6 +46,36 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	private boolean mStarted = false;
 	private boolean mRunning = false;
 	
+	private AudioManager mAudioManager;
+	private int mOldVolume = 0;
+	private int mVolume = 100; 
+	
+	private OnAudioFocusChangeListener afChangeListener = new OnAudioFocusChangeListener() {
+		private boolean mDucking = false;
+		
+		public void onAudioFocusChange(int focusChange) {
+			if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+				// Other app requested focus for a bit.
+			} else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+				// Other app requested focus but said it is cool if we keep it quiet.
+				mDucking = true;
+				mOldVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+				mVolume = (int)(mOldVolume * 0.125);
+				mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mVolume, 0);
+	        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+	        	// We got audio focus now.
+	        	if(mDucking) {
+	        		mDucking = false;
+	        		mVolume = mOldVolume;
+	        	}
+	        	 
+	        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+	        	// We are out.
+	        	mAudioManager.abandonAudioFocus(afChangeListener);
+	        }
+	    }
+	};
+	
 	protected class EngineRunner extends Thread {
 		@Override
 		public void run() {
@@ -65,6 +98,11 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		mSurfaceHolder.addCallback(this);
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		
+		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		
 	}
 	
 	private void step() {
@@ -78,13 +116,6 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 				if(FP.buffer != null) {
 					c.clipRect(mScreenRect);
 					c.drawBitmap(FP.buffer, FP.bounds, mScreenRect, null);
-					/*
-					Log.d(TAG, String.format("Drawing %dx%d bounded by %s %s and clipped %s",
-							FP.buffer.getWidth(), FP.buffer.getHeight(),
-							FP.bounds.toShortString(), mScreenRect.toShortString(),
-							c.getClipBounds().toShortString()));
-					*/
-
 				}
 				mSurfaceHolder.unlockCanvasAndPost(c);
 			}
@@ -98,6 +129,8 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		for (Timer t : Engine.TIMERS) {
 			t.stop();
 		}
+		mAudioManager.abandonAudioFocus(afChangeListener);
+
 	}
 
 	@Override
@@ -109,6 +142,23 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		for (Timer t : Engine.TIMERS) {
 			t.start();
 		}
+		// Request audio focus for playback
+		int result = mAudioManager.requestAudioFocus(afChangeListener,
+                // Use the music stream.
+                AudioManager.STREAM_MUSIC,
+                // Request permanent focus.
+                AudioManager.AUDIOFOCUS_GAIN);
+		if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+			Log.e(TAG, "Failed to request focus. No sound.");
+		}
+	}
+	
+	
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Sfx.SOUND_POOL.release();
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {

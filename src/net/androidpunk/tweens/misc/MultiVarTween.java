@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Vector;
 
 import net.androidpunk.Tween;
+import net.androidpunk.flashcompat.OnCompleteCallback;
+import net.androidpunk.flashcompat.OnEaseCallback;
 import android.util.Log;
 
 public class MultiVarTween extends Tween {

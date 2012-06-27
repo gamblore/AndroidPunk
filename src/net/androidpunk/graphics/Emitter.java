@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
-import net.androidpunk.Tween.OnEaseCallback;
+import net.androidpunk.flashcompat.OnEaseCallback;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

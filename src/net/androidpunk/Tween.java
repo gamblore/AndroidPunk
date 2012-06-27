@@ -1,14 +1,10 @@
 package net.androidpunk;
 
+import net.androidpunk.flashcompat.OnCompleteCallback;
+import net.androidpunk.flashcompat.OnEaseCallback;
+
 public class Tween {
 	
-	public static abstract class OnCompleteCallback {
-		public abstract void completed();
-	}
-	
-	public static abstract class OnEaseCallback {
-		public abstract float ease(float t);
-	}
 	/**
 	 * Persistent Tween type, will stop when it finishes.
 	 */

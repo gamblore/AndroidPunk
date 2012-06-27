@@ -1,6 +1,6 @@
 package net.androidpunk.utils;
 
-import net.androidpunk.Tween.OnEaseCallback;
+import net.androidpunk.flashcompat.OnEaseCallback;
 
 public class Ease {
 
