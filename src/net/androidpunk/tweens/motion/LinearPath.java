@@ -84,7 +84,7 @@ public class LinearPath extends Motion {
 	 * @param	speed		Speed of the movement.
 	 */
 	public void setMotionSpeed(float speed) {
-		setMotion(speed, null);
+		setMotionSpeed(speed, null);
 	}
 	
 	/**
@@ -156,14 +156,16 @@ public class LinearPath extends Motion {
 	
 	/** @private Updates the path, preparing it for motion. */
 	private void updatePath() {
-		if (mPoints.size() < 2)
+		if (mPoints.size() < 2) {
 			Log.e(TAG, "A LinearPath must have at least 2 points to operate.");
+			return;
+		}
 		if (mPointD.size() == mPointT.size()) 
 			return;
 		// evaluate t for each point
+		mPointT.clear();
 		for (int i = 0; i < mPoints.size(); i++) {
-			float set = mPointD.get(i) / mDistance;
-			mPointT.set(i, set);
+			mPointT.add(mPointD.get(i) / mDistance);
 		}
 	}
 	

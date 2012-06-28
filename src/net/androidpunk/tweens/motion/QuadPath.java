@@ -190,18 +190,21 @@ public class QuadPath extends Motion {
 
 		// find the total distance of the path
 		mDistance = 0;
+		mCurveD.clear();
 		for (i = 0; i < mCurve.size() - 1; i++) {
-			float value = curveLength(mCurve.get(i), mPoints.get(i + 1), mCurve.get(i + 1)); 
-			mCurveD.set(i, value);
-			mDistance += mCurveD.get(i);
+			float value = curveLength(mCurve.get(i), mPoints.get(i + 1), mCurve.get(i + 1));
+			mCurveD.add(value);
+			mDistance += value;
 		}
 
 		// find t for each point on the curve
 		float d = 0;
+		mCurveT.clear();
 		for (i = 1; i < mCurve.size(); i++) {
 			d += mCurveD.get(i);
 			float value = d / mDistance;
-			mCurveT.set(i, value);
+			
+			mCurveT.add(value);
 		}
 		mCurveT.set(mCurve.size() -1, 1f);
 	}

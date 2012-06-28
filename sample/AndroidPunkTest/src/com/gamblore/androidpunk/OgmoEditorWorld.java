@@ -13,6 +13,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.gamblore.androidpunk.entities.Exit;
+import com.gamblore.androidpunk.entities.Monster;
 import com.gamblore.androidpunk.entities.Ogmo;
 import com.gamblore.androidpunk.entities.PlayerStart;
 
@@ -87,7 +88,35 @@ public class OgmoEditorWorld extends World {
 					Log.d(TAG, String.format("New exit at %d,%d",x,y) );
 					mExit = new Exit(x, y);
 					add(mExit);
+				} else if ("Enemy".equals(n.getNodeName())) {
+					NamedNodeMap atts = n.getAttributes();
+					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+					float speed = 100.0f;
+					try { 
+						speed = (float)Integer.parseInt(atts.getNamedItem("speed").getNodeValue());
+					} catch (Exception e) {}
+					Log.d(TAG, String.format("New enemy at %d,%d",x,y) );
+					
+					Monster m = new Monster(x, y);
+					m.setSpeed(speed);
+					
+					
+					NodeList enemyPoints = n.getChildNodes();
+					for (int j = 0; j < enemyPoints.getLength(); j++) {
+						Node node = enemyPoints.item(j);
+						if ("node".equals(node.getNodeName())) {
+							NamedNodeMap natts = node.getAttributes();
+							int nx = Integer.parseInt(natts.getNamedItem("x").getNodeValue());
+							int ny = Integer.parseInt(natts.getNamedItem("y").getNodeValue());
+							m.addPoint(nx, ny);
+							Log.d(TAG, String.format("Path to %d %d", nx, ny));
+						}
+					}
+					m.start();
+					add(m);
 				}
+				
 			}
 		}
 	}
@@ -106,13 +135,26 @@ public class OgmoEditorWorld extends World {
 			if (mCurrentLevelRes == R.raw.intro_1) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.jumping_2));
 			} else if (mCurrentLevelRes == R.raw.jumping_2) {
+				FP.setWorld(new OgmoEditorWorld(R.raw.enemy_3));
+			} else if (mCurrentLevelRes == R.raw.enemy_3) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
 			}
 			remove(mOgmo);
 			mOgmo = null;
 		}
-		if (mOgmo != null && mOgmo.y > FP.screen.getHeight()) {
-			mOgmo = null;
+		if (mOgmo != null) {
+			boolean restart = false;
+			
+			if (mOgmo.y > FP.screen.getHeight()) {
+				restart = true;
+			} else if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null){
+				restart = true;
+			}
+
+			if (restart) {
+				mOgmo = null;
+				FP.setWorld(new OgmoEditorWorld(mCurrentLevelRes));
+			}
 		}
 	}
 	
