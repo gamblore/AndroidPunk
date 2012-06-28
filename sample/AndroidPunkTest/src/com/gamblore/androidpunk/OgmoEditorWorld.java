@@ -43,13 +43,24 @@ public class OgmoEditorWorld extends World {
 		int lHeight = Integer.parseInt(levelatts.getNamedItem("height").getNodeValue());
 		mLevel.setHitbox(lWidth, lHeight);
 		
+		NodeList cameras = doc.getElementsByTagName("camera");
+		if (cameras.getLength() > 0) {
+			Node cameraElement = cameras.item(0);
+			NamedNodeMap catts = cameraElement.getAttributes();
+			int x = Integer.parseInt(catts.getNamedItem("x").getNodeValue());
+			int y = Integer.parseInt(catts.getNamedItem("y").getNodeValue());
+			Log.d(TAG, String.format("camera at %d,%d",x,y) );
+
+			camera.set(x, y); 
+		}
+		
 		NodeList tiles = doc.getElementsByTagName("Tiles");
 		if (tiles.getLength() > 0) {
 			Node n = tiles.item(0);
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String tilescsv = child.getTextContent();
-				TileMap tileMap = new TileMap(FP.getBitmap(R.drawable.grass_tiles), FP.screen.getWidth(), FP.screen.getHeight(), 32, 32);
+				TileMap tileMap = new TileMap(FP.getBitmap(R.drawable.grass_tiles), lWidth, lHeight, 32, 32);
 				tileMap.loadFromString(tilescsv);
 				mLevel.setGraphic(tileMap);
 			}
@@ -60,7 +71,7 @@ public class OgmoEditorWorld extends World {
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String gridBitString = child.getTextContent();
-				Grid g = new Grid(FP.screen.getWidth(), FP.screen.getHeight(), 32, 32);
+				Grid g = new Grid(lWidth, lHeight, 32, 32);
 				mLevel.setType("level");
 				g.loadFromString(gridBitString, "", "\n");
 				mLevel.setMask(g);
@@ -137,6 +148,8 @@ public class OgmoEditorWorld extends World {
 			} else if (mCurrentLevelRes == R.raw.jumping_2) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.enemy_3));
 			} else if (mCurrentLevelRes == R.raw.enemy_3) {
+				FP.setWorld(new OgmoEditorWorld(R.raw.big_4));
+			} else if (mCurrentLevelRes == R.raw.big_4) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
 			}
 			remove(mOgmo);
@@ -144,10 +157,27 @@ public class OgmoEditorWorld extends World {
 		}
 		if (mOgmo != null) {
 			boolean restart = false;
+			int width = FP.screen.getWidth();
+			int height = FP.screen.getHeight();
+			// move the camera if you can.
+			if (mOgmo.x > camera.x + 2 * width / 3 ) {
+				int newLeft = mOgmo.x - 2 * width / 3 ;
+				camera.x = Math.min(mLevel.width - width, newLeft);
+			} else if (mOgmo.x < camera.x + 1 * width / 3) {
+				int newLeft = mOgmo.x - 1 * width/3;
+				camera.x = Math.max(0, newLeft);
+			}
 			
-			if (mOgmo.y > FP.screen.getHeight()) {
-				restart = true;
-			} else if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null){
+			if (mOgmo.y > camera.y + 2 * height / 3) {
+				int newTop = mOgmo.y - 2 * height / 3;
+				camera.y = Math.min(mLevel.height - height, newTop);
+			} else if (mOgmo.y < camera.y + 1 * height/3) {
+				int newTop = mOgmo.y - 1 * height / 3;
+				camera.y = Math.max(0, newTop);
+			}
+			//if (mOgmo.y > FP.screen.getHeight()) {
+			//	restart = true;
+			if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null){
 				restart = true;
 			}
 

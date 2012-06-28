@@ -56,9 +56,9 @@ public class Ogmo extends Entity {
 				mCanJump = false;
 			}
 			Point p = points[0];
-			if (p.x > x) {
+			if (p.x + FP.camera.x > x ) {
 				mVelocity.x = 200;
-			} else if (p.x < x) {
+			} else if (p.x + FP.camera.x < x) {
 				mVelocity.x = -200;
 			}
 		}

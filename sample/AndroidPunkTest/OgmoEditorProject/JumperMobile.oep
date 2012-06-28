@@ -13,17 +13,17 @@
     <Height>480</Height>
   </LevelMinimumSize>
   <LevelMaximumSize>
-    <Width>800</Width>
-    <Height>480</Height>
+    <Width>1600</Width>
+    <Height>960</Height>
   </LevelMaximumSize>
   <Filename>C:\Users\ametcalf\workspace\AndroidPunk\sample\AndroidPunkTest\OgmoEditorProject\JumperMobile.oep</Filename>
   <AngleMode>Degrees</AngleMode>
-  <CameraEnabled>false</CameraEnabled>
+  <CameraEnabled>true</CameraEnabled>
   <CameraSize>
-    <Width>640</Width>
+    <Width>800</Width>
     <Height>480</Height>
   </CameraSize>
-  <ExportCameraPosition>false</ExportCameraPosition>
+  <ExportCameraPosition>true</ExportCameraPosition>
   <LevelValueDefinitions>
     <ValueDefinition xsi:type="StringValueDefinition" Name="Name" Default="" MaxChars="-1" MultiLine="false" />
   </LevelValueDefinitions>
