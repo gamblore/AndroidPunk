@@ -1,6 +1,7 @@
 package net.androidpunk;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -861,10 +862,7 @@ public class World extends Tweener {
 		// sort the depth list
 		if (mLayerSort) {
 			if (mLayerList.size() > 1) {
-				Integer[] array = (Integer[]) mLayerList.toArray();
-				Arrays.sort(array);
-				mLayerList.clear();
-				mLayerList.copyInto(array);
+				Collections.sort(mLayerList);
 			}
 				
 			mLayerSort = false;

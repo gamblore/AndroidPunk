@@ -1,12 +1,20 @@
 package net.androidpunk.graphics;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import net.androidpunk.FP;
 import net.androidpunk.utils.Draw;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.provider.OpenableColumns;
 import android.util.Log;
 
 /**
@@ -52,8 +60,8 @@ public class TileMap extends CanvasGraphic {
 		mHeight = height - (height % tileHeight);
 		mColumns = mWidth / tileWidth;
 		mRows = mHeight / tileHeight;
-		mMap = Bitmap.createBitmap(mColumns, mRows, Config.ARGB_8888);
-		mTemp = mMap.copy(Config.ARGB_8888, true);
+		mMap = Bitmap.createBitmap(mColumns, mRows, Config.ARGB_4444);
+		mTemp = mMap.copy(Config.ARGB_4444, true);
 		mTile = new Rect(0, 0, tileWidth, tileHeight);
 
 		// create the canvas

@@ -4,11 +4,11 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.Tween;
 import net.androidpunk.graphics.SpriteMap;
+import net.androidpunk.graphics.TileMap;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.VelocityTracker;
 
 import com.gamblore.androidpunk.Main;
@@ -17,8 +17,6 @@ import com.gamblore.androidpunk.R;
 public class Ogmo extends Entity {
 
 	private static final String TAG = "Ogmo";
-	
-	private Tween tween;
 	
 	private PointF mVelocity = new PointF();
 	
@@ -47,7 +45,8 @@ public class Ogmo extends Entity {
 	@Override
 	public void update() {
 		float deltax = 0, deltay = 0;
-		mVelocity.y = mVelocity.y > 200 ? 200 : mVelocity.y + 1000 * FP.elapsed;
+		
+		mVelocity.y = mVelocity.y > 200 ? 200 : mVelocity.y + (1000 * FP.elapsed);
 		if (Input.mouseDown) {
 			
 			Point points[] = Input.getTouches();
@@ -61,6 +60,8 @@ public class Ogmo extends Entity {
 			} else if (p.x + FP.camera.x < x) {
 				mVelocity.x = -200;
 			}
+			//mVelocity.x = Math.max(Math.min(mVelocity.x, 200), -200);
+			
 		}
 		
 		mCanJump = false;
@@ -68,17 +69,27 @@ public class Ogmo extends Entity {
 		deltax = (int)(mVelocity.x * FP.elapsed);
 		deltay = (int)(mVelocity.y * FP.elapsed);
 		//Log.d(TAG, String.format("delta %.2f %.2f", deltax, deltay));
-		
-		if (collide("level", (int) (x + deltax), y) != null) {
+		Entity e;
+		float previousXVelocity = mVelocity.x;
+		if ((e = collide("level", (int) (x + deltax), y)) != null) {
 			mCanJump = true;
+			
+			if (mVelocity.y > 0) {
+				mVelocity.y *= 0.90;
+			}
+			int width = ((TileMap)e.getGraphic()).getTileWidth();
 			mVelocity.x = 0;
+			if (previousXVelocity < 0) {
+				x = ((x + (int)deltax) / width) * width + width;
+			} else {
+				x = ((x + (int)deltax) / width) * width;
+			}
 			if (!Main.mBonk.getPlaying())
 				Main.mBonk.loop(1);
 		} else { 
 			Main.mBonk.stopLooping();
 			x += deltax;
 		}
-		// TODO make this better.
 		if (collide("level", x, (int) (y + deltay)) != null) {
 			if (mVelocity.y >= 0) {
 				mCanJump = true;

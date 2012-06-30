@@ -3,6 +3,7 @@ package net.androidpunk.graphics;
 import net.androidpunk.FP;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
@@ -26,6 +27,8 @@ public class Text extends Image {
 	private String mText;
 	private int mSize;
 	private int mColor = 0xffffffff;
+	
+	private Canvas mCanvas = new Canvas();
 	
 	
 	public Text(String text, int x, int y) {
@@ -86,13 +89,13 @@ public class Text extends Image {
 		mHeight = (int)(mSize);
 		
 		// Create a new bitmap for this text
-		Bitmap newBm = Bitmap.createBitmap(mWidth, mHeight, Config.ARGB_8888);
+		Bitmap newBm = Bitmap.createBitmap(mWidth, mHeight+4, Config.ARGB_8888);
 		mSource.recycle();
 		mSource = newBm;
 		mBufferRect.set(0, 0, mWidth, mHeight);
 		getClipRect().set(mBufferRect);
-		FP.canvas.setBitmap(mSource);
-		FP.canvas.drawText(mText, 0, -p.ascent(), p);
+		mCanvas.setBitmap(mSource);
+		mCanvas.drawText(mText, 0, -p.ascent(), p);
 		Log.d(TAG, String.format("Updated text buffer says %s %dx%d %s", mText, newBm.getWidth(), newBm.getHeight(), getClipRect().toShortString()));
 		super.updateBuffer(clearBefore);
 	}
@@ -151,6 +154,7 @@ public class Text extends Image {
 		if (mColor == value) 
 			return;
 		mColor = value;
-		updateBuffer();
+		super.setColor(value);
+		//updateBuffer();
 	}
 }

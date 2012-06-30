@@ -37,6 +37,5 @@
       <node x="736" y="416" />
       <node x="544" y="416" />
     </Enemy>
-    <Enemy id="3" x="-160" y="48" speed="100" />
   </Objects>
 </level>

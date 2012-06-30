@@ -9,7 +9,10 @@ import net.androidpunk.Sfx;
 import net.androidpunk.flashcompat.Event;
 import net.androidpunk.flashcompat.Timer;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -17,6 +20,7 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -49,6 +53,36 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	private AudioManager mAudioManager;
 	private int mOldVolume = 0;
 	private int mVolume = 100; 
+	
+	public static abstract class OnBackCallback {
+		public abstract boolean onBack();
+	}
+	
+	public final OnBackCallback DEFAULT_ON_BACK = new OnBackCallback() {
+		
+		@Override
+		public boolean onBack() {
+			AlertDialog.Builder builder = new AlertDialog.Builder(FP.context);
+			
+			builder.setTitle(R.string.exit_dialog_title);
+			builder.setMessage(R.string.exit_dialog_message);
+			
+			OnClickListener ocl = new OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					if (which == DialogInterface.BUTTON_POSITIVE) {
+						finish();
+					}
+				}
+			};
+			builder.setPositiveButton(R.string.yes, ocl);
+			builder.setNegativeButton(R.string.no, ocl);
+			builder.create().show();
+			return true;
+		}
+	}; 
+	
+	private OnBackCallback mOnBackCallback = DEFAULT_ON_BACK;
 	
 	private OnAudioFocusChangeListener afChangeListener = new OnAudioFocusChangeListener() {
 		private boolean mDucking = false;
@@ -201,6 +235,29 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 			FP.screen.setMotionEvent(event);
 		return true;
 	}
+	
+	/**
+	 * Callback to execute on back button presses.
+	 * @param callback  The callback. If null it uses the default back behaviour.
+	 */
+	public void setOnBackCallback(OnBackCallback callback) {
+		if (callback == null) {
+			mOnBackCallback = DEFAULT_ON_BACK;
+		} else {
+			mOnBackCallback = callback;
+		}
+	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			if (mOnBackCallback != null) {
+				return mOnBackCallback.onBack();
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	
 	
 }

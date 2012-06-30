@@ -11,8 +11,11 @@ public class Main extends Engine {
 	public static Sfx mBonk;
 	public Main(int width, int height, float frameRate, boolean fixed) {
 		super(width, height, frameRate, fixed);
+		FP.setWorld(new MenuWorld());
+	
 		mBonk = new Sfx(R.raw.bonk);
-		FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
+		//FP.setWorld(new OgmoEditorWorld(R.raw.big_4));
+
 	}
 
 	@Override

@@ -5,22 +5,24 @@ import net.androidpunk.Graphic;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapShader;
-import android.graphics.Paint.Style;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader.TileMode;
+import android.util.Log;
 
 /**
  * A  multi-purpose drawing canvas, for comatability with flash library.
  */
 public class CanvasGraphic extends Graphic {
 
+	private static final String TAG = "CanvasGraphic";
 	
 	// Buffer information.
 	protected Bitmap mBuffer;
@@ -32,10 +34,14 @@ public class CanvasGraphic extends Graphic {
 	// Color tinting information.
 	private int mColor;
 	private ColorFilter mTint;
-
+	// To prevent weirdness with big bitmaps we use it's own canvas to not mess with clip rects.
+	private Canvas mCanvas = new Canvas();
+	
 	// Global objects.
 	private Rect mRect = new Rect();
-	private Canvas mCanvas = FP.canvas;
+	private Matrix mMatrix = FP.matrix;
+	
+	
 	private Paint mPaint = FP.paint;
 
 	/**
@@ -47,6 +53,7 @@ public class CanvasGraphic extends Graphic {
 		mWidth = width;
 		mHeight = height;
 		mBuffer = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+		Log.d(TAG, String.format("CanvasGraphic %dx%d",mBuffer.getWidth(), mBuffer.getHeight()));
 	}
 	
 	/** @private Renders the canvas. */
@@ -61,7 +68,11 @@ public class CanvasGraphic extends Graphic {
 			mPaint.setColorFilter(mTint);
 		}
 		mCanvas.setBitmap(target);
+		
+		//mMatrix.reset();
+		//mMatrix.postTranslate(mPoint.x, mPoint.y);
 		mCanvas.drawBitmap(mBuffer, mPoint.x, mPoint.y, mPaint);
+		//mCanvas.drawBitmap(mBuffer, mMatrix, mPaint);
 	}
 	
 	/**
@@ -82,6 +93,7 @@ public class CanvasGraphic extends Graphic {
 	 */
 	public void draw(int x, int y, Bitmap source, Rect src) {
 		mCanvas.setBitmap(mBuffer);
+		
 		if (src != null) {
 			mRect.set(x, y, x + src.width(), y + src.height());
 			mCanvas.drawBitmap(source, src, mRect, null);
@@ -137,12 +149,20 @@ public class CanvasGraphic extends Graphic {
 	}
 	
 	/**
-	 * The tinted color of the Canvas. Use 0xFFFFFF to draw the it normally.
+	 * The tinted color of the Canvas. Use 0xFFFFFFFF to draw the it normally.
 	 */
 	public int getColor() { return mColor; }
+	/**
+	 * The tinted color of the Canvas. Use 0xFFFFFFFF to draw the it normally.
+	 * WARNING: THIS SUCKS CPU LIKE NO ONES BUSSINESS
+	 */
 	public void setColor(int value) {
 		if (mColor == value) 
 			return;
+		if (value == 0xffffffff) {
+			mTint = null;
+			return;
+		}
 		
 		mColor = value;
 		float matrix[] = new float[20];

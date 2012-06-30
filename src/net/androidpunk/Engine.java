@@ -48,7 +48,7 @@ public class Engine {
 	private long mUpdateTime;
 	private long mRenderTime;
 	private long mGameTime;
-	private long mSystemTime;
+	private long mJavaTime;
 	
 	// FrameRate tracking.
 	private long mFrameLast = 0;
@@ -142,7 +142,7 @@ public class Engine {
 
 			// update timer
 			mGameTime = mTime;
-			FP.javaTime = mTime - FP.javaTime;
+			FP.javaTime = mTime - mJavaTime;
 
 			// update console
 			//if (FP._console) 
@@ -181,7 +181,7 @@ public class Engine {
 				render();
 
 			// update timer
-			mTime = FP.javaTime = System.currentTimeMillis();
+			mTime = mJavaTime = System.currentTimeMillis();
 			FP.renderTime = mTime - FP.renderTime;
 			FP.gameTime =  mTime - FP.gameTime;
 		}
@@ -192,7 +192,7 @@ public class Engine {
 		public void event() {
 			// update timer
 			mTime = mGameTime = System.currentTimeMillis();
-			FP.javaTime = mTime - FP.javaTime;
+			FP.javaTime = mTime - mJavaTime;
 			mUpdateTime = mTime;
 			FP.elapsed = (mTime - mLast) / 1000.0f;
 			if (FP.elapsed > maxElapsed) 
@@ -222,7 +222,7 @@ public class Engine {
 				render();
 
 			// update timer
-			mTime = FP.javaTime = System.currentTimeMillis();
+			mTime = mJavaTime = System.currentTimeMillis();
 			FP.renderTime = mTime - mRenderTime;
 			FP.gameTime = mTime - mGameTime;
 		}
@@ -336,8 +336,9 @@ public class Engine {
 			mFrameListSum -= mFrameList.get(0);
 			mFrameList.remove(0);
 		}
-			
-		FP.frameRate = 1000 / (mFrameListSum / mFrameList.size());
+		if (mFrameListSum > 0 ) 
+			FP.frameRate = 1000 / (mFrameListSum / mFrameList.size());
+		
 		mFrameLast = t;
 	}
 }

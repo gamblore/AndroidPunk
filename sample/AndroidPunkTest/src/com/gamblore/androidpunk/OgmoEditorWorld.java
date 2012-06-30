@@ -1,9 +1,9 @@
 package com.gamblore.androidpunk;
 
-import net.androidpunk.Engine;
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
+import net.androidpunk.graphics.Image;
 import net.androidpunk.graphics.TileMap;
 import net.androidpunk.masks.Grid;
 
@@ -12,16 +12,16 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.util.Log;
+
 import com.gamblore.androidpunk.entities.Exit;
 import com.gamblore.androidpunk.entities.Monster;
 import com.gamblore.androidpunk.entities.Ogmo;
 import com.gamblore.androidpunk.entities.PlayerStart;
 
-import android.util.Log;
-
 public class OgmoEditorWorld extends World {
 
-	private static final String TAG = "MyWorld";
+	private static final String TAG = "OgmoEditorWorld";
 	
 	private int mCurrentLevelRes = 0;
 	
@@ -41,6 +41,7 @@ public class OgmoEditorWorld extends World {
 		NamedNodeMap levelatts = doc.getFirstChild().getAttributes();
 		int lWidth = Integer.parseInt(levelatts.getNamedItem("width").getNodeValue());
 		int lHeight = Integer.parseInt(levelatts.getNamedItem("height").getNodeValue());
+		Log.d(TAG, String.format("Level is %dx%d",lWidth,lHeight));
 		mLevel.setHitbox(lWidth, lHeight);
 		
 		NodeList cameras = doc.getElementsByTagName("camera");
@@ -52,6 +53,8 @@ public class OgmoEditorWorld extends World {
 			Log.d(TAG, String.format("camera at %d,%d",x,y) );
 
 			camera.set(x, y); 
+		} else {
+			camera.set(0, 0);
 		}
 		
 		NodeList tiles = doc.getElementsByTagName("Tiles");
@@ -143,11 +146,13 @@ public class OgmoEditorWorld extends World {
 		}
 		
 		if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
+			Log.d(TAG, "Level Compelete");
 			if (mCurrentLevelRes == R.raw.intro_1) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.jumping_2));
 			} else if (mCurrentLevelRes == R.raw.jumping_2) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.enemy_3));
 			} else if (mCurrentLevelRes == R.raw.enemy_3) {
+				//TODO BUG when loading this level after a smaller level it breaks.
 				FP.setWorld(new OgmoEditorWorld(R.raw.big_4));
 			} else if (mCurrentLevelRes == R.raw.big_4) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
@@ -175,9 +180,9 @@ public class OgmoEditorWorld extends World {
 				int newTop = mOgmo.y - 1 * height / 3;
 				camera.y = Math.max(0, newTop);
 			}
-			//if (mOgmo.y > FP.screen.getHeight()) {
-			//	restart = true;
-			if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null){
+			if (mOgmo.y > mLevel.height) {
+				restart = true;
+			} else if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null){
 				restart = true;
 			}
 

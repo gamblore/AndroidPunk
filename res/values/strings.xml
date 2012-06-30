@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World!</string>
     <string name="app_name">AndroidPunk</string>
+    <string name="exit_dialog_title">Exit?</string>
+    <string name="exit_dialog_message">Do you want to exit the game?</string>
+    
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>
