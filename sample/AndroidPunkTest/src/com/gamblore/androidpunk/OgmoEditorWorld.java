@@ -152,9 +152,10 @@ public class OgmoEditorWorld extends World {
 			} else if (mCurrentLevelRes == R.raw.jumping_2) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.enemy_3));
 			} else if (mCurrentLevelRes == R.raw.enemy_3) {
-				//TODO BUG when loading this level after a smaller level it breaks.
 				FP.setWorld(new OgmoEditorWorld(R.raw.big_4));
 			} else if (mCurrentLevelRes == R.raw.big_4) {
+				FP.setWorld(new OgmoEditorWorld(R.raw.scrolling_5));
+			} else if (mCurrentLevelRes == R.raw.scrolling_5) {
 				FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
 			}
 			remove(mOgmo);
