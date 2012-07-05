@@ -72,7 +72,7 @@ public class Ogmo extends Entity {
 		Entity e;
 		float previousXVelocity = mVelocity.x;
 		if ((e = collide("level", (int) (x + deltax), y)) != null) {
-			mCanJump = true;
+			//mCanJump = true;
 			
 			if (mVelocity.y > 0) {
 				mVelocity.y *= 0.90;

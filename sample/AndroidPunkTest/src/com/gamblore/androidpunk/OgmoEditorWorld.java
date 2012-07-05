@@ -1,9 +1,13 @@
 package com.gamblore.androidpunk;
 
+import java.io.File;
+
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
-import net.androidpunk.graphics.Image;
+import net.androidpunk.graphics.Backdrop;
+import net.androidpunk.graphics.GraphicList;
+import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.TileMap;
 import net.androidpunk.masks.Grid;
 
@@ -23,21 +27,45 @@ public class OgmoEditorWorld extends World {
 
 	private static final String TAG = "OgmoEditorWorld";
 	
-	private int mCurrentLevelRes = 0;
+	private static final String LEVEL_FOLDER = "levels";
+	private int mCurrentLevel = 1;
+	private int mNumLevels;
 	
 	private Entity mLevel = new Entity();
 	private Ogmo mOgmo = null;
 	private PlayerStart mPlayerStart = null;
 	private Exit mExit = null;
 	
-	public OgmoEditorWorld(int resId) {
-		parseOgmoEditorLevel(resId);
-		mCurrentLevelRes = resId;
+	public OgmoEditorWorld(int level) {
+		
+		mCurrentLevel = level;
+		String levels[] = FP.getAssetList(LEVEL_FOLDER);
+		mNumLevels = levels.length;
+		String theLevel = String.format("%d_", level);
+		//Log.d(TAG, String.format("%d levels looking for level %s", mNumLevels, theLevel));
+		for (String l : levels) {
+			Log.d(TAG, l);
+			if (l.startsWith(theLevel)) {
+				parseOgmoEditorLevel(LEVEL_FOLDER + File.separator + l);
+				break;
+			}
+		}
 	}
-
+	
+	private void parseOgmoEditorLevel(String assetFilename) {
+		Document doc = FP.getXML(assetFilename);
+		parseOgmoEditorLevel(doc);
+	}
+	
 	private void parseOgmoEditorLevel(int resId) {
 		Document doc = FP.getXML(resId);
-		
+		parseOgmoEditorLevel(doc);
+	}
+	
+	private void parseOgmoEditorLevel(Document doc) {
+		if (doc == null) {
+			return;
+		}
 		NamedNodeMap levelatts = doc.getFirstChild().getAttributes();
 		int lWidth = Integer.parseInt(levelatts.getNamedItem("width").getNodeValue());
 		int lHeight = Integer.parseInt(levelatts.getNamedItem("height").getNodeValue());
@@ -60,10 +88,26 @@ public class OgmoEditorWorld extends World {
 		NodeList tiles = doc.getElementsByTagName("Tiles");
 		if (tiles.getLength() > 0) {
 			Node n = tiles.item(0);
+			String tileset = n.getAttributes().getNamedItem("tileset").getNodeValue();
+			int res;
+			int resWidth, resHeight;
+			if ("grass_tiles".equals(tileset)) {
+				res = R.drawable.grass_tiles;
+				resWidth = 32;
+				resHeight = 32;
+			} else if ("grass_box_tiles".equals(tileset)) {
+				res = R.drawable.grass_box_tiles;
+				resWidth = 32;
+				resHeight = 32;
+			} else {
+				res = R.drawable.grey_cement;
+				resWidth = 32;
+				resHeight = 32;
+			}
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String tilescsv = child.getTextContent();
-				TileMap tileMap = new TileMap(FP.getBitmap(R.drawable.grass_tiles), lWidth, lHeight, 32, 32);
+				TileMap tileMap = new TileMap(FP.getBitmap(res), lWidth, lHeight, resWidth, resHeight);
 				tileMap.loadFromString(tilescsv);
 				mLevel.setGraphic(tileMap);
 			}
@@ -102,6 +146,24 @@ public class OgmoEditorWorld extends World {
 					Log.d(TAG, String.format("New exit at %d,%d",x,y) );
 					mExit = new Exit(x, y);
 					add(mExit);
+				} else if ("Text".equals(n.getNodeName())) {
+					
+					NamedNodeMap atts = n.getAttributes();
+					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+					String text = atts.getNamedItem("text").getNodeValue();
+					
+					Log.d(TAG, String.format("New text %s at %d, %d", text, x, y));
+					
+					Entity e = new Entity(x, y);
+					e.setLayer(100);
+					Text.size = 26;
+					Text t = new Text(text, 0, 0);
+					t.setSize(24);
+					
+					e.setGraphic(t);
+					t.setColor(0xffffffff);
+					add(e);
 				} else if ("Enemy".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
@@ -147,16 +209,10 @@ public class OgmoEditorWorld extends World {
 		
 		if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
 			Log.d(TAG, "Level Compelete");
-			if (mCurrentLevelRes == R.raw.intro_1) {
-				FP.setWorld(new OgmoEditorWorld(R.raw.jumping_2));
-			} else if (mCurrentLevelRes == R.raw.jumping_2) {
-				FP.setWorld(new OgmoEditorWorld(R.raw.enemy_3));
-			} else if (mCurrentLevelRes == R.raw.enemy_3) {
-				FP.setWorld(new OgmoEditorWorld(R.raw.big_4));
-			} else if (mCurrentLevelRes == R.raw.big_4) {
-				FP.setWorld(new OgmoEditorWorld(R.raw.scrolling_5));
-			} else if (mCurrentLevelRes == R.raw.scrolling_5) {
-				FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
+			if (mCurrentLevel + 1 > mNumLevels) {
+				FP.setWorld(new MenuWorld());
+			} else {
+				FP.setWorld(new OgmoEditorWorld(mCurrentLevel + 1));
 			}
 			remove(mOgmo);
 			mOgmo = null;
@@ -189,7 +245,7 @@ public class OgmoEditorWorld extends World {
 
 			if (restart) {
 				mOgmo = null;
-				FP.setWorld(new OgmoEditorWorld(mCurrentLevelRes));
+				FP.setWorld(new OgmoEditorWorld(mCurrentLevel));
 			}
 		}
 	}

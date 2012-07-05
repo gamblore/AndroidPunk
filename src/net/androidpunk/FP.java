@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -808,13 +809,58 @@ public class FP {
 		}
 	}
 	
+	
+	/**
+	 * Get a list of a directory of the assets path.
+	 * @param path to check for files
+	 * @return a string array of the filenames.
+	 */
+	public static String[] getAssetList(String path) {
+		try {
+			return FP.context.getAssets().list(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the file descriptor of an asset.
+	 * @param path to the file.
+	 * @return the file descriptor for the asset. 
+	 */
+	public static InputStream getAsset(String file) {
+		try {
+			return FP.context.getAssets().open(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * Loads the file as an XML object.
 	 * @param	file		The embedded file to load.
 	 * @return	An XML object representing the file.
 	 */
 	public static Document getXML(int resId) {
-		InputStream is = FP.context.getResources().openRawResource(resId);
+		return createDocument(FP.context.getResources().openRawResource(resId));
+		
+	}
+	
+	/**
+	 * Loads the file as an XML object.
+	 * @param	assetFile		The asset file to load.
+	 * @return	An XML object representing the file.
+	 */
+	public static Document getXML(String assetFile) {
+		return createDocument(getAsset(assetFile));
+	}
+	
+	private static Document createDocument(InputStream is) {
+		if (is == null) {
+			return null;
+		}
 		DocumentBuilderFactory builderfactory = DocumentBuilderFactory.newInstance();
 		Document d;
 		try {

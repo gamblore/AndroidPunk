@@ -89,14 +89,13 @@ public class Text extends Image {
 		mHeight = (int)(mSize);
 		
 		// Create a new bitmap for this text
-		Bitmap newBm = Bitmap.createBitmap(mWidth, mHeight+4, Config.ARGB_8888);
+		Bitmap newBm = Bitmap.createBitmap(mWidth, (int)(mHeight+FP.dip(4)), Config.ARGB_8888);
 		mSource.recycle();
 		mSource = newBm;
 		mBufferRect.set(0, 0, mWidth, mHeight);
 		getClipRect().set(mBufferRect);
 		mCanvas.setBitmap(mSource);
 		mCanvas.drawText(mText, 0, -p.ascent(), p);
-		Log.d(TAG, String.format("Updated text buffer says %s %dx%d %s", mText, newBm.getWidth(), newBm.getHeight(), getClipRect().toShortString()));
 		super.updateBuffer(clearBefore);
 	}
 	

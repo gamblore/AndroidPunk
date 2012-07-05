@@ -1,6 +1,5 @@
 package com.gamblore.androidpunk;
 
-import net.androidpunk.FP;
 import net.androidpunk.android.PunkActivity;
 import android.os.Bundle;
 

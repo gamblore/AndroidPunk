@@ -75,6 +75,15 @@
       </TileSize>
       <TileSep>0</TileSep>
     </Tileset>
+    <Tileset>
+      <Name>grass_box_tiles</Name>
+      <FilePath>..\res\drawable-hdpi\grass_box_tiles.png</FilePath>
+      <TileSize>
+        <Width>32</Width>
+        <Height>32</Height>
+      </TileSize>
+      <TileSep>0</TileSep>
+    </Tileset>
   </Tilesets>
   <EntityDefinitions>
     <EntityDefinition Name="PlayerStart" Limit="1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
@@ -123,6 +132,23 @@
         <ValueDefinition xsi:type="IntValueDefinition" Name="speed" Default="100" Min="0" Max="400" ShowSlider="true" />
       </ValueDefinitions>
       <NodesDefinition Enabled="true" Limit="-1" DrawMode="Circuit" Ghost="false" />
+    </EntityDefinition>
+    <EntityDefinition Name="Text" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+      <Size>
+        <Width>128</Width>
+        <Height>32</Height>
+      </Size>
+      <Origin>
+        <X>0</X>
+        <Y>0</Y>
+      </Origin>
+      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+        <RectColor A="255" R="0" G="128" B="192" />
+      </ImageDefinition>
+      <ValueDefinitions>
+        <ValueDefinition xsi:type="StringValueDefinition" Name="text" Default="" MaxChars="-1" MultiLine="false" />
+      </ValueDefinitions>
+      <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
     </EntityDefinition>
   </EntityDefinitions>
 </project>

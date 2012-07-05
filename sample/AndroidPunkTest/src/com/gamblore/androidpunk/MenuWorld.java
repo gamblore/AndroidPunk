@@ -4,6 +4,7 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
 import net.androidpunk.flashcompat.OnCompleteCallback;
+import net.androidpunk.graphics.Backdrop;
 import net.androidpunk.graphics.GraphicList;
 import net.androidpunk.graphics.Image;
 import net.androidpunk.graphics.SpriteMap;
@@ -42,6 +43,10 @@ public class MenuWorld extends World {
 	private ColorTween mTextTween = new ColorTween(null, LOOPING);
 	
 	public MenuWorld() {
+		
+		Backdrop bd = new Backdrop(FP.getBitmap(R.drawable.jumper_background));
+		Backdrop bd2 = new Backdrop(FP.getBitmap(R.drawable.jumper_clouds));
+		
 		logo = new Image(FP.getBitmap(R.drawable.jumper_mobile));
 		logo.x = FP.screen.getWidth()/2 - logo.getWidth()/2;
 		logo.y = FP.screen.getHeight()/4;
@@ -56,7 +61,7 @@ public class MenuWorld extends World {
 		startText.x = FP.screen.getWidth()/2 - startText.getWidth()/2;
 		startText.y = 3*FP.screen.getHeight()/4;
 		
-		GraphicList gl = new GraphicList(logo, ogmo);
+		GraphicList gl = new GraphicList(bd, bd2, logo, ogmo);
 		mDisplay.setLayer(99);
 		mDisplay.setGraphic(gl);
 		
@@ -110,7 +115,7 @@ public class MenuWorld extends World {
 		startText.setColor(mTextTween.color);
 		
 		if (Input.mousePressed) {
-			FP.setWorld(new OgmoEditorWorld(R.raw.intro_1));
+			FP.setWorld(new OgmoEditorWorld(1));
 		}
 	}
 	

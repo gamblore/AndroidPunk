@@ -274,54 +274,57 @@ public class Screen {
 	}
 	
 	public Point[] getTouches() {
-		MotionEvent copy = mInput;
-		if (copy != null) {
-			int index = 0;
-			for (Integer id : mPointIndices) {
-				for(int i = 0; i < copy.getPointerCount() && index < mPoints.length; i++) {
-					if (copy.getPointerId(i) == id) {
-						mPoints[index].x = (int)copy.getX(i);
-						mPoints[index].y = (int)copy.getY(i);
-						index++;
-						break;
+		synchronized (mPointIndices) {
+			if (mInput != null) {
+				int index = 0;
+				for (Integer id : mPointIndices) {
+					for(int i = 0; i < mInput.getPointerCount() && index < mPoints.length; i++) {
+						if (mInput.getPointerId(i) == id) {
+							mPoints[index].x = (int)mInput.getX(i);
+							mPoints[index].y = (int)mInput.getY(i);
+							index++;
+							break;
+						}
 					}
 				}
+				/*
+				for (int i = 0; i < mInput.getPointerCount() && i < 5; i++) {
+					mPoints[i].x = (int)mInput.getX(i);
+					mPoints[i].y = (int)mInput.getY(i);
+				}
+				*/
 			}
-			/*
-			for (int i = 0; i < mInput.getPointerCount() && i < 5; i++) {
-				mPoints[i].x = (int)mInput.getX(i);
-				mPoints[i].y = (int)mInput.getY(i);
-			}
-			*/
+			return mPoints;
 		}
-		return mPoints;
 	}
 	
 	public void setMotionEvent(MotionEvent me) {
-		if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
-			mPointIndices.add(me.getPointerId(0));
-			Input.mouseDown = true;
-			Input.mouseUp = false;
-			Input.mousePressed = true;
-		}
-		if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
-			int id = me.getPointerId(me.getActionIndex());
-			//Log.d(TAG, "Adding " + id);
-			mPointIndices.add(id);
-		}
-		if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
-			int id = me.getPointerId(me.getActionIndex());
-			//Log.d(TAG, "Removing " + id);
-			mPointIndices.remove((Integer)id);
-		}
-		
-		mInput = me;
-		if (me.getActionMasked() == MotionEvent.ACTION_UP) {
-			mPointIndices.clear();
-			Input.mouseDown = false;
-			Input.mouseUp = true;
-			Input.mouseReleased = true;
-			mInput = null;
+		synchronized (mPointIndices) {
+			if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
+				mPointIndices.add(me.getPointerId(0));
+				Input.mouseDown = true;
+				Input.mouseUp = false;
+				Input.mousePressed = true;
+			}
+			if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+				int id = me.getPointerId(me.getActionIndex());
+				//Log.d(TAG, "Adding " + id);
+				mPointIndices.add(id);
+			}
+			if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
+				int id = me.getPointerId(me.getActionIndex());
+				//Log.d(TAG, "Removing " + id);
+				mPointIndices.remove((Integer)id);
+			}
+			
+			mInput = me;
+			if (me.getActionMasked() == MotionEvent.ACTION_UP) {
+				mPointIndices.clear();
+				Input.mouseDown = false;
+				Input.mouseUp = true;
+				Input.mouseReleased = true;
+				mInput = null;
+			}
 		}
 	}
 	
