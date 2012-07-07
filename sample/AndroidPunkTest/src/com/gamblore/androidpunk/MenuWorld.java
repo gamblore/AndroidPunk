@@ -13,6 +13,7 @@ import net.androidpunk.tweens.misc.AngleTween;
 import net.androidpunk.tweens.misc.ColorTween;
 import net.androidpunk.tweens.misc.VarTween;
 import net.androidpunk.tweens.motion.QuadMotion;
+import net.androidpunk.utils.Data;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -114,7 +115,7 @@ public class MenuWorld extends World {
 		startText.setColor(mTextTween.color);
 		
 		if (mTextTween.active && Input.mousePressed) {
-			FP.setWorld(new OgmoEditorWorld(1));
+			FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
 		}
 	}
 	

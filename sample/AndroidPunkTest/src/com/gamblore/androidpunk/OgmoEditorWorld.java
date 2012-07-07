@@ -10,6 +10,7 @@ import net.androidpunk.graphics.GraphicList;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.TileMap;
 import net.androidpunk.masks.Grid;
+import net.androidpunk.utils.Data;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -209,9 +210,11 @@ public class OgmoEditorWorld extends World {
 		if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
 			Log.d(TAG, "Level Compelete");
 			if (mCurrentLevel + 1 > mNumLevels) {
+				Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
 				FP.setWorld(new MenuWorld());
 			} else {
 				FP.setWorld(new OgmoEditorWorld(mCurrentLevel + 1));
+				Data.getData().edit().putInt(Main.DATA_CURRENT_LEVEL, mCurrentLevel + 1).commit();
 			}
 			remove(mOgmo);
 			mOgmo = null;

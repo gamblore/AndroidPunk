@@ -11,6 +11,8 @@ public class Main extends Engine {
 	public static Sfx mBonk;
 	public static Sfx mJump;
 	public static Sfx mDeath;
+	
+	public static final String DATA_CURRENT_LEVEL = "current_level";
 
 	public Main(int width, int height, float frameRate, boolean fixed) {
 		super(width, height, frameRate, fixed);
