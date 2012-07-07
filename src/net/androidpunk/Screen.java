@@ -275,13 +275,14 @@ public class Screen {
 	
 	public Point[] getTouches() {
 		synchronized (mPointIndices) {
+			MotionEvent copy = MotionEvent.obtain(mInput);
 			if (mInput != null) {
 				int index = 0;
 				for (Integer id : mPointIndices) {
-					for(int i = 0; i < mInput.getPointerCount() && index < mPoints.length; i++) {
+					for(int i = 0; i < copy.getPointerCount() && index < mPoints.length; i++) {
 						if (mInput.getPointerId(i) == id) {
-							mPoints[index].x = (int)mInput.getX(i);
-							mPoints[index].y = (int)mInput.getY(i);
+							mPoints[index].x = (int)copy.getX(i);
+							mPoints[index].y = (int)copy.getY(i);
 							index++;
 							break;
 						}

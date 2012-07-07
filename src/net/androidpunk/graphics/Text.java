@@ -58,9 +58,9 @@ public class Text extends Image {
 		p.reset();
 		p.setTextSize(Text.size);
 		if (width == 0)
-			width = (int)(p.measureText(text));
+			width = (int)(FP.dip(p.measureText(text)));
 		if (height == 0)
-			height = (int)(Text.size);
+			height = (int)(FP.dip(Text.size));
 
 		Bitmap source = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		return source;
@@ -86,7 +86,7 @@ public class Text extends Image {
 		p.setTextAlign(Align.LEFT);
 		
 		mWidth = (int)(p.measureText(mText));
-		mHeight = (int)(mSize);
+		mHeight = (int)(FP.dip(mSize));
 		
 		// Create a new bitmap for this text
 		Bitmap newBm = Bitmap.createBitmap(mWidth, (int)(mHeight+FP.dip(4)), Config.ARGB_8888);
