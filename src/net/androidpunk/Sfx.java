@@ -22,7 +22,7 @@ public class Sfx {
 	private static float GLOBAL_VOLUME = 1.0f;
 	private static float GLOBAL_PAN = 0.0f;
 	
-	public static final SoundPool SOUND_POOL = new SoundPool(64, AudioManager.STREAM_MUSIC, 0);
+	public static final SoundPool SOUND_POOL = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
 	public static final Vector<Sfx> SOUNDS = new Vector<Sfx>();
 	
 	private int mSoundId;

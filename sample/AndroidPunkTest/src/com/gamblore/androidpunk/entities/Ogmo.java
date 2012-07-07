@@ -2,14 +2,12 @@ package com.gamblore.androidpunk.entities;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
-import net.androidpunk.Tween;
 import net.androidpunk.graphics.SpriteMap;
 import net.androidpunk.graphics.TileMap;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.view.VelocityTracker;
 
 import com.gamblore.androidpunk.Main;
 import com.gamblore.androidpunk.R;
@@ -18,14 +16,20 @@ public class Ogmo extends Entity {
 
 	private static final String TAG = "Ogmo";
 	
+	private static final int X_SPEED = 200;
+	private static final int MAX_FALL_SPEED = 200;
+	private static final int JUMP_SPEED = -500;
+	
+	//private static final String ANIM_STANDING = "standing";
+	private static final String ANIM_WALKING = "walking";
+	
 	private PointF mVelocity = new PointF();
 	
 	private SpriteMap mMap;
 	
 	private boolean mCanJump = false;
 	
-	//private static final String ANIM_STANDING = "standing";
-	private static final String ANIM_WALKING = "walking";
+	
 	
 	public Ogmo(int x, int y) {
 		super(x, y);
@@ -46,20 +50,20 @@ public class Ogmo extends Entity {
 	public void update() {
 		float deltax = 0, deltay = 0;
 		
-		mVelocity.y = mVelocity.y > 200 ? 200 : mVelocity.y + (1000 * FP.elapsed);
+		mVelocity.y = mVelocity.y > MAX_FALL_SPEED ? MAX_FALL_SPEED : mVelocity.y + (1000 * FP.elapsed);
 		if (Input.mouseDown) {
 			
 			Point points[] = Input.getTouches();
 			if (Input.getTouchesCount() > 1 && mCanJump) {
 				Main.mJump.play();
-				mVelocity.y = -500;
+				mVelocity.y = JUMP_SPEED;
 				mCanJump = false;
 			}
 			Point p = points[0];
 			if (p.x + FP.camera.x >= getRight() ) {
-					mVelocity.x = 200;
+					mVelocity.x = X_SPEED;
 			} else if (p.x + FP.camera.x <= getLeft()) {
-					mVelocity.x = -200;
+					mVelocity.x = -X_SPEED;
 			}
 			
 			//mVelocity.x = Math.max(Math.min(mVelocity.x, 200), -200);

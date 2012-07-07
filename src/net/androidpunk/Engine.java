@@ -21,9 +21,9 @@ public class Engine {
 	public boolean paused = false;
 
 	/**
-	 * Cap on the elapsed time (default at 30 FPS). Raise this to allow for lower framerates (eg. 1 / 10).
+	 * Cap on the elapsed time (default at 60 FPS). Raise this to allow for lower framerates (eg. 1 / 30).
 	 */
-	public float maxElapsed = 0.0333f;
+	public float maxElapsed = 1/60f;
 
 	/**
 	 * The max amount of frames that can be skipped in fixed framerate mode.
@@ -155,7 +155,7 @@ public class Engine {
 				// update timer
 				mUpdateTime = mTime;
 				mDelta -= mRate;
-				FP.elapsed = (mTime - mPrev) / 1000;
+				FP.elapsed = (mTime - mPrev) / 1000.0f;
 				if (FP.elapsed > maxElapsed) 
 					FP.elapsed = maxElapsed;
 				FP.elapsed *= FP.rate;
@@ -170,7 +170,7 @@ public class Engine {
 
 				// update timer
 				mTime = System.currentTimeMillis();
-				FP.updateTime = mTime - FP.updateTime;
+				FP.updateTime = mTime - mUpdateTime;
 			}
 
 			// update timer
@@ -182,8 +182,8 @@ public class Engine {
 
 			// update timer
 			mTime = mJavaTime = System.currentTimeMillis();
-			FP.renderTime = mTime - FP.renderTime;
-			FP.gameTime =  mTime - FP.gameTime;
+			FP.renderTime = mTime - mRenderTime;
+			FP.gameTime =  mTime - mGameTime;
 		}
 	};
 	
@@ -337,7 +337,7 @@ public class Engine {
 			mFrameList.remove(0);
 		}
 		if (mFrameListSum > 0 ) 
-			FP.frameRate = 1000 / (mFrameListSum / mFrameList.size());
+			FP.frameRate = 1000.0f / (mFrameListSum / mFrameList.size());
 		
 		mFrameLast = t;
 	}

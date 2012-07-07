@@ -66,10 +66,6 @@ public class Screen {
         mCanvas.setBitmap(mBitmap);
         mCanvas.drawColor(mColor);
         
-        //TODO FIGURE OUT WHAT SPRITE DOES?
-        //mSprite.addChild(mBitmap[0]).visible = true;
-        //mSprite.addChild(mBitmap[1]).visible = false;
-        
         FP.buffer = mBitmap;
         mWidth = FP.width;
         mHeight = FP.height;
@@ -275,25 +271,20 @@ public class Screen {
 	
 	public Point[] getTouches() {
 		synchronized (mPointIndices) {
+			if (mInput == null) {
+				return mPoints;
+			}
 			MotionEvent copy = MotionEvent.obtain(mInput);
-			if (mInput != null) {
-				int index = 0;
-				for (Integer id : mPointIndices) {
-					for(int i = 0; i < copy.getPointerCount() && index < mPoints.length; i++) {
-						if (mInput.getPointerId(i) == id) {
-							mPoints[index].x = (int)copy.getX(i);
-							mPoints[index].y = (int)copy.getY(i);
-							index++;
-							break;
-						}
+			int index = 0;
+			for (Integer id : mPointIndices) {
+				for(int i = 0; i < copy.getPointerCount() && index < mPoints.length; i++) {
+					if (mInput.getPointerId(i) == id) {
+						mPoints[index].x = (int)copy.getX(i);
+						mPoints[index].y = (int)copy.getY(i);
+						index++;
+						break;
 					}
 				}
-				/*
-				for (int i = 0; i < mInput.getPointerCount() && i < 5; i++) {
-					mPoints[i].x = (int)mInput.getX(i);
-					mPoints[i].y = (int)mInput.getY(i);
-				}
-				*/
 			}
 			return mPoints;
 		}

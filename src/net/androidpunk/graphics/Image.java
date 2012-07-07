@@ -162,7 +162,14 @@ public class Image extends Graphic {
 		//FP.MATRIX_VALUES[5] += originY + mPoint.y;
 		//mMatrix.setValues(FP.MATRIX_VALUES);
 		*/
-		mCanvas.drawBitmap(mBuffer, mMatrix, null);
+		
+		if (mTint != null) {
+			mPaint.reset();
+			mPaint.setColorFilter(mTint);
+			mCanvas.drawBitmap(mBuffer, mMatrix, mPaint);
+		} else {
+			mCanvas.drawBitmap(mBuffer, mMatrix, null);
+		}
 		
 		//mCanvas.drawBitmap(mSource, 0, 0, null);
 	}
@@ -293,7 +300,7 @@ public class Image extends Graphic {
 		matrix[18] = Color.alpha(value) / 255f;
 		
 		mTint = new ColorMatrixColorFilter(matrix);
-		updateBuffer();
+		//updateBuffer();
 	}
 	
 	/**

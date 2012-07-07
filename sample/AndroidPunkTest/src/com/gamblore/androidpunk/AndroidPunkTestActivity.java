@@ -1,5 +1,6 @@
 package com.gamblore.androidpunk;
 
+import net.androidpunk.FP;
 import net.androidpunk.android.PunkActivity;
 import android.os.Bundle;
 
@@ -15,7 +16,9 @@ public class AndroidPunkTestActivity extends PunkActivity {
         
         // If you want fixed time between frames set these. Value is in frames per second. 
         //FP.fixed = true;
-        //FP.assignedFrameRate = 30
+        //FP.assignedFrameRate = 30;
+        
+        FP.debug = true;
 	}
 	
     /** Called when the activity is first created. */

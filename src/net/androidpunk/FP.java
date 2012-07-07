@@ -97,6 +97,10 @@ public class FP {
      */
     public static Screen screen;
     
+    /**
+     * Turn on debug display
+     */
+    public static boolean debug = false;
     
     /**
      * The current screen buffer, drawn to in the render loop.

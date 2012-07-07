@@ -15,6 +15,9 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
@@ -37,8 +40,6 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	public static int static_height = 480;
 	public static Class<? extends Engine> engine_class = Engine.class;
 	
-	private static final String WAKE_TAG = "PunkAcitivty";
-	
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mSurfaceHolder;
 		
@@ -46,13 +47,14 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	private Thread mGameThread;
 	
 	private static final Rect mScreenRect = new Rect();
+	private static final Path DEBUG_PATH = new Path();
 	
 	private boolean mStarted = false;
 	private boolean mRunning = false;
 	
 	private AudioManager mAudioManager;
 	private int mOldVolume = 0;
-	private int mVolume = 100; 
+	private int mVolume = 100;
 	
 	public static abstract class OnBackCallback {
 		public abstract boolean onBack();
@@ -62,6 +64,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		
 		@Override
 		public boolean onBack() {
+			mEngine.paused = true;
 			AlertDialog.Builder builder = new AlertDialog.Builder(FP.context);
 			
 			builder.setTitle(R.string.exit_dialog_title);
@@ -73,6 +76,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 					if (which == DialogInterface.BUTTON_POSITIVE) {
 						finish();
 					}
+					mEngine.paused = false;
 				}
 			};
 			builder.setPositiveButton(R.string.yes, ocl);
@@ -148,11 +152,41 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 			Canvas c = mSurfaceHolder.lockCanvas();
 			if (c != null) {
 				if(FP.buffer != null) {
-					c.clipRect(mScreenRect);
 					c.drawBitmap(FP.buffer, FP.bounds, mScreenRect, null);
 				}
-				mSurfaceHolder.unlockCanvasAndPost(c);
+				if (FP.debug) {
+					Paint p = FP.paint;
+					p.reset();
+					
+					p.setStyle(Style.FILL);
+					p.setAntiAlias(true);
+					p.setColor(0x80000000);
+					
+					c.drawPath(DEBUG_PATH, p);
+					
+					
+					// Draw the timers.
+					p.setColor(0xffffffff);
+					p.setAntiAlias(false);
+					
+					//Row 1
+					p.setTextSize(30);
+					String fps = String.format("FPS: %3d", (int)FP.frameRate);
+					c.drawText(fps, 0, -p.ascent(), p);
+					int step1 = (int) p.measureText(fps);
+					
+					//Row 2
+					p.setTextSize(20);
+					int step2 = step1 + (int) p.measureText("Update: 000ms");
+					c.drawText(String.format("Update: %3dms", FP.updateTime), step1 + FP.dip(2), -p.ascent(), p);
+					c.drawText(String.format("Render: %3dms", FP.renderTime), step1 + FP.dip(2), FP.dip(20)-p.ascent(), p);
+				
+					//Row 3
+					c.drawText(String.format("Game: %3dms", FP.gameTime), step2 + FP.dip(4), -p.ascent(), p);
+					c.drawText(String.format("Java: %3dms", FP.javaTime), step2 + FP.dip(4), FP.dip(20)-p.ascent(), p);
+				}
 			}
+			mSurfaceHolder.unlockCanvasAndPost(c);
 		}
 	}
 	
@@ -205,6 +239,11 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
 			mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
+			DEBUG_PATH.moveTo(0, 0);
+			DEBUG_PATH.lineTo(2*FP.screen.getWidth()/3, 0);
+			DEBUG_PATH.cubicTo(2*FP.screen.getWidth()/3, FP.dip(25), 2*FP.screen.getWidth()/3-FP.dip(25), FP.dip(50), 2*FP.screen.getWidth()/3-FP.dip(50), FP.dip(50));
+			DEBUG_PATH.lineTo(0, FP.dip(50));
+			DEBUG_PATH.close();
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
