@@ -86,8 +86,8 @@ public class OgmoEditorWorld extends World {
 		}
 		
 		NodeList tiles = doc.getElementsByTagName("Tiles");
-		if (tiles.getLength() > 0) {
-			Node n = tiles.item(0);
+		for (int i = 0; i < tiles.getLength(); i++) {
+			Node n = tiles.item(i);
 			String tileset = n.getAttributes().getNamedItem("tileset").getNodeValue();
 			int res;
 			int resWidth, resHeight;
@@ -113,8 +113,8 @@ public class OgmoEditorWorld extends World {
 			}
 		}
 		NodeList grid = doc.getElementsByTagName("Grid");
-		if (grid.getLength() > 0) {
-			Node n = grid.item(0);
+		for (int i = 0; i < grid.getLength(); i++) {
+			Node n = grid.item(i);
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String gridBitString = child.getTextContent();
@@ -159,7 +159,6 @@ public class OgmoEditorWorld extends World {
 					e.setLayer(100);
 					Text.size = 26;
 					Text t = new Text(text, 0, 0);
-					t.setSize(24);
 					
 					e.setGraphic(t);
 					t.setColor(0xffffffff);
@@ -239,7 +238,8 @@ public class OgmoEditorWorld extends World {
 			}
 			if (mOgmo.y > mLevel.height) {
 				restart = true;
-			} else if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null){
+			} else if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null) {
+				Main.mDeath.play();
 				restart = true;
 			}
 

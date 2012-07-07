@@ -57,7 +57,6 @@ public class MenuWorld extends World {
 		
 		Text.size = 36;
 		startText = new Text("Tap to Start", 0,0);
-		startText.setSize(34);
 		startText.x = FP.screen.getWidth()/2 - startText.getWidth()/2;
 		startText.y = 3*FP.screen.getHeight()/4;
 		
@@ -114,7 +113,7 @@ public class MenuWorld extends World {
 		
 		startText.setColor(mTextTween.color);
 		
-		if (Input.mousePressed) {
+		if (mTextTween.active && Input.mousePressed) {
 			FP.setWorld(new OgmoEditorWorld(1));
 		}
 	}

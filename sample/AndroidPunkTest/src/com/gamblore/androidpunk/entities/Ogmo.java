@@ -51,15 +51,17 @@ public class Ogmo extends Entity {
 			
 			Point points[] = Input.getTouches();
 			if (Input.getTouchesCount() > 1 && mCanJump) {
+				Main.mJump.play();
 				mVelocity.y = -500;
 				mCanJump = false;
 			}
 			Point p = points[0];
-			if (p.x + FP.camera.x > x ) {
-				mVelocity.x = 200;
-			} else if (p.x + FP.camera.x < x) {
-				mVelocity.x = -200;
+			if (p.x + FP.camera.x >= getRight() ) {
+					mVelocity.x = 200;
+			} else if (p.x + FP.camera.x <= getLeft()) {
+					mVelocity.x = -200;
 			}
+			
 			//mVelocity.x = Math.max(Math.min(mVelocity.x, 200), -200);
 			
 		}
