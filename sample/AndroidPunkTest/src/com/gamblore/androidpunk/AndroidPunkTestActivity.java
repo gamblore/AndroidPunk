@@ -18,7 +18,7 @@ public class AndroidPunkTestActivity extends PunkActivity {
         //FP.fixed = true;
         //FP.assignedFrameRate = 30;
         
-        FP.debug = true;
+        FP.debug = false;
 	}
 	
     /** Called when the activity is first created. */

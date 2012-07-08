@@ -2,6 +2,7 @@ package com.gamblore.androidpunk;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
+import net.androidpunk.FP.TweenOptions;
 import net.androidpunk.World;
 import net.androidpunk.flashcompat.OnCompleteCallback;
 import net.androidpunk.graphics.Backdrop;
@@ -9,20 +10,28 @@ import net.androidpunk.graphics.GraphicList;
 import net.androidpunk.graphics.Image;
 import net.androidpunk.graphics.SpriteMap;
 import net.androidpunk.graphics.Text;
+import net.androidpunk.masks.Hitbox;
+import net.androidpunk.masks.MaskList;
 import net.androidpunk.tweens.misc.AngleTween;
 import net.androidpunk.tweens.misc.ColorTween;
 import net.androidpunk.tweens.misc.VarTween;
 import net.androidpunk.tweens.motion.QuadMotion;
 import net.androidpunk.utils.Data;
+import net.androidpunk.utils.Ease;
 import net.androidpunk.utils.Input;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 
 public class MenuWorld extends World {
 
 	private static final String ANIM_WALKING = "walking";
 	
 	private Entity mDisplay = new Entity();
+	private Entity mSecondDisplay = new Entity();
 	private Image logo;
 	private SpriteMap ogmo;
 	private Text startText;
@@ -100,6 +109,24 @@ public class MenuWorld extends World {
 		
 		add(mDisplay);
 		
+		// Secondary options
+		mSecondDisplay.x = FP.screen.getWidth();
+		
+		Image menuNewGame = new Image(FP.getBitmap(R.drawable.menu_newgame));
+		menuNewGame.relative = true;
+		menuNewGame.x = FP.screen.getWidth()/4 - menuNewGame.getWidth()/2;
+		menuNewGame.y = 2*FP.screen.getHeight()/3;
+		Hitbox newHitbox = new Hitbox(menuNewGame.getWidth(), menuNewGame.getHeight(), (int)menuNewGame.x, (int)menuNewGame.y);
+		
+		Image menuContinue = new Image(FP.getBitmap(R.drawable.menu_continue));
+		menuContinue.relative = true;
+		menuContinue.x = 3*FP.screen.getWidth()/4 - menuContinue.getWidth()/2;
+		menuContinue.y = menuNewGame.y;
+		Hitbox contHitbox = new Hitbox(menuContinue.getWidth(), menuContinue.getHeight(), (int)menuContinue.x, (int)menuContinue.y);
+		
+		mSecondDisplay.setMask(new MaskList(newHitbox, contHitbox));
+		mSecondDisplay.setGraphic(new GraphicList(menuNewGame, menuContinue));
+		add(mSecondDisplay);
 		//add(new Button(FP.screen.getWidth()/4, FP.screen.getHeight()/2, FP.screen.getWidth()/2, 40, "START"));
 	}
 
@@ -115,8 +142,32 @@ public class MenuWorld extends World {
 		startText.setColor(mTextTween.color);
 		
 		if (mTextTween.active && Input.mousePressed) {
-			//FP.setWorld(new OgmoEditorWorld(8));
-			FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
+			if (Data.getData().contains(Main.DATA_CURRENT_LEVEL)) {
+				FP.tween(mSecondDisplay, FP.tweenmap("x", 0), 2.0f, new TweenOptions(ONESHOT, null, Ease.quadInOut, this));
+				mTextTween.active = false;
+				startText.visible = false;
+				
+				
+			} else {
+				//FP.setWorld(new OgmoEditorWorld(8));
+				FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
+			}
+		}
+		
+		// In secondary menu
+		if (mSecondDisplay.x < 5 && Input.mousePressed) {
+			Point p = FP.screen.getTouches()[0];
+			if (mSecondDisplay.collidePoint(mSecondDisplay.x, mSecondDisplay.y, p.x, p.y)) {
+				if (p.x < FP.screen.getWidth()/2) {
+					// new game
+					Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
+					FP.setWorld(new OgmoEditorWorld(1));
+				} else {
+					//continue
+					FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
+				}
+			}
+			
 		}
 	}
 	
