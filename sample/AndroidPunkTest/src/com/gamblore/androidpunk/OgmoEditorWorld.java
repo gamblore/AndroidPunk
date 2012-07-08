@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 import android.util.Log;
 
 import com.gamblore.androidpunk.entities.Exit;
+import com.gamblore.androidpunk.entities.Lightning;
 import com.gamblore.androidpunk.entities.Monster;
 import com.gamblore.androidpunk.entities.Ogmo;
 import com.gamblore.androidpunk.entities.PlayerStart;
@@ -164,6 +165,17 @@ public class OgmoEditorWorld extends World {
 					e.setGraphic(t);
 					t.setColor(0xffffffff);
 					add(e);
+				} else if ("Lightning".equals(n.getNodeName())) {
+					NamedNodeMap atts = n.getAttributes();
+					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+					int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
+					int height = Integer.parseInt(atts.getNamedItem("height").getNodeValue());
+					boolean flipped = Boolean.parseBoolean(atts.getNamedItem("flipped").getNodeValue());
+					
+					Lightning l = new Lightning(x, y, width, height, flipped);
+					
+					add(l);
 				} else if ("Enemy".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());

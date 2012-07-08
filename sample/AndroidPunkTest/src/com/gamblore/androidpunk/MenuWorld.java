@@ -115,6 +115,7 @@ public class MenuWorld extends World {
 		startText.setColor(mTextTween.color);
 		
 		if (mTextTween.active && Input.mousePressed) {
+			//FP.setWorld(new OgmoEditorWorld(8));
 			FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
 		}
 	}
