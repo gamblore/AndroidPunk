@@ -5,8 +5,6 @@ import java.io.File;
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
-import net.androidpunk.graphics.Backdrop;
-import net.androidpunk.graphics.GraphicList;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.TileMap;
 import net.androidpunk.masks.Grid;
@@ -17,6 +15,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.gamblore.androidpunk.entities.Exit;
@@ -93,23 +92,29 @@ public class OgmoEditorWorld extends World {
 			String tileset = n.getAttributes().getNamedItem("tileset").getNodeValue();
 			int res;
 			int resWidth, resHeight;
-			if ("grass_tiles".equals(tileset)) {
-				res = R.drawable.grass_tiles;
-				resWidth = 32;
-				resHeight = 32;
+			Bitmap bm;
+			if ("grass".equals(tileset)) {
+				bm = FP.getBitmap(R.drawable.grass);
+				resWidth = bm.getWidth()/6;
+				resHeight = bm.getHeight()/3;
+			} else if ("grass_tiles".equals(tileset)) {
+				bm = FP.getBitmap(R.drawable.grass_tiles);
+				resWidth = bm.getWidth()/4;
+				resHeight = bm.getHeight()/3;
 			} else if ("grass_box_tiles".equals(tileset)) {
-				res = R.drawable.grass_box_tiles;
-				resWidth = 32;
-				resHeight = 32;
+				bm = FP.getBitmap(R.drawable.grass_box_tiles);
+				resWidth = bm.getWidth()/3;
+				resHeight = bm.getHeight()/3;
 			} else {
+				bm = FP.getBitmap(R.drawable.grey_cement);
 				res = R.drawable.grey_cement;
-				resWidth = 32;
-				resHeight = 32;
+				resWidth = bm.getWidth();
+				resHeight = bm.getHeight();
 			}
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String tilescsv = child.getTextContent();
-				TileMap tileMap = new TileMap(FP.getBitmap(res), lWidth, lHeight, resWidth, resHeight);
+				TileMap tileMap = new TileMap(bm, lWidth, lHeight, resWidth, resHeight);
 				tileMap.loadFromString(tilescsv);
 				mLevel.setGraphic(tileMap);
 			}
