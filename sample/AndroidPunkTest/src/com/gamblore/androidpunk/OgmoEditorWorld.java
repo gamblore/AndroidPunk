@@ -97,14 +97,16 @@ public class OgmoEditorWorld extends World {
 				bm = FP.getBitmap(R.drawable.grass);
 				resWidth = bm.getWidth()/6;
 				resHeight = bm.getHeight()/3;
-			} else if ("grass_tiles".equals(tileset)) {
-				bm = FP.getBitmap(R.drawable.grass_tiles);
-				resWidth = bm.getWidth()/4;
+			} else if ("desert".equals(tileset)) {
+				bm = FP.getBitmap(R.drawable.desert);
+				resWidth = bm.getWidth()/6;
 				resHeight = bm.getHeight()/3;
+			/*	
 			} else if ("grass_box_tiles".equals(tileset)) {
 				bm = FP.getBitmap(R.drawable.grass_box_tiles);
 				resWidth = bm.getWidth()/3;
 				resHeight = bm.getHeight()/3;
+			*/
 			} else {
 				bm = FP.getBitmap(R.drawable.grey_cement);
 				res = R.drawable.grey_cement;

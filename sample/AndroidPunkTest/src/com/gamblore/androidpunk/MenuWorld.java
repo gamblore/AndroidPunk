@@ -143,7 +143,7 @@ public class MenuWorld extends World {
 		
 		if (mTextTween.active && Input.mousePressed) {
 			if (Data.getData().contains(Main.DATA_CURRENT_LEVEL)) {
-				FP.tween(mSecondDisplay, FP.tweenmap("x", 0), 2.0f, new TweenOptions(ONESHOT, null, Ease.quadInOut, this));
+				FP.tween(mSecondDisplay, FP.tweenmap("x", 0), 1.5f, new TweenOptions(ONESHOT, null, Ease.quadIn, this));
 				mTextTween.active = false;
 				startText.visible = false;
 				

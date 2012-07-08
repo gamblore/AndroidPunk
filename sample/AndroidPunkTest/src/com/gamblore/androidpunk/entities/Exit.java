@@ -7,10 +7,13 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.FP.TweenOptions;
 import net.androidpunk.graphics.SpriteMap;
+import net.androidpunk.tweens.misc.AngleTween;
 import android.graphics.Bitmap;
 
 public class Exit extends Entity {
 
+	private AngleTween mAngleTween = new AngleTween(null, LOOPING);
+	
 	public Exit(int x, int y) {
 		super(x, y);
 		Bitmap blackHole = FP.getBitmap(R.drawable.black_hole);
@@ -18,7 +21,9 @@ public class Exit extends Entity {
 		map.add("blink", FP.frames(0, 4), 3);
 		setGraphic(map);
 		map.play("blink");
-		FP.tween(map, FP.tweenmap("angle", 360), 10.0f, new TweenOptions(LOOPING, null, null, this));
+		
+		mAngleTween.tween(0, 360, 10.0f);
+		FP.getWorld().addTween(mAngleTween);
 		
 		map.scale = 0.75f;
 		setHitbox(blackHole.getWidth()/5, blackHole.getHeight());
