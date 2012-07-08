@@ -58,15 +58,13 @@ public class Backdrop extends CanvasGraphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 
-		if (mRepeatX)
-		{
+		if (mRepeatX) {
 			mPoint.x %= mTextWidth;
 			if (mPoint.x > 0) 
 				mPoint.x -= mTextWidth;
 		}
 
-		if (mRepeatY)
-		{
+		if (mRepeatY) {
 			mPoint.y %= mTextHeight;
 			if (mPoint.y > 0) 
 				mPoint.y -= mTextHeight;

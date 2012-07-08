@@ -60,8 +60,8 @@ public class TileMap extends CanvasGraphic {
 		mHeight = height - (height % tileHeight);
 		mColumns = mWidth / tileWidth;
 		mRows = mHeight / tileHeight;
-		mMap = Bitmap.createBitmap(mColumns, mRows, Config.ARGB_4444);
-		mTemp = mMap.copy(Config.ARGB_4444, true);
+		mMap = Bitmap.createBitmap(mColumns, mRows, Config.ARGB_8888);
+		mTemp = mMap.copy(Config.ARGB_8888, true);
 		mTile = new Rect(0, 0, tileWidth, tileHeight);
 
 		// create the canvas

@@ -66,10 +66,7 @@ public class TiledSpriteMap extends SpriteMap {
 	public void updateBuffer(boolean clearBefore) {
 		// get position of the current frame
 		mPaint.reset();
-		//Tint the buffer
-		if (mTint != null) {
-			mPaint.setColorFilter(mTint);
-		}
+		
 		mRect.offsetTo(mRect.width() * mFrame, (int)(mRect.left / mWidth) * mRect.height());
 		mRect.offsetTo(mRect.left % mWidth, 0);
 		if (mFlipped)
