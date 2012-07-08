@@ -1,6 +1,5 @@
 package net.androidpunk;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import net.androidpunk.flashcompat.Event;
@@ -9,6 +8,7 @@ import net.androidpunk.flashcompat.Timer;
 import net.androidpunk.utils.Draw;
 import net.androidpunk.utils.Input;
 import android.graphics.Rect;
+import android.os.SystemClock;
 import android.util.Log;
 
 public class Engine {
@@ -57,42 +57,42 @@ public class Engine {
 	
 	public static final Vector<Timer> TIMERS = new Vector<Timer>();
 	
-	public static final Vector<Integer> mPendingEvents = new Vector<Integer>();
-	public static final Vector<OnEventListener> mEventListeners = new Vector<OnEventListener>();
+	
+	public static int mPendingEvents = 0;
+	
+	public static int mEventListenersCount = 0;
+	public static final OnEventListener mEventListeners[] = new OnEventListener[10];
+	
 	
 	public static void checkEvents() {
-		synchronized (mPendingEvents) {
-			Iterator<Integer> it = mPendingEvents.iterator();
-			while (it.hasNext()) {
-				int event = it.next();
-				if (event == Event.TIMER) {
-					for (OnEventListener l : mEventListeners) {
-						if (l.type == Event.TIMER) {
-							l.event();
-						}
-					}
-				} else if (event == Event.ADDED_TO_STAGE) {
-					for (OnEventListener l : mEventListeners) {
-						if (l.type == Event.ADDED_TO_STAGE) {
-							l.event();
-						}
-					}
-				} else if (event == Event.ENTER_FRAME) {
-					for (OnEventListener l : mEventListeners) {
-						if (l.type == Event.ENTER_FRAME) {
-							l.event();
-						}
+		synchronized (mEventListeners) {
+			if ((mPendingEvents & Event.TIMER) > 0) {
+				for (int i = 0; i < mEventListenersCount; i++) {
+					if (mEventListeners[i].type == Event.TIMER) {
+						mEventListeners[i].event();
 					}
 				}
-				it.remove();
+				mPendingEvents ^= Event.TIMER;
+			} else if ((mPendingEvents & Event.ADDED_TO_STAGE) > 0) {
+				for (int i = 0; i < mEventListenersCount; i++) {
+					if (mEventListeners[i].type == Event.ADDED_TO_STAGE) {
+						mEventListeners[i].event();
+					}
+				}
+				mPendingEvents ^= Event.ADDED_TO_STAGE;
+			} else if ((mPendingEvents & Event.ENTER_FRAME) > 0) {
+				for (int i = 0; i < mEventListenersCount; i++) {
+					if (mEventListeners[i].type == Event.ENTER_FRAME) {
+						mEventListeners[i].event();
+					}
+				}
+				mPendingEvents ^= Event.ENTER_FRAME;
 			}
 		}
 	}
 	
 	public static void fire(int event) {
-		synchronized (mPendingEvents) {
-			mPendingEvents.add(event);
-		}
+		mPendingEvents |= event;
 	}
 	
 	private OnEventListener onStage = new OnEventListener(Event.ADDED_TO_STAGE) {
@@ -113,13 +113,13 @@ public class Engine {
 			if (FP.fixed) {
 				// fixed framerate
 				mSkip = mRate * maxFrameSkip;
-				mLast = mPrev = System.currentTimeMillis();
+				mLast = mPrev = SystemClock.uptimeMillis();
 				mTimer = new Timer(tickRate);
 				addEventListener(onTimer);
 				mTimer.start();
 			} else {
 				// nonfixed framerate
-				mLast = System.currentTimeMillis();
+				mLast = SystemClock.uptimeMillis();
 				addEventListener(onEnterFrame);
 			}
 			
@@ -131,7 +131,7 @@ public class Engine {
 		@Override
 		public void event() {
 			// update timer
-			mTime = System.currentTimeMillis();
+			mTime = SystemClock.uptimeMillis();
 			mDelta += (mTime - mLast);
 			//Log.d(TAG, String.format("Delta %f millis this frame %d to hit rate %f", mDelta, (mTime - mLast), mRate));
 			mLast = mTime;
@@ -169,7 +169,7 @@ public class Engine {
 				Input.update();
 
 				// update timer
-				mTime = System.currentTimeMillis();
+				mTime = SystemClock.uptimeMillis();
 				FP.updateTime = mTime - mUpdateTime;
 			}
 
@@ -179,9 +179,9 @@ public class Engine {
 			// render loop
 			if (!paused) 
 				render();
-
+			
 			// update timer
-			mTime = mJavaTime = System.currentTimeMillis();
+			mTime = mJavaTime = SystemClock.uptimeMillis();
 			FP.renderTime = mTime - mRenderTime;
 			FP.gameTime =  mTime - mGameTime;
 		}
@@ -191,7 +191,7 @@ public class Engine {
 		@Override
 		public void event() {
 			// update timer
-			mTime = mGameTime = System.currentTimeMillis();
+			mTime = mGameTime = SystemClock.uptimeMillis();
 			FP.javaTime = mTime - mJavaTime;
 			mUpdateTime = mTime;
 			FP.elapsed = (mTime - mLast) / 1000.0f;
@@ -214,15 +214,15 @@ public class Engine {
 			Input.update();
 
 			// update timer
-			mTime = mRenderTime = System.currentTimeMillis();
+			mTime = mRenderTime = SystemClock.uptimeMillis();
 			FP.updateTime = mTime - mUpdateTime;
 
 			// render loop
 			if (!paused) 
 				render();
-
+			
 			// update timer
-			mTime = mJavaTime = System.currentTimeMillis();
+			mTime = mJavaTime = SystemClock.uptimeMillis();
 			FP.renderTime = mTime - mRenderTime;
 			FP.gameTime = mTime - mGameTime;
 		}
@@ -255,18 +255,38 @@ public class Engine {
 		if (FP.getRandomSeed() == 0) 
 			FP.randomizeSeed();
 		FP.entity = new Entity();
-		FP.mTime = System.currentTimeMillis();
+		FP.mTime = SystemClock.uptimeMillis();
 
 		// on-stage event listener
 		addEventListener(onStage);
 	}
 	
 	public void addEventListener(OnEventListener listener) {
-		mEventListeners.add(listener);
+		if (mEventListenersCount < 10) {
+			mEventListeners[mEventListenersCount++] = listener;
+		} else {
+			Log.e(TAG, "Could not add a new event listener too many listeners");
+		}
 	}
 	
 	public void removeEventListener(OnEventListener listener) {
-		mEventListeners.remove(listener);
+		boolean found = false;
+		for (int i = 0; i < mEventListenersCount; i++) {
+			if (found) {
+				if (i+1 < 9) {
+					mEventListeners[i] = mEventListeners[i+1];
+				} else {
+					mEventListeners[i] = null;
+				}
+			}
+			if (listener == mEventListeners[i]) {
+				found = true;
+				mEventListeners[i] = mEventListeners[i+1];
+			}
+		}
+		if (found) {
+			mEventListenersCount--;
+		}
 	}
 	
 	/** @private Switch Worlds if they've changed. */
@@ -276,17 +296,20 @@ public class Engine {
 		World world = FP.getWorld();
 		if(world != null) { 
 			world.end();
+			world.removeAll();
 			world.updateLists();
 			if (world.autoClear && world.mTween != null)
 				world.clearTweens();
 		}
-	
+		world = null;
+		System.gc();
 		FP.mWorld = FP.mGoto;
 		FP.mGoto = null;
 		FP.camera = FP.mWorld.camera;
 		FP.mWorld.updateLists();
 		FP.mWorld.begin();
 		FP.mWorld.updateLists();
+		
 		FP.mWorld.active = true;
 	}
 	
@@ -316,11 +339,12 @@ public class Engine {
 	 */
 	public void render() {
 		// timing stuff
-		long t = System.currentTimeMillis();
+		long t = SystemClock.uptimeMillis();
 		if (mFrameLast != 0) 
 			mFrameLast = t;
 
 		// render loop
+		FP.screen.swap();
 		Draw.resetTarget();
 		FP.screen.refresh();
 		World world = FP.getWorld();
@@ -328,7 +352,7 @@ public class Engine {
 			world.render();
 
 		// more timing stuff
-		t = System.currentTimeMillis();
+		t = SystemClock.uptimeMillis();
 		long time = t - mFrameLast;
 		mFrameListSum += time;
 		mFrameList.add(time);

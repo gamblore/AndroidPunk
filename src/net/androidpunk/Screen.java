@@ -17,7 +17,7 @@ public class Screen {
 	private static final String TAG = "Screen";
 	
     // Screen information.
-    private Bitmap mBitmap;
+    private Bitmap mBitmap[] = new Bitmap[2];
     private int mCurrent = 0;
     private Matrix mMatrix = new Matrix();
     
@@ -37,15 +37,16 @@ public class Screen {
     private int[] mYInput = new int[2];
     
 	private final Point mPoints[] = new Point[] { new Point(), new Point(), new Point(), new Point(), new Point() };
-	
-	private final Vector<Integer> mPointIndices = new Vector<Integer>();
+	private final int[] mPointIndices = new int[5];
+	private int mPointIndicesCount = 0;
     
     public Screen() {
 		// create screen buffers
-		mBitmap = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
-		//mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
+		mBitmap[0] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
+		mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
 		
-		FP.buffer = mBitmap;
+		FP.buffer = mBitmap[0];
+		FP.backBuffer = mBitmap[1];
 		mWidth = FP.width;
 		mHeight = FP.height;
 		update();
@@ -56,21 +57,37 @@ public class Screen {
      * Initialise buffers to current screen size.
      */
     public void resize() {
-        mBitmap.recycle(); 
-        // create screen buffers
-        mBitmap = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
-        //mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
-        
-        Log.d(TAG, String.format("Screen created %dx%d", mBitmap.getWidth(), mBitmap.getHeight()));
-
-        mCanvas.setBitmap(mBitmap);
-        mCanvas.drawColor(mColor);
-        
-        FP.buffer = mBitmap;
+    	synchronized (FP.backBuffer) {
+	        mBitmap[0].recycle();
+	        mBitmap[1].recycle();
+	        // create screen buffers
+	        mBitmap[0] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
+	        mBitmap[0].eraseColor(mColor);
+	        mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
+	    	
+	        
+	        Log.d(TAG, String.format("Screen created %dx%d", mBitmap[0].getWidth(), mBitmap[0].getHeight()));
+	
+	        
+	        
+	        FP.buffer = mBitmap[0];
+	        FP.backBuffer = mBitmap[1];
+    	}
         mWidth = FP.width;
         mHeight = FP.height;
         mCurrent = 0;
     }
+	
+    /**
+	 * Swaps screen buffers.
+	 */
+	public void swap() {
+		synchronized (FP.backBuffer) {
+			mCurrent = 1 - mCurrent;
+			FP.buffer = mBitmap[mCurrent];
+			FP.backBuffer = mBitmap[1-mCurrent];
+		}
+	}
 	
 	/**
 	 * Refreshes the screen.
@@ -82,7 +99,14 @@ public class Screen {
 	
 	/** @private Re-applies transformation matrix. */
 	public void update() {
-		float values[] = new float[9];
+		mMatrix.reset();
+		mMatrix.postScale(mScaleX * mScale, mScaleY * mScale);
+		mMatrix.postTranslate(-mOriginX, -mOriginY);
+		if (mAngle != 0) 
+			mMatrix.postRotate(mAngle);
+		mMatrix.postTranslate(mOriginX + mX, mOriginY + mY);
+		/*
+		float values[] = FP.MATRIX_VALUES;
 		mMatrix.getValues(values);
 		values[3] = values[2] = 0;
 		values[0] = mScaleX * mScale;
@@ -97,6 +121,7 @@ public class Screen {
 		values[2] += mOriginX * mScaleX * mScale + mX;
 		values[5] += mOriginY * mScaleY * mScale + mY;
 		mMatrix.setValues(values);
+		*/
 	}
 	
 	/**
@@ -266,21 +291,22 @@ public class Screen {
 	}
 	
 	public int getTouchesCount() {
-		return (mInput != null) ? Math.min(mPointIndices.size(), 5) : 0; 
+		return (mInput != null) ? Math.min(mPointIndicesCount, 5) : 0; 
 	}
 	
 	public Point[] getTouches() {
-		synchronized (mPointIndices) {
+		synchronized (this) {
 			if (mInput == null) {
 				return mPoints;
 			}
-			MotionEvent copy = MotionEvent.obtain(mInput);
+			//MotionEvent copy = MotionEvent.obtain(mInput);
 			int index = 0;
-			for (Integer id : mPointIndices) {
-				for(int i = 0; i < copy.getPointerCount() && index < mPoints.length; i++) {
+			for( int k = 0; k < mPointIndicesCount; k++) {
+				int id = mPointIndices[k];
+				for(int i = 0; i < mInput.getPointerCount() && index < mPoints.length; i++) {
 					if (mInput.getPointerId(i) == id) {
-						mPoints[index].x = (int)copy.getX(i);
-						mPoints[index].y = (int)copy.getY(i);
+						mPoints[index].x = (int)mInput.getX(i);
+						mPoints[index].y = (int)mInput.getY(i);
 						index++;
 						break;
 					}
@@ -291,27 +317,46 @@ public class Screen {
 	}
 	
 	public void setMotionEvent(MotionEvent me) {
-		synchronized (mPointIndices) {
+		synchronized (this) {
 			if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
-				mPointIndices.add(me.getPointerId(0));
+				mPointIndicesCount = 0;
+				mPointIndices[mPointIndicesCount++] = me.getPointerId(0);
 				Input.mouseDown = true;
 				Input.mouseUp = false;
 				Input.mousePressed = true;
+				
 			}
 			if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
 				int id = me.getPointerId(me.getActionIndex());
 				//Log.d(TAG, "Adding " + id);
-				mPointIndices.add(id);
+				if (mPointIndicesCount < 4) {
+					mPointIndices[mPointIndicesCount++] = me.getPointerId(id);
+				}
 			}
 			if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
 				int id = me.getPointerId(me.getActionIndex());
 				//Log.d(TAG, "Removing " + id);
-				mPointIndices.remove((Integer)id);
+				boolean found = false;
+				for (int i = 0; i < mPointIndicesCount; i++) {
+					if (found) {
+						if (i+1 < 4) {
+							mPointIndices[i] = mPointIndices[i+1];
+						} else { 
+							mPointIndices[i] = -1;
+						}
+					} else if (mPointIndices[i] == id) {
+						found = true;
+						mPointIndices[i] = mPointIndices[i+1];
+					}
+				}
+				if (found) {
+					mPointIndicesCount--;
+				}
 			}
 			
 			mInput = me;
 			if (me.getActionMasked() == MotionEvent.ACTION_UP) {
-				mPointIndices.clear();
+				mPointIndicesCount = 0;
 				Input.mouseDown = false;
 				Input.mouseUp = true;
 				Input.mouseReleased = true;
@@ -325,7 +370,7 @@ public class Screen {
 	 * @return	A new Image object.
 	 */
 	public Bitmap capture() {
-		return mBitmap.copy(Config.ARGB_8888, false);
+		return mBitmap[mCurrent].copy(Config.ARGB_8888, false);
 	}
 	
 }

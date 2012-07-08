@@ -25,6 +25,8 @@ public class Mask {
     
     public final Map<Class<?>, CollideCallback> mCheck = new HashMap<Class<?>, CollideCallback>();
     
+    private int mTempPixels[];
+    		
     public Mask() {
         mCheck.put(Mask.class, new CollideCallback() {
             
@@ -54,11 +56,15 @@ public class Mask {
     	checkRect.top = Math.max(0, r.top);
     	checkRect.right = Math.min(checkRect.left + r.width(), bm.getWidth());
     	checkRect.bottom = Math.min(checkRect.top + r.height(), bm.getHeight());
-        int pixels[] = new int[checkRect.width() * checkRect.height()];
+    	int maxPixel = checkRect.width() * checkRect.height();
+    	if (mTempPixels == null || (mTempPixels != null && mTempPixels.length < maxPixel) ) {
+    		mTempPixels = new int[checkRect.width() * checkRect.height()];
+    	}
+    	
         int alpha;
-        bm.getPixels(pixels, 0, checkRect.width(), checkRect.left, checkRect.top, checkRect.width(), checkRect.height());
-        for (int i = 0; i < pixels.length; i++) {
-            alpha = Color.alpha(pixels[i]);
+        bm.getPixels(mTempPixels, 0, checkRect.width(), checkRect.left, checkRect.top, checkRect.width(), checkRect.height());
+        for (int i = 0; i < maxPixel; i++) {
+            alpha = Color.alpha(mTempPixels[i]);
             if (alpha > alphaThreshold) {
                 return true;
             }

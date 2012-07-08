@@ -108,6 +108,11 @@ public class FP {
     public static Bitmap buffer;
     
     /**
+     * The background screen buffer, ready to draw to screen.
+     */
+    public static Bitmap backBuffer;
+    
+    /**
      * A rectangle representing the target size of the screen.
      */
     public static Rect bounds;

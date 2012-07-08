@@ -20,5 +20,5 @@ public class Event {
 	/**
 	 * When a timer fires.
 	 */
-	public static final int TIMER = 3;
+	public static final int TIMER = 4;
 }

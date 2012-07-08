@@ -72,6 +72,7 @@ public class Image extends Graphic {
 	protected boolean mFlipped;
 	private Bitmap mFlip;
 	
+	private final float matrix[] = new float[20];
 	/**
 	 * Constructor with a clip rect of the whole image.
 	 * @param	source		Source image.
@@ -273,8 +274,7 @@ public class Image extends Graphic {
 	 * Clears the image buffer.
 	 */
 	public void clear() {
-		Canvas c = new Canvas(mBuffer);
-		c.drawColor(0xff000000);
+		mBuffer.eraseColor(0xff000000);
 	}
 	
 	/**
@@ -289,7 +289,7 @@ public class Image extends Graphic {
 			return;
 		
 		mColor = value;
-		float matrix[] = new float[20];
+		
 		//red
 		matrix[0] = Color.red(value) / 255f;
 		//green
