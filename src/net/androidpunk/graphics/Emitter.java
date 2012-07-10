@@ -37,17 +37,22 @@ public class Emitter extends Graphic {
 	private int mFrameWidth;
 	private int mFrameHeight;
 	private int mFrameCount;
+	
+	private final float matrix[] = new float[20];
+	
 	// Drawing information.
 	private Point mP = new Point();
 	private ColorFilter mTint = new ColorFilter();
 	private static final double SIN = Math.PI / 2;
+	private static final Canvas mCanvas = new Canvas();
+	
 	
 	/**
 	 * Constructor. Sets the source image to use for newly added particle types.
 	 * @param	source			Source image.
 	 */
 	public Emitter(Bitmap source) {
-		this(source, 0, 0);
+		this(source, source.getWidth(), source.getHeight());
 	}
 	
 	/**
@@ -141,7 +146,6 @@ public class Emitter extends Graphic {
 		Particle p = mParticle;
 		ParticleType type;
 		Rect rect;
-		Canvas c = new Canvas();
 		Paint paint = FP.paint;
 
 		// loop through the particles
@@ -159,44 +163,42 @@ public class Emitter extends Graphic {
 			mP.y = (int)(mPoint.y + p.mY + p.mMoveY * td);
 
 			// get frame
-			rect.offsetTo(rect.width() * type.mFrames[(int)(td * type.mFrameCount)], (int)(rect.left / type.mWidth) * rect.height());
-			rect.offsetTo(rect.left % type.mWidth, 0);
+			if (type.mFrames != null) {
+				rect.offsetTo(rect.width() * type.mFrames[(int)(td * type.mFrameCount)], (int)(rect.left / type.mWidth) * rect.height());
+				rect.offsetTo(rect.left % type.mWidth, 0);
+			} else {
+				rect.offsetTo(0, 0);
+			}
 
 			// draw particle
 			if (type.mBuffer != null) {
-				float matrix[] = new float[20];
-				//red
-				matrix[0] = type.mRed + type.mRedRange * td;
-				//green
-				matrix[6] = type.mGreen + type.mGreenRange * td;
-				//blue
-				matrix[12] = type.mBlue + type.mBlueRange * td;
-				//alpha
-				matrix[18] = type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t));
-				
-				mTint = new ColorMatrixColorFilter(matrix);
-				
-				
 				// get color
 				td = (type.mColorEase == null) ? t : type.mColorEase.ease(t);
 				
-				c.setBitmap(type.mBuffer);
-				paint.reset();
-				paint.setStyle(Style.FILL);
-				paint.setColor(0);
-				c.drawRect(type.mBufferRect, paint);
+				//red
+				matrix[0] = (type.mRed + type.mRedRange * td) / 255.0f;
+				//green
+				matrix[6] = (type.mGreen + type.mGreenRange * td) / 255.0f;
+				//blue
+				matrix[12] = (type.mBlue + type.mBlueRange * td) / 255.0f;
+				//alpha
+				matrix[18] = (type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t))) / 255.0f;
 				
+				mTint = new ColorMatrixColorFilter(matrix);
+				
+				paint.reset();
 				paint.setColorFilter(mTint);
-				c.setBitmap(target);
+				mCanvas.setBitmap(target);
 				Rect r = FP.rect;
-				r.set(mP.x, mP.y, type.mBufferRect.width(), type.mBufferRect.height());
-				c.drawBitmap(type.mBuffer, type.mBufferRect, r, paint);
+				r.set(mP.x, mP.y, mP.x + type.mBufferRect.width(), mP.y + type.mBufferRect.height());
+				//Log.d(TAG, String.format("Drawing particle w/ alpha %.2f from %s to %s", matrix[18], type.mBufferRect.toShortString(), r.toShortString()));
+				mCanvas.drawBitmap(type.mSource, type.mBufferRect, r, paint);
 			}
 			else {
 				Rect r = FP.rect;
-				r.set(mP.x, mP.y, rect.width(), rect.height());
-				c.setBitmap(target);
-				c.drawBitmap(type.mSource, rect, r, null);
+				r.set(mP.x, mP.y, mP.x + rect.width(), mP.y + rect.height());
+				mCanvas.setBitmap(target);
+				mCanvas.drawBitmap(type.mSource, rect, r, null);
 			}
 
 			// get next particle

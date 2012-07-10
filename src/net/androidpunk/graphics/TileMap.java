@@ -413,4 +413,12 @@ public class TileMap extends CanvasGraphic {
 	 */
 	public int getRows() { return mRows; }
 
+	@Override
+	protected void release() {
+		super.release();
+		
+		mMap.recycle();
+		mTemp.recycle();
+	}
+
 }

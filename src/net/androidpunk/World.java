@@ -167,6 +167,10 @@ public class World extends Tweener {
 		Entity e = mUpdateFirst;
 		while (e != null) {
 			mRemove.add(e);
+			Graphic g = e.getGraphic();
+			if (g != null) {
+				g.release();
+			}
 			e.setWorld(null);
 			e = e.mUpdateNext;
 		}

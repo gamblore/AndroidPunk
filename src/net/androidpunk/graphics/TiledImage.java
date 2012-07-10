@@ -8,16 +8,18 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Shader.TileMode;
+import android.util.Log;
 
 /**
  * Special Image object that can display blocks of tiles.
  */
 public class TiledImage extends Image {
 
+	private static final String TAG = "TiledImage"; 
 	
 	// Drawing information.
-	private Canvas mCanvas = FP.canvas;
-	private Paint mPaint = FP.paint;
+	private static final Canvas mCanvas = FP.canvas;
+	private static final Paint mPaint = FP.paint;
 	private BitmapShader mBitmapShader;
 	private Bitmap mTexture;
 	private int mWidth;
@@ -25,30 +27,59 @@ public class TiledImage extends Image {
 	private int mOffsetX = 0;
 	private int mOffsetY = 0;
 
+	
 	/**
 	 * Constructs the TiledImage.
 	 * @param	texture		Source texture.
 	 * @param	width		The width of the image (the texture will be drawn to fill this area).
 	 * @param	height		The height of the image (the texture will be drawn to fill this area).
-	 * @param	clipRect	An optional area of the source texture to use (eg. a tile from a tileset).
+	 */
+	public TiledImage(Bitmap texture, int width, int height) {
+		this(texture, width, height, null);
+	}
+	
+	/**
+	 * Constructs the TiledImage.
+	 * @param	texture		Source texture.
+	 * @param	width		The width of the image (the texture will be drawn to fill this area).
+	 * @param	height		The height of the image (the texture will be drawn to fill this area).
+	 * @param	clipRect	An area of the source texture to use (eg. a tile from a tileset).
 	 */
 	public TiledImage(Bitmap texture, int width, int height, Rect clipRect) {
 		super(texture, clipRect);
 		mWidth = width;
 		mHeight = height;
 		
-		mBitmapShader = new BitmapShader(texture, TileMode.REPEAT, TileMode.REPEAT);
+		if (clipRect != null) {
+			mTexture = Bitmap.createBitmap(clipRect.width(), clipRect.height(), Config.ARGB_8888);
+			mCanvas.setBitmap(mTexture);
+			Rect r = FP.rect;
+			r.set(0, 0, mTexture.getWidth(), mTexture.getHeight());
+			mCanvas.drawBitmap(texture, clipRect, r, null);
+			mBitmapShader = new BitmapShader(mTexture, TileMode.REPEAT, TileMode.REPEAT);
+		} else {
+			mTexture = texture;
+			mBitmapShader = new BitmapShader(texture, TileMode.REPEAT, TileMode.REPEAT);
+		}
 		
+		createBuffer();
+		updateBuffer();
 	}
 	
 	/** @return 
 	 * @private Creates the buffer. */
 	@Override 
 	protected void createBuffer() {
+		if (mPaint == null) {
+			return;
+		}
 		if (mWidth == 0) 
 			mWidth = mSourceRect.width();
 		if (mHeight == 0) 
 			mHeight = mSourceRect.height();
+		if (mBuffer != null) {
+			mBuffer.recycle();
+		}
 		mBuffer = Bitmap.createBitmap(mWidth, mHeight, Config.ARGB_8888);
 		mBufferRect = new Rect(0, 0, mBuffer.getWidth(), mBuffer.getHeight());
 	}
@@ -64,26 +95,34 @@ public class TiledImage extends Image {
 	public void updateBuffer(boolean clearBefore) {
 		if (mSource == null)
 			return;
+		if (mPaint == null) {
+			return;
+		}
 		mPaint.reset();
-		if (mTint != null)
-			mPaint.setColorFilter(mTint);
 		mPaint.setShader(mBitmapShader);
+		/*
 		if (mTexture == null) {
 			mTexture = Bitmap.createBitmap(mSourceRect.width(), mSourceRect.height(), Config.ARGB_8888);
 			mCanvas.setBitmap(mTexture);
 			mCanvas.drawBitmap(mSource, 0, 0, null);
+			mBitmapShader = new BitmapShader(mTexture, TileMode.REPEAT, TileMode.REPEAT);
 		}
+		*/
+		mBuffer.eraseColor(0);
 		mCanvas.setBitmap(mBuffer);
-		mCanvas.drawColor(0);
 		if (mOffsetX != 0 || mOffsetY != 0) {
-			float xoff = Math.round(mOffsetX);
-			float yoff = Math.round(mOffsetY);
-			mCanvas.translate(-xoff, -yoff);
-			mCanvas.drawBitmap(mTexture, xoff, yoff, mPaint);
-			mCanvas.translate(xoff, yoff);
+			int x = Math.round(mOffsetX);
+			int y = Math.round(mOffsetY);
+			
+			mCanvas.translate(-x, -y);
+			mCanvas.drawRect(mBufferRect, mPaint);
+			mCanvas.translate(x, y);
 		}
-		else 
-			mCanvas.drawBitmap(mTexture, 0, 0, mPaint);
+		else {
+			//Log.d(TAG, String.format("Blitting texture size %dx%d", mBufferRect.width(), mBufferRect.height()));
+			
+			mCanvas.drawRect(mBufferRect, mPaint);
+		}
 	}
 	
 	/**

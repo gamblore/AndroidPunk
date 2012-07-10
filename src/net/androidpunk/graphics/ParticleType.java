@@ -6,12 +6,16 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.util.Log;
 
 /**
  * Template used to define a particle type used by the Emitter class. Instead
  * of creating this object yourself, fetch one with Emitter's add() function.
  */
 public class ParticleType {
+	
+	private static final String TAG = "ParticleType";
+	
 	// Particle information.
 	protected String mName;
 	protected Bitmap mSource;
@@ -45,7 +49,7 @@ public class ParticleType {
 
 	// Buffer information.
 	protected Bitmap mBuffer;
-	protected Rect mBufferRect;
+	protected Rect mBufferRect = new Rect();
 	
 	/**
 	 * Constructor.
@@ -62,7 +66,11 @@ public class ParticleType {
 		mWidth = source.getWidth();
 		mFrame = new Rect(0, 0, frameWidth, frameHeight);
 		mFrames = frames;
-		mFrameCount = frames.length;
+		if (frames != null) {
+			mFrameCount = frames.length;
+		} else {
+			mFrameCount = 0;
+		}
 	}
 	
 	

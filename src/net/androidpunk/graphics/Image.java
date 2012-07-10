@@ -390,4 +390,11 @@ public class Image extends Graphic {
 
 	/** @private Source BitmapData image. */
 	protected Bitmap getSource() { return mSource; }
+
+	@Override
+	protected void release() {
+		mBuffer.recycle();
+	}
+	
+	
 }

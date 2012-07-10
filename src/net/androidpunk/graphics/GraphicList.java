@@ -23,15 +23,17 @@ public class GraphicList extends Graphic {
 	 * @param	...graphic		Graphic objects to add to the list.
 	 */
 	public GraphicList(Graphic... graphics) {
-		for (Graphic g : graphics) {
-			add(g);
+		for (int i = 0; i < graphics.length; i++) {
+			add(graphics[i]);
 		}
 	}
 	
 	/** @private Updates the graphics in the list. */
 	@Override
 	public void update() {
-		for (Graphic g : mGraphics) {
+		int size = mGraphics.size();
+		for (int i = 0; i < size; i++) {
+			Graphic g = mGraphics.get(i);
 			if (g.active)
 				g.update();
 		}
@@ -44,7 +46,9 @@ public class GraphicList extends Graphic {
 		point.y += y;
 		camera.x *= scrollX;
 		camera.y *= scrollY;
-		for (Graphic g : mGraphics) {
+		int size = mGraphics.size();
+		for (int i = 0; i < size; i++) {
+			Graphic g = mGraphics.get(i);
 			if (g.visible) {
 				if (g.relative) {
 					mPoint.x = point.x;
@@ -80,7 +84,9 @@ public class GraphicList extends Graphic {
 		if(mGraphics.indexOf(graphic)< 0)
 			return graphic;
 		mTemp.clear();
-		for (Graphic g : mGraphics) {
+		int size = mGraphics.size();
+		for (int i = 0; i < size; i++) {
+			Graphic g = mGraphics.get(i);
 			if (g == graphic) 
 				mCount--;
 			else
@@ -133,7 +139,9 @@ public class GraphicList extends Graphic {
 	 */
 	private void updateCheck() {
 		active = false;
-		for (Graphic g : mGraphics) {
+		int size = mGraphics.size();
+		for (int i = 0; i < size; i++) {
+			Graphic g = mGraphics.get(i);
 			if (g.active) {
 				active = true;
 				return;

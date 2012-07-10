@@ -35,14 +35,14 @@ public class CanvasGraphic extends Graphic {
 	private int mColor;
 	private ColorFilter mTint;
 	// To prevent weirdness with big bitmaps we use it's own canvas to not mess with clip rects.
-	private Canvas mCanvas = new Canvas();
+	private final Canvas mCanvas = new Canvas();
 	
 	// Global objects.
-	private Rect mRect = new Rect();
-	private Matrix mMatrix = FP.matrix;
+	private final Rect mRect = new Rect();
+	//private Matrix mMatrix = FP.matrix;
 	
 	
-	private Paint mPaint = FP.paint;
+	private final Paint mPaint = new Paint();
 
 	/**
 	 * Constructor.
@@ -53,7 +53,7 @@ public class CanvasGraphic extends Graphic {
 		mWidth = width;
 		mHeight = height;
 		mBuffer = Bitmap.createBitmap(width, height, Config.ARGB_8888);
-		Log.d(TAG, String.format("CanvasGraphic %dx%d",mBuffer.getWidth(), mBuffer.getHeight()));
+		//Log.d(TAG, String.format("CanvasGraphic %dx%d",mBuffer.getWidth(), mBuffer.getHeight()));
 	}
 	
 	/** @private Renders the canvas. */
@@ -196,4 +196,11 @@ public class CanvasGraphic extends Graphic {
 	 * Height of the canvas.
 	 */
 	public int getHeigth() { return mHeight; }
+
+	@Override
+	protected void release() {
+		mBuffer.recycle();
+	}
+	
+	
 }

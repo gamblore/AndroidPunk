@@ -85,4 +85,11 @@ public class Graphic {
     protected OnAssignToEntityCallback getOnAssignToEntityCallback() { 
         return mAssign;
     }
+    
+    /**
+     * Releases any native memory, like bitmaps, So that memory is handled better. 
+     */
+    protected void release() {
+    	
+    }
 }
