@@ -44,10 +44,12 @@ public class GraphicsWorld extends World {
 			mEntities[i] = new Entity();
 		}
 		
+		Bitmap spritemap = FP.getBitmap(R.drawable.ogmo);
+		
 		//Backdrop
 		mBackdrop = new Backdrop(FP.getBitmap(R.drawable.jumper_background));
 		mBackdrop.scrollX = 0.25f;
-		Bitmap spritemap = FP.getBitmap(R.drawable.ogmo);
+		
 		SpriteMap spriteMap = new SpriteMap(spritemap, (int) spritemap.getWidth()/6, (int) spritemap.getHeight());
 		spriteMap.add("walking", FP.frames(0, 5), 20);
 		spriteMap.play("walking");
@@ -64,8 +66,7 @@ public class GraphicsWorld extends World {
 		mEntities[1].setGraphic(mCanvasGraphic);
 		
 		//Emitter
-		Bitmap spritemap2 = FP.getBitmap(R.drawable.ogmo);
-		SpriteMap spriteMap2 = new SpriteMap(spritemap2, (int) spritemap.getWidth()/6, (int) spritemap.getHeight());
+		SpriteMap spriteMap2 = new SpriteMap(spritemap, (int) spritemap.getWidth()/6, (int) spritemap.getHeight());
 		spriteMap2.add("walking", FP.frames(0, 5), 20);
 		spriteMap2.play("walking");
 		
@@ -83,7 +84,7 @@ public class GraphicsWorld extends World {
 		mEntities[3].setGraphic(mImage);
 		
 		//SpriteMap
-		Bitmap mSpritemap = FP.getBitmap(R.drawable.ogmo);
+		
 		mSpriteMap = new SpriteMap(spritemap, (int) spritemap.getWidth()/6, (int) spritemap.getHeight());
 		mSpriteMap.add("walking", FP.frames(0, 5), 20);
 		mSpriteMap.play("walking");
