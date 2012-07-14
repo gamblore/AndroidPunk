@@ -3,6 +3,7 @@ package net.androidpunk;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
@@ -19,7 +20,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -30,6 +30,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
 public class FP {
@@ -177,6 +178,9 @@ public class FP {
     public static Context context;
         
     public static final float MATRIX_VALUES[] = new float[9];
+    
+    // Hash for caching FP.getBitmap()
+    private static final HashMap<Integer, Bitmap> CACHED_BITMAPS = new HashMap<Integer, Bitmap>();
     
     /**
      * Resize the screen.
@@ -1032,7 +1036,31 @@ public class FP {
 		}
 	}
 	
+	/**
+	 * Get a bitmap from the Android resource package using Resource id. Consider these immutable and cached.
+	 * 
+	 * Make a copy if you need to edit it.
+	 * @param resId the resource id to load.
+	 * @return A bitmap of resource id for the current display density.
+	 */
 	public static Bitmap getBitmap(int resId) {
-		return ((BitmapDrawable)FP.resources.getDrawable(resId)).getBitmap();
+		Bitmap bm = CACHED_BITMAPS.get(resId);
+		if (bm == null) {
+			//TODO do something with scale.
+			Drawable d = FP.resources.getDrawable(resId);
+			bm = ((BitmapDrawable) d).getBitmap();
+			CACHED_BITMAPS.put(resId, bm);
+		}
+		return bm;
+	}
+	
+	public static void clearCachedBitmaps() {
+		Iterator<Integer> it = CACHED_BITMAPS.keySet().iterator();
+		while (it.hasNext()) {
+			int i = it.next();
+			Bitmap m = CACHED_BITMAPS.get(i);
+			m.recycle();
+			it.remove();
+		}
 	}
 }

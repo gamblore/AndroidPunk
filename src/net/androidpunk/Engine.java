@@ -301,9 +301,13 @@ public class Engine {
 			if (world.autoClear && world.mTween != null)
 				world.clearTweens();
 		}
-		world = null;
-		System.gc();
+		
 		FP.mWorld = FP.mGoto;
+		if (world != null) {
+			world = null;
+			System.gc();
+			System.gc();
+		}
 		FP.mGoto = null;
 		FP.camera = FP.mWorld.camera;
 		FP.mWorld.updateLists();

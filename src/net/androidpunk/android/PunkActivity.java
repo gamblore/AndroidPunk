@@ -281,6 +281,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	protected void onDestroy() {
 		super.onDestroy();
 		Sfx.SOUND_POOL.release();
+		FP.clearCachedBitmaps();
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
