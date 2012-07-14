@@ -1,10 +1,15 @@
 package net.androidpunk;
 
+import net.androidpunk.android.Texture;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
 public class Graphic {
 
+	protected Texture mTexture = new Texture(); 
+	
+	private static final float vertices[] = new float[8];
+	
 	public interface OnAssignToEntityCallback {
 		public void assigned(Entity e);
 	}

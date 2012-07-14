@@ -177,8 +177,9 @@ public class Engine {
 			mRenderTime = mTime;
 
 			// render loop
-			if (!paused) 
-				render();
+			// Handled in GL Thread
+			//if (!paused) 
+			//	render();
 			
 			// update timer
 			mTime = mJavaTime = SystemClock.uptimeMillis();
@@ -218,8 +219,9 @@ public class Engine {
 			FP.updateTime = mTime - mUpdateTime;
 
 			// render loop
-			if (!paused) 
-				render();
+			// Handled in GL Thread
+			//if (!paused) 
+			//	render();
 			
 			// update timer
 			mTime = mJavaTime = SystemClock.uptimeMillis();
@@ -342,15 +344,18 @@ public class Engine {
 	 * Renders the game, rendering the World and Entities.
 	 */
 	public void render() {
+		if (FP.getWorld() == null) {
+			return;
+		}
 		// timing stuff
 		long t = SystemClock.uptimeMillis();
 		if (mFrameLast != 0) 
 			mFrameLast = t;
 
 		// render loop
-		FP.screen.swap();
-		Draw.resetTarget();
-		FP.screen.refresh();
+		//FP.screen.swap();
+		//Draw.resetTarget();
+		//FP.screen.refresh();
 		World world = FP.getWorld();
 		if (world.visible)
 			world.render();

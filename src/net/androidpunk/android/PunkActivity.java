@@ -2,6 +2,9 @@ package net.androidpunk.android;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
 import net.androidpunk.Engine;
 import net.androidpunk.FP;
 import net.androidpunk.R;
@@ -23,15 +26,14 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
@@ -44,12 +46,13 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	public static int static_height = 480;
 	public static Class<? extends Engine> engine_class = Engine.class;
 	
-	private SurfaceView mSurfaceView;
-	private SurfaceHolder mSurfaceHolder;
+	private GLSurfaceView mSurfaceView;
+	private static APRenderer mRenderer;
+	//private SurfaceHolder mSurfaceHolder;
 		
 	private Engine mEngine;
 	private Thread mGameThread;
-	private Thread mRenderThread;
+	//private Thread mRenderThread;
 	
 	private static final Rect mScreenRect = new Rect();
 	private static Path mDebugPath;
@@ -66,6 +69,120 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	
 	public static abstract class OnBackCallback {
 		public abstract boolean onBack();
+	}
+	
+	public static class APRenderer implements GLSurfaceView.Renderer {
+		private float mScaleX, mScaleY;
+		private Engine mEngine = null;
+		private Texture testTexture;
+		private final OpenGLSystem mOpenGLSystem = new OpenGLSystem(); 
+		
+		public void setEngine(Engine e) {
+			mEngine = e;
+		}
+		
+		public void onDrawFrame(GL10 gl) {
+			OpenGLSystem.setGL(gl);
+			gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+			// Iterate loop and draw them.
+			if (mEngine != null) {
+				mEngine.render();
+			}
+			OpenGLSystem.drawTexture(gl, 10, 10, 500, 400, testTexture);
+			OpenGLSystem.setGL(null);
+			
+		}
+
+		public void onSurfaceChanged(GL10 gl, int width, int height) {
+			Log.d(TAG, "Surface Size Change: " + width + ", " + height);
+			mScreenRect.set(0, 0, width, height);
+			Engine.fire(Event.ADDED_TO_STAGE);
+			
+			
+			testTexture = new Texture();
+			testTexture.createTexture(gl, FP.getBitmap(R.drawable.ic_launcher), true);
+			testTexture.displayWidth = 500;
+			testTexture.displayHeight = 256;
+	        //mWidth = w;0
+	        //mHeight = h;
+	        // ensure the same aspect ratio as the game
+	        float scaleX = (float)width / static_width;
+	        float scaleY =  (float)height / static_height;
+	        
+	        final int viewportWidth = (int)(mScreenRect.width() * scaleX);
+	        final int viewportHeight = (int)(mScreenRect.height() * scaleY);
+	        
+	        gl.glViewport(0, 0, viewportWidth, viewportHeight);
+	        
+	        mScaleX = scaleX;
+	        mScaleY = scaleY;
+	        
+	        gl.glMatrixMode(GL10.GL_PROJECTION);
+	        gl.glLoadIdentity();
+	        gl.glOrthof(0, viewportWidth, viewportHeight, 0, -1, 1);
+		}
+
+		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+			/*
+	         * Some one-time OpenGL initialization can be made here probably based
+	         * on features of this particular context
+	         */
+			
+	        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
+
+	        gl.glClearColor(0.0f, 0.0f, 0.0f, 1);
+	        gl.glShadeModel(GL10.GL_FLAT);
+	       
+	        gl.glEnable(GL10.GL_TEXTURE_2D);
+	        /*
+	         * By default, OpenGL enables features that improve quality but reduce
+	         * performance. One might want to tweak that especially on software
+	         * renderer.
+	         */
+	        gl.glDisable(GL10.GL_CULL_FACE);
+	        gl.glDisable(GL10.GL_DITHER);
+	        gl.glDisable(GL10.GL_LIGHTING);
+	        gl.glDisable(GL10.GL_DEPTH_TEST);
+	        gl.glDisable(GL10.GL_FOG);
+
+	        gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE);
+
+	        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+	       
+	        String extensions = gl.glGetString(GL10.GL_EXTENSIONS); 
+	        String version = gl.glGetString(GL10.GL_VERSION);
+	        String renderer = gl.glGetString(GL10.GL_RENDERER);
+	        boolean isSoftwareRenderer = renderer.contains("PixelFlinger");
+	        boolean isOpenGL10 = version.contains("1.0");
+	        boolean supportsDrawTexture = extensions.contains("draw_texture");
+	        
+	        // VBOs are standard in GLES1.1
+	        // No use using VBOs when software renderering, esp. since older versions of the software renderer
+	        // had a crash bug related to freeing VBOs.
+	        boolean supportsVBOs = !isSoftwareRenderer && (!isOpenGL10 || extensions.contains("vertex_buffer_object"));
+	        
+	        FP.supportsDrawTexture = supportsDrawTexture;
+	        FP.supportsVBOs = supportsVBOs;
+	        
+	        Log.d(TAG, "Graphics Support" + version + " (" + renderer + "): " +(supportsDrawTexture ?  "draw texture," : "") + (supportsVBOs ? "vbos" : ""));
+	        try {
+		        mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
+				mRenderer.setEngine(mEngine);
+	        } catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	public final OnBackCallback DEFAULT_ON_BACK = new OnBackCallback() {
@@ -148,7 +265,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 			}
 		}
 	}
-	
+	/*
 	protected class RenderRunner extends Thread {
 		int mDebugCounter = 0; 
 		
@@ -216,7 +333,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 			}
 		}
 	}
-	
+	*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -224,10 +341,11 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		FP.context = this;
 		setContentView(R.layout.main);
 		
-		mSurfaceView = (SurfaceView) findViewById(R.id.surface_view);
+		mSurfaceView = (GLSurfaceView) findViewById(R.id.surface_view);
 		mSurfaceView.setOnTouchListener(this);
-		mSurfaceHolder = mSurfaceView.getHolder();
-		mSurfaceHolder.addCallback(this);
+		mRenderer = new APRenderer();
+		mSurfaceView.setRenderer(mRenderer);
+		mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
@@ -240,6 +358,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		mSurfaceView.onPause();
 		
 		mRunning = false;
 		for (Timer t : Engine.TIMERS) {
@@ -257,10 +376,13 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 			mGameThread = new EngineRunner();
 			mGameThread.start();
 		}
+		/*
 		if (mRenderThread == null || !mRenderThread.isAlive()) {
 			mRenderThread = new RenderRunner();
 			mRenderThread.start();
 		}
+		*/
+		mSurfaceView.onResume();
 		
 		
 		for (Timer t : Engine.TIMERS) {
@@ -294,7 +416,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
 			mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
-			
+			mRenderer.setEngine(mEngine);
 			if (FP.debug) {
 				mDebugPath = new Path();
 				mDebugPath.moveTo(0, 0);

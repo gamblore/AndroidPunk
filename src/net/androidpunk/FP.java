@@ -133,6 +133,16 @@ public class FP {
      */
     public static boolean focused = true;
     
+    /**
+     *  Used in graphics drawing to see if there is a faster way to blit.
+     */
+    public static boolean supportsVBOs = false;
+    
+    /**
+     *  Used in graphics drawing to see if there is a the fastest way to blit.
+     */
+    public static boolean supportsDrawTexture = false;
+    
     private static final float HSV[] = new float[3];
     
     // World information.
