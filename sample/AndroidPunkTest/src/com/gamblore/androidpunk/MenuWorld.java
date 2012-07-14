@@ -22,9 +22,12 @@ import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.util.Log;
 
 public class MenuWorld extends World {
 
+	private static final String TAG = "MenuWorld";
+	
 	private static final String ANIM_WALKING = "walking";
 	
 	private Entity mDisplay = new Entity();
@@ -154,6 +157,7 @@ public class MenuWorld extends World {
 		// In secondary menu
 		if (mSecondDisplay.x < 5 && Input.mousePressed) {
 			Point p = FP.screen.getTouches()[0];
+			Log.d(TAG, String.format("Touch at %d %d", p.x, p.y));
 			if (mSecondDisplay.collidePoint(mSecondDisplay.x, mSecondDisplay.y, p.x, p.y)) {
 				if (p.x < FP.screen.getWidth()/2) {
 					// new game
