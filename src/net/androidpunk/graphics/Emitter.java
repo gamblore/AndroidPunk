@@ -3,15 +3,18 @@ package net.androidpunk.graphics;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
+import net.androidpunk.android.OpenGLSystem;
+import net.androidpunk.android.OpenGLSystem.OpenGLRunnable;
 import net.androidpunk.flashcompat.OnEaseCallback;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -88,6 +91,13 @@ public class Emitter extends Graphic {
 		mFrameWidth = frameWidth != 0 ? frameWidth : mWidth;
 		mFrameHeight = frameHeight != 0 ? frameHeight : mHeight;
 		mFrameCount = (int)(mWidth / mFrameWidth) * (int)(mHeight / mFrameHeight);
+		
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			@Override
+			public void run(GL10 gl) {
+				mTexture.createTexture(gl, mSource);
+			}
+		});
 	}
 	
 	@Override 
@@ -136,7 +146,8 @@ public class Emitter extends Graphic {
 		// quit if there are no particles
 		if (mParticle == null)
 			return;
-
+		
+		GL10 gl = OpenGLSystem.getGL();
 		// get rendering position
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
@@ -169,23 +180,21 @@ public class Emitter extends Graphic {
 			} else {
 				rect.offsetTo(0, 0);
 			}
-
+			
+			type.mTexture.setCrop(rect);
+			
 			// draw particle
 			if (type.mBuffer != null) {
 				// get color
 				td = (type.mColorEase == null) ? t : type.mColorEase.ease(t);
 				
-				//red
-				matrix[0] = (type.mRed + type.mRedRange * td) / 255.0f;
-				//green
-				matrix[6] = (type.mGreen + type.mGreenRange * td) / 255.0f;
-				//blue
-				matrix[12] = (type.mBlue + type.mBlueRange * td) / 255.0f;
-				//alpha
-				matrix[18] = (type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t))) / 255.0f;
+				mTexture.red = (type.mRed + type.mRedRange * td) / 255.0f;
+				mTexture.green = (type.mGreen + type.mGreenRange * td) / 255.0f;
+				mTexture.blue = (type.mBlue + type.mBlueRange * td) / 255.0f;
+				mTexture.alpha = (type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t))) / 255.0f;
 				
-				mTint = new ColorMatrixColorFilter(matrix);
-				
+				OpenGLSystem.drawTexture(gl, mP.x, mP.y, rect.width(), rect.height(), mTexture);
+				/*
 				paint.reset();
 				paint.setColorFilter(mTint);
 				mCanvas.setBitmap(target);
@@ -193,12 +202,14 @@ public class Emitter extends Graphic {
 				r.set(mP.x, mP.y, mP.x + type.mBufferRect.width(), mP.y + type.mBufferRect.height());
 				//Log.d(TAG, String.format("Drawing particle w/ alpha %.2f from %s to %s", matrix[18], type.mBufferRect.toShortString(), r.toShortString()));
 				mCanvas.drawBitmap(type.mSource, type.mBufferRect, r, paint);
+				*/
 			}
 			else {
 				Rect r = FP.rect;
 				r.set(mP.x, mP.y, mP.x + rect.width(), mP.y + rect.height());
-				mCanvas.setBitmap(target);
-				mCanvas.drawBitmap(type.mSource, rect, r, null);
+				OpenGLSystem.drawTexture(gl, mP.x, mP.y, rect.width(), rect.height(), mTexture);
+				//mCanvas.setBitmap(target);
+				//mCanvas.drawBitmap(type.mSource, rect, r, null);
 			}
 
 			// get next particle

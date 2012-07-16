@@ -112,9 +112,10 @@ public class SpriteMap extends Image {
 		
 		clipRect.offsetTo(newX % width, (int)((int)(newX / width) * clipRect.height()));
 
+		mTexture.setCrop(clipRect);
 		//Log.d(TAG, String.format("Clipped to %s, frame %d", clipRect.toShortString(), mIndex));
 		// update the buffer
-		super.updateBuffer(clearBefore);
+		//super.updateBuffer(clearBefore);
 	}
 	
 	/** @private Updates the animation. */

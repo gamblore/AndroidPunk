@@ -100,14 +100,16 @@ public class World extends Tweener {
 	 */
 	public void render() {
 		// render the entities in order of depth
-		Entity e;
-		int i = mLayerList.size();
-		while (i-- > 0) {
-			e = mRenderLast.get(mLayerList.get(i));
-			while (e != null) {
-				if (e.visible) 
-					e.render();
-				e = e.mRenderPrev;
+		synchronized (mLayerList) {
+			Entity e;
+			int i = mLayerList.size();
+			while (i-- > 0) {
+				e = mRenderLast.get(mLayerList.get(i));
+				while (e != null) {
+					if (e.visible) 
+						e.render();
+					e = e.mRenderPrev;
+				}
 			}
 		}
 	}
@@ -831,45 +833,47 @@ public class World extends Tweener {
 	 * Updates the add/remove lists at the end of the frame.
 	 */
 	public void updateLists() {
-		// remove entities
-		if (mRemove.size() > 0) {
-			for (Entity e : mRemove) {
-				
-				if (e.mAdded != true && mAdd.indexOf(e) >= 0) {
-					mAdd.remove(e);
-					continue;
+		synchronized (mLayerList) {
+			// remove entities
+			if (mRemove.size() > 0) {
+				for (Entity e : mRemove) {
+					
+					if (e.mAdded != true && mAdd.indexOf(e) >= 0) {
+						mAdd.remove(e);
+						continue;
+					}
+					e.mAdded = false;
+					
+					e.removed();
+					removeUpdate(e);
+					removeRender(e);
+					if (e.mTween != null) 
+						e.clearTweens();
 				}
-				e.mAdded = false;
-				
-				e.removed();
-				removeUpdate(e);
-				removeRender(e);
-				if (e.mTween != null) 
-					e.clearTweens();
+				mRemove.clear();
 			}
-			mRemove.clear();
-		}
-
-		// add entities
-		if (mAdd.size() > 0){
-			for (Entity e : mAdd) {
-				e.mAdded = true;
-				addUpdate(e);
-				addRender(e);
-				if (!"".equals(e.mType))
-					addType(e);
-				e.added();
+	
+			// add entities
+			if (mAdd.size() > 0){
+				for (Entity e : mAdd) {
+					e.mAdded = true;
+					addUpdate(e);
+					addRender(e);
+					if (!"".equals(e.mType))
+						addType(e);
+					e.added();
+				}
+				mAdd.clear();
 			}
-			mAdd.clear();
-		}
-
-		// sort the depth list
-		if (mLayerSort) {
-			if (mLayerList.size() > 1) {
-				Collections.sort(mLayerList);
+	
+			// sort the depth list
+			if (mLayerSort) {
+				if (mLayerList.size() > 1) {
+					Collections.sort(mLayerList);
+				}
+					
+				mLayerSort = false;
 			}
-				
-			mLayerSort = false;
 		}
 	}
 

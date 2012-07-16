@@ -35,8 +35,9 @@ public class GraphicsWorld extends World {
 	private TileMap mTileMap;
 	
 	
+	private int counter = 0;
 	private Entity mEntities[] = new Entity[10];
-	private int mCurrentEntity = 0;
+	private int mCurrentEntity = 3;
 	
 	public GraphicsWorld() {
 		super();
@@ -56,7 +57,7 @@ public class GraphicsWorld extends World {
 		
 		mEntities[0].setGraphic(new GraphicList(mBackdrop, spriteMap));
 		
-		add(mEntities[0]);
+		//add(mEntities[0]);
 		
 		//CanvasGraphic
 		mCanvasGraphic = new CanvasGraphic(FP.width, FP.height);
@@ -82,6 +83,7 @@ public class GraphicsWorld extends World {
 		mImage = new Image(FP.getBitmap(R.drawable.jumper_clouds));
 		
 		mEntities[3].setGraphic(mImage);
+		add(mEntities[3]);
 		
 		//SpriteMap
 		
@@ -152,6 +154,14 @@ public class GraphicsWorld extends World {
 			if (mEmitter.getParticleCount() < 3) {
 				mEmitter.emit("test", 25, 25);
 			}
+			break;
+		case 3:
+			if (counter > 50) {
+				counter = 0;
+				mImage.setFlipped(!mImage.getFlipped());
+			}
+			
+			counter++;
 			break;
 		default:
 			

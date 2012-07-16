@@ -353,8 +353,8 @@ public class Engine {
 			mFrameLast = t;
 
 		// render loop
-		//FP.screen.swap();
-		//Draw.resetTarget();
+		FP.screen.swap();
+		Draw.resetTarget();
 		//FP.screen.refresh();
 		World world = FP.getWorld();
 		if (world.visible)

@@ -1,12 +1,12 @@
 package net.androidpunk.graphics;
 
 import net.androidpunk.FP;
+import net.androidpunk.android.Texture;
 import net.androidpunk.flashcompat.OnEaseCallback;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.util.Log;
 
 /**
  * Template used to define a particle type used by the Emitter class. Instead
@@ -50,6 +50,8 @@ public class ParticleType {
 	// Buffer information.
 	protected Bitmap mBuffer;
 	protected Rect mBufferRect = new Rect();
+	
+	protected Texture mTexture = new Texture();
 	
 	/**
 	 * Constructor.

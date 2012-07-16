@@ -1,7 +1,11 @@
 package net.androidpunk.graphics;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
+import net.androidpunk.android.OpenGLSystem;
+import net.androidpunk.android.OpenGLSystem.OpenGLRunnable;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapShader;
@@ -9,13 +13,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader.TileMode;
-import android.util.Log;
 
 /**
  * A  multi-purpose drawing canvas, for comatability with flash library.
@@ -28,12 +30,12 @@ public class CanvasGraphic extends Graphic {
 	protected Bitmap mBuffer;
 	protected int mWidth;
 	protected int mHeight;
-	protected int mMaxWidth = 4000;
-	protected int mMaxHeight = 4000;
+	protected int mMaxWidth = 2048;
+	protected int mMaxHeight = 2048;
 
 	// Color tinting information.
 	private int mColor;
-	private ColorFilter mTint;
+	
 	// To prevent weirdness with big bitmaps we use it's own canvas to not mess with clip rects.
 	private final Canvas mCanvas = new Canvas();
 	
@@ -54,6 +56,14 @@ public class CanvasGraphic extends Graphic {
 		mHeight = height;
 		mBuffer = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		//Log.d(TAG, String.format("CanvasGraphic %dx%d",mBuffer.getWidth(), mBuffer.getHeight()));
+		
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			
+			@Override
+			public void run(GL10 gl) {
+				mTexture.createTexture(gl, mBuffer);
+			}
+		});
 	}
 	
 	/** @private Renders the canvas. */
@@ -63,6 +73,7 @@ public class CanvasGraphic extends Graphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 
+		/*
 		mPaint.reset();
 		if (mTint != null) {
 			mPaint.setColorFilter(mTint);
@@ -73,6 +84,10 @@ public class CanvasGraphic extends Graphic {
 		//mMatrix.postTranslate(mPoint.x, mPoint.y);
 		mCanvas.drawBitmap(mBuffer, mPoint.x, mPoint.y, mPaint);
 		//mCanvas.drawBitmap(mBuffer, mMatrix, mPaint);
+		 */
+		GL10 gl = OpenGLSystem.getGL();
+		OpenGLSystem.drawTexture(gl, mPoint.x, mPoint.y, mWidth, mHeight, mTexture);
+		
 	}
 	
 	/**
@@ -100,6 +115,14 @@ public class CanvasGraphic extends Graphic {
 		} else {
 			mCanvas.drawBitmap(source, x, y, null);
 		}
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			
+			@Override
+			public void run(GL10 gl) {
+				mTexture.updateTexture(gl, mBuffer);
+			}
+		});
+		
 	}
 	
 	/**
@@ -159,23 +182,13 @@ public class CanvasGraphic extends Graphic {
 	public void setColor(int value) {
 		if (mColor == value) 
 			return;
-		if (value == 0xffffffff) {
-			mTint = null;
-			return;
-		}
 		
 		mColor = value;
-		float matrix[] = new float[20];
-		//red
-		matrix[0] = Color.red(value) / 255f;
-		//blue
-		matrix[6] = Color.blue(value) / 255f;
-		//green
-		matrix[12] = Color.green(value) / 255f;
-		//alpha
-		matrix[18] = Color.alpha(value) / 255f;
 		
-		mTint = new ColorMatrixColorFilter(matrix);
+		mTexture.red = Color.red(value) / 255f;
+		mTexture.green = Color.green(value) / 255f;
+		mTexture.blue = Color.blue(value) / 255f;
+		mTexture.alpha = Color.alpha(value) / 255f;
 	}
 	
 	/**
@@ -199,7 +212,14 @@ public class CanvasGraphic extends Graphic {
 
 	@Override
 	protected void release() {
-		mBuffer.recycle();
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			
+			@Override
+			public void run(GL10 gl) {
+				mTexture.releaseTexture(gl);
+				
+			}
+		});
 	}
 	
 	

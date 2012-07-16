@@ -24,7 +24,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
+import android.opengl.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -1068,8 +1068,6 @@ public class FP {
 		Iterator<Integer> it = CACHED_BITMAPS.keySet().iterator();
 		while (it.hasNext()) {
 			int i = it.next();
-			Bitmap m = CACHED_BITMAPS.get(i);
-			m.recycle();
 			it.remove();
 		}
 	}

@@ -1,18 +1,18 @@
 package net.androidpunk.graphics;
 
-import java.util.Map;
+import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
+import net.androidpunk.android.OpenGLSystem;
+import net.androidpunk.android.OpenGLSystem.OpenGLRunnable;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Matrix;
+import android.opengl.Matrix;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -103,8 +103,17 @@ public class Image extends Graphic {
 			mSourceRect = new Rect(0, 0, mSource.getWidth(), mSource.getHeight());
 		}
 		
-		createBuffer();
-		updateBuffer();
+		
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			@Override
+			public void run(GL10 gl) {
+				mTexture.createTexture(gl, mSource);
+				mTexture.setCrop(mSourceRect);
+				
+			}
+		});
+		//createBuffer();
+		//updateBuffer();
 	}
 	
 	/** @private Creates the buffer. */
@@ -117,10 +126,10 @@ public class Image extends Graphic {
 	/** @private Renders the image. */
 	public void render(Bitmap target, Point point, Point camera) {
 		// quit if no graphic is assigned
-		if (mBuffer == null) 
-			return;
+		//if (mBuffer == null) 
+		//	return;
 
-		mCanvas.setBitmap(target);
+		//mCanvas.setBitmap(target);
 		// determine drawing location
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
@@ -135,7 +144,7 @@ public class Image extends Graphic {
 		}
 		*/
 		
-		setMatrix();
+		
 		/*
 		// a(0) c(1) tx(2)
 		// b(3) d(4) ty(5)
@@ -163,7 +172,15 @@ public class Image extends Graphic {
 		//FP.MATRIX_VALUES[5] += originY + mPoint.y;
 		//mMatrix.setValues(FP.MATRIX_VALUES);
 		*/
-		
+		GL10 gl = OpenGLSystem.getGL();
+		gl.glPushMatrix(); 
+		{
+		//	gl.glLoadIdentity();
+			setMatrix(gl);
+			OpenGLSystem.drawTexture(gl, (int)0, (int)0, mSourceRect.width(), mSourceRect.height(), mTexture);
+		}
+		gl.glPopMatrix();
+		/*
 		if (mTint != null) {
 			mPaint.reset();
 			mPaint.setColorFilter(mTint);
@@ -171,20 +188,26 @@ public class Image extends Graphic {
 		} else {
 			mCanvas.drawBitmap(mBuffer, mMatrix, null);
 		}
-		
+		*/
 		//mCanvas.drawBitmap(mSource, 0, 0, null);
 	}
 	
-	private void setMatrix() {
-		mMatrix.reset();
+	private void setMatrix(GL10 gl) {
+		
+		//mMatrix.reset();
 		float sX = scaleX * scale;
 		float sY = scaleY * scale;
-		mMatrix.postScale(sX, sY);
-		mMatrix.postTranslate(-originX * sX, -originY * sY);
+		//mMatrix.postScale(sX, sY);
+		gl.glScalef(sX, sY, 1.0f);
+		
+		//mMatrix.postTranslate(-originX * sX, -originY * sY);
+		gl.glTranslatef(-originX * sX, -originY * sY, 0.0f);
 		if (angle != 0) {
-			mMatrix.postRotate(angle);
+			gl.glRotatef(0, 0, 1.0f, angle);
+			//mMatrix.postRotate(angle);
 		}
-		mMatrix.postTranslate(originX + mPoint.x, originY + mPoint.y);
+		//mMatrix.postTranslate(originX + mPoint.x, originY + mPoint.y);
+		gl.glTranslatef(originX + mPoint.x, originY + mPoint.y, 0f);
 	}
 	
 	/**
@@ -198,7 +221,7 @@ public class Image extends Graphic {
 	 * Updates the image buffer.
 	 */
 	public void updateBuffer(boolean clearBefore) {
-		
+		/*
 		mPaint.reset();
 		if (mSource == null)
 			return;
@@ -218,7 +241,17 @@ public class Image extends Graphic {
 			mCanvas.drawBitmap(mSource, mSourceRect, mBufferRect, mPaint);
 		}
 		
+		*/
+		
 		//Log.d(TAG, "Image "+ mSourceRect.toShortString() + " rendering into " + mBufferRect.toShortString());
+		
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			@Override
+			public void run(GL10 gl) {
+				mTexture.releaseTexture(gl);
+				mTexture.createTexture(gl, mSource);
+			}
+		});
 	}
 	
 	/**
@@ -290,17 +323,11 @@ public class Image extends Graphic {
 		
 		mColor = value;
 		
-		//red
-		matrix[0] = Color.red(value) / 255f;
-		//green
-		matrix[6] = Color.green(value) / 255f;
-		//blue
-		matrix[12] = Color.blue(value) / 255f;
-		//alpha
-		matrix[18] = Color.alpha(value) / 255f;
+		mTexture.red = Color.red(value) / 255f;
+		mTexture.green = Color.green(value) / 255f;
+		mTexture.blue = Color.blue(value) / 255f;
+		mTexture.alpha = Color.alpha(value) / 255f;
 		
-		mTint = new ColorMatrixColorFilter(matrix);
-		//updateBuffer();
 	}
 	
 	/**
@@ -317,6 +344,10 @@ public class Image extends Graphic {
 		if (mFlipped == value)
 			return;
 		mFlipped = value;
+		
+		mTexture.flipX = mFlipped;
+		return;
+		/*
 		Bitmap temp = mSource;
 		
 		if (!value || mFlip != null) {
@@ -327,6 +358,7 @@ public class Image extends Graphic {
 		}
 		mSource = Bitmap.createBitmap(mSource.getWidth(), mSource.getHeight(), Config.ARGB_8888);
 		mFlip = temp;
+		
 		
 		FP.matrix.reset();
 		FP.matrix.setScale(-1, 1);
@@ -342,6 +374,7 @@ public class Image extends Graphic {
 		
 		mCanvas.drawBitmap(temp, FP.matrix, null);
 		updateBuffer();
+		*/
 	}
 	
 	/**
@@ -393,7 +426,14 @@ public class Image extends Graphic {
 
 	@Override
 	protected void release() {
-		mBuffer.recycle();
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			
+			@Override
+			public void run(GL10 gl) {
+				mTexture.releaseTexture(gl);
+			}
+		});
+		
 	}
 	
 	

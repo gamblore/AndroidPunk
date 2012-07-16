@@ -8,8 +8,6 @@ public class Graphic {
 
 	protected Texture mTexture = new Texture(); 
 	
-	private static final float vertices[] = new float[8];
-	
 	public interface OnAssignToEntityCallback {
 		public void assigned(Entity e);
 	}

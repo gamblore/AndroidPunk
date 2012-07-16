@@ -38,7 +38,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
-public class PunkActivity extends Activity implements Callback, OnTouchListener {
+public class PunkActivity extends Activity implements OnTouchListener {
 	
 	private static final String TAG = "PunkActivity";
 	
@@ -71,24 +71,23 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		public abstract boolean onBack();
 	}
 	
-	public static class APRenderer implements GLSurfaceView.Renderer {
+	public class APRenderer implements GLSurfaceView.Renderer {
 		private float mScaleX, mScaleY;
-		private Engine mEngine = null;
-		private Texture testTexture;
-		private final OpenGLSystem mOpenGLSystem = new OpenGLSystem(); 
+		private OpenGLSystem mOpenGLSystem = new OpenGLSystem(); 
 		
-		public void setEngine(Engine e) {
-			mEngine = e;
-		}
 		
 		public void onDrawFrame(GL10 gl) {
 			OpenGLSystem.setGL(gl);
+			
+			// process queue runnables for a max of 8ms.
+			OpenGLSystem.processQueue(8);
+			
 			gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 			// Iterate loop and draw them.
-			if (mEngine != null) {
+			//TODO remove FP.backbuffer once moved to OpenGL
+			if (mEngine != null && FP.backBuffer != null) {
 				mEngine.render();
 			}
-			OpenGLSystem.drawTexture(gl, 10, 10, 500, 400, testTexture);
 			OpenGLSystem.setGL(null);
 			
 		}
@@ -98,11 +97,6 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 			mScreenRect.set(0, 0, width, height);
 			Engine.fire(Event.ADDED_TO_STAGE);
 			
-			
-			testTexture = new Texture();
-			testTexture.createTexture(gl, FP.getBitmap(R.drawable.ic_launcher), true);
-			testTexture.displayWidth = 500;
-			testTexture.displayHeight = 256;
 	        //mWidth = w;0
 	        //mHeight = h;
 	        // ensure the same aspect ratio as the game
@@ -117,9 +111,19 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	        mScaleX = scaleX;
 	        mScaleY = scaleY;
 	        
+	        gl.glMatrixMode(GL10.GL_MODELVIEW);
+	        gl.glLoadIdentity();
+	        
 	        gl.glMatrixMode(GL10.GL_PROJECTION);
 	        gl.glLoadIdentity();
+	        
 	        gl.glOrthof(0, viewportWidth, viewportHeight, 0, -1, 1);
+	        mStarted = true;
+	        
+	        //This should give it a bit of time to setup anything created during initial surface load.
+	        OpenGLSystem.setGL(gl);
+			OpenGLSystem.processQueue(32);
+			OpenGLSystem.setGL(null);
 		}
 
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -127,7 +131,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	         * Some one-time OpenGL initialization can be made here probably based
 	         * on features of this particular context
 	         */
-			
+			gl.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 
 	        gl.glClearColor(0.0f, 0.0f, 0.0f, 1);
@@ -146,6 +150,9 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	        gl.glDisable(GL10.GL_FOG);
 
 	        gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE);
+	        
+	        gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+	        gl.glEnable(GL10.GL_BLEND);
 
 	        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 	       
@@ -167,7 +174,6 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	        Log.d(TAG, "Graphics Support" + version + " (" + renderer + "): " +(supportsDrawTexture ?  "draw texture," : "") + (supportsVBOs ? "vbos" : ""));
 	        try {
 		        mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
-				mRenderer.setEngine(mEngine);
 	        } catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {
@@ -405,7 +411,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		Sfx.SOUND_POOL.release();
 		FP.clearCachedBitmaps();
 	}
-
+/*
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		Log.d(TAG, String.format("Resize to %dx%d", width, height));
 		mScreenRect.set(0, 0, width, height);
@@ -416,7 +422,6 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
 			mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
-			mRenderer.setEngine(mEngine);
 			if (FP.debug) {
 				mDebugPath = new Path();
 				mDebugPath.moveTo(0, 0);
@@ -447,7 +452,7 @@ public class PunkActivity extends Activity implements Callback, OnTouchListener 
 		mRunning = false;
 		mStarted = false;
 	}
-
+*/
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);

@@ -3,11 +3,13 @@ package net.androidpunk.android;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
-import javax.microedition.khronos.opengles.GL11Ext;
 
+import android.opengl.Matrix;
+import android.os.SystemClock;
 import android.util.Log;
 
 public class OpenGLSystem {
@@ -20,27 +22,62 @@ public class OpenGLSystem {
 	private static final float vertexArray[] = new float[8];
 	private static final float textureArray[] = new float[8];
 	
-	private static GL10 sGL;
+	private static final Queue<OpenGLRunnable> mQueue = new LinkedList<OpenGLRunnable>();
+	
+	private static GL10 mGL;
     
     public OpenGLSystem() {
         this(null);
     }
 
     public OpenGLSystem(GL10 gl) {
-        sGL = gl;
-        textureBuffer = ByteBuffer.allocateDirect(vertexArray.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();;
-        vertexBuffer = ByteBuffer.allocateDirect(textureArray.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();;
+        mGL = gl;
+        textureBuffer = ByteBuffer.allocateDirect(vertexArray.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        vertexBuffer = ByteBuffer.allocateDirect(textureArray.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
     }
-
+    
+    public static abstract class OpenGLRunnable {
+    	public abstract void run(GL10 gl);
+    }
+    /**
+     * Pop runnables off the queue until time is up.
+     * @param ms the amount of time to process queue elements for.
+     */
+    public static void processQueue(long ms) {
+    	long start = SystemClock.uptimeMillis();
+    	long now = start;
+    	OpenGLRunnable r;
+    	while(true) {
+    		now = SystemClock.uptimeMillis();
+    		if (now > start + ms) {
+    			// Time is up for this frame.
+    			return;
+    		}
+    		r = mQueue.poll();
+    		if (r == null) {
+    			// No more elements in the queue.
+    			return;
+    		}
+    		r.run(mGL);
+    	}
+    }
+    
+    public static void postRunnable(OpenGLRunnable r) {
+    	mQueue.add(r);
+    }
+    
     public static final void setGL(GL10 gl) {
-        sGL = gl;
+        mGL = gl;
     }
     
     public static final GL10 getGL() {
-        return sGL;
+        return mGL;
     }
     
     public static final void drawTexture(GL10 gl, int x, int y, int w, int h, Texture texture) {
+    	if (!texture.isDrawable()) {
+    		return;
+    	}
     	gl.glEnable(GL10.GL_TEXTURE_2D);
     	
     	gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.name);
@@ -51,11 +88,19 @@ public class OpenGLSystem {
     	vertexArray[6] = x + w; vertexArray[7] = y + h;
     	vertexBuffer.put(vertexArray).position(0);
     	
-    	texture.setTexCoords(textureArray);
+    	if (texture.isRepeating()) {
+    		texture.setTexCoords(textureArray, w, h);
+    	} else {
+    		texture.setTexCoords(textureArray);
+    	}
     	textureBuffer.put(textureArray).position(0);
-    	
-    	gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-    	gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
+
+    	if (texture.name == -1) {
+    		gl.glDisable(GL10.GL_TEXTURE_2D);
+    	} else {
+    		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+    		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
+    	}
     	gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     	gl.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
     	
