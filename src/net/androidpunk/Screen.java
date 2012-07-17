@@ -42,14 +42,14 @@ public class Screen {
     
     public Screen() {
 		// create screen buffers
-		mBitmap[0] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
-		mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
+		//mBitmap[0] = Bitmap.createBitmap(FP.width, FP.height, Config.ARGB_8888);
+		//mBitmap[1] = mBitmap[0].copy(Config.ARGB_8888, true);
 		
-		FP.buffer = mBitmap[0];
-		FP.backBuffer = mBitmap[1];
+		//FP.buffer = mBitmap[0];
+		//FP.backBuffer = mBitmap[1];
 		mWidth = FP.width;
 		mHeight = FP.height;
-		update();
+		//update();
 		
 	}
     
@@ -57,6 +57,7 @@ public class Screen {
      * Initialise buffers to current screen size.
      */
     public void resize() {
+    	/*
     	synchronized (FP.backBuffer) {
 	        mBitmap[0].recycle();
 	        mBitmap[1].recycle();
@@ -67,12 +68,11 @@ public class Screen {
 	    	
 	        
 	        Log.d(TAG, String.format("Screen created %dx%d", mBitmap[0].getWidth(), mBitmap[0].getHeight()));
-	
-	        
 	        
 	        FP.buffer = mBitmap[0];
 	        FP.backBuffer = mBitmap[1];
     	}
+    	*/
         mWidth = FP.width;
         mHeight = FP.height;
         mCurrent = 0;

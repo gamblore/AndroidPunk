@@ -1,12 +1,10 @@
 package net.androidpunk;
 
-import net.androidpunk.android.Texture;
-import android.graphics.Bitmap;
+import javax.microedition.khronos.opengles.GL10;
+
 import android.graphics.Point;
 
 public class Graphic {
-
-	protected Texture mTexture = new Texture(); 
 	
 	public interface OnAssignToEntityCallback {
 		public void assigned(Entity e);
@@ -73,11 +71,11 @@ public class Graphic {
 
     /**
      * Renders the graphic to the screen buffer.
-     * @param target the bitmap to draw into
+     * @param the GL context we are drawing to.
      * @param point The position to draw the graphic.
      * @param camera The camera offset.
      */
-    public void render(Bitmap target, Point point, Point camera) {
+    public void render(GL10 gl, Point point, Point camera) {
     	
     }
     

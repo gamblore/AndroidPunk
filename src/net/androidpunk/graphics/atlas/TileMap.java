@@ -1,26 +1,22 @@
-package net.androidpunk.graphics;
+package net.androidpunk.graphics.atlas;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.FP;
-import net.androidpunk.utils.Draw;
-import android.content.Context;
+import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Rect;
-import android.provider.OpenableColumns;
 import android.util.Log;
 
 /**
  * A canvas to which Tiles can be drawn for fast multiple tile rendering.
  */
-public class TileMap extends CanvasGraphic {
+public class TileMap extends AtlasGraphic {
 
 	private static final String TAG = "TileMap";
 	/**
@@ -28,14 +24,18 @@ public class TileMap extends CanvasGraphic {
 	 */
 	public boolean usePositions = false;
 	
+	private FloatBuffer mVertexBuffer = getDirectFloatBuffer(8);
+	
 	// Tilemap information.
 	protected Bitmap mMap;
 	private Bitmap mTemp;
+	private int mWidth;
+	private int mHeight;
 	private int mColumns;
 	private int mRows;
 
 	// Tileset information.
-	private Bitmap mSet;
+	private SubTexture mSet;
 	private int mSetColumns;
 	private int mSetRows;
 	private int mSetCount;
@@ -53,21 +53,18 @@ public class TileMap extends CanvasGraphic {
 	 * @param	tileWidth		Tile width.
 	 * @param	tileHeight		Tile height.
 	 */
-	public TileMap(Bitmap tileset, int width, int height, int tileWidth, int tileHeight) {
-		super(width - (width % tileWidth), height - (height % tileHeight));
+	public TileMap(SubTexture tileset, int width, int height, int tileWidth, int tileHeight) {
+		super(tileset);
 		// set some tilemap information
 		mWidth = width - (width % tileWidth);
 		mHeight = height - (height % tileHeight);
 		mColumns = mWidth / tileWidth;
 		mRows = mHeight / tileHeight;
 		mMap = Bitmap.createBitmap(mColumns, mRows, Config.ARGB_8888);
-		mTemp = mMap.copy(Config.ARGB_8888, true);
+		//mTemp = mMap.copy(Config.ARGB_8888, true);
 		mTile = new Rect(0, 0, tileWidth, tileHeight);
-
-		// create the canvas
-		mMaxWidth -= mMaxWidth % tileWidth;
-		mMaxHeight -= mMaxHeight % tileHeight;
 		
+		setGeometryBuffer(mVertexBuffer, mTile);
 
 		// load the tileset graphic
 		mSet = tileset;
@@ -80,6 +77,39 @@ public class TileMap extends CanvasGraphic {
 		mSetCount = mSetColumns * mSetRows;
 	}
 	
+	
+	@Override
+	public void render(GL10 gl, Point point, Point camera) {
+		super.render(gl, point, camera);
+		mPoint.x = (int)(point.x + x - camera.x * scrollX);
+		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		
+		for (int y = 0; y < mRows; y++) {
+			gl.glPushMatrix(); 
+			gl.glTranslatef(mPoint.x, mPoint.y + y * mTile.height(), 0);
+			
+			for (int x = 0; x < mColumns; x++) {
+				int color = mMap.getPixel(x, y) & 0x00ffffff;
+				if (color != -1) {
+					
+					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSet, color, mTile.width(), mTile.height());
+				
+					setBuffers(gl, mVertexBuffer, QUAD_FLOAT_BUFFER_2);
+				
+					gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+					gl.glTranslatef(mTile.width(), 0, 0);
+
+				}
+			}
+			gl.glPopMatrix();
+		}
+		
+		unsetBuffers(gl);
+		
+		
+	}
+
+
 	public void setTile(int column, int row) {
 		setTile(column, row, 0);
 	}
@@ -99,17 +129,8 @@ public class TileMap extends CanvasGraphic {
 		column %= mColumns;
 		row %= mRows;
 		
-		int newX = (index % mSetColumns) * mTile.width();
-		int newY = (int)(index / mSetColumns) * mTile.height();
-		mTile.offsetTo(newX, newY);
-		
-		mMap.setPixel(column, row, index);
-		if (index < 0) {
-			clearTile(column, row);
-		} else {
-			draw(column * mTile.width(), row * mTile.height(), mSet, mTile);
-		}
-		
+		mMap.setPixel(column, row, 0xff << 24 | index);
+		Log.d(TAG, String.format("Setting %d %d to %d = %d", column, row, index, mMap.getPixel(column, row)));
 	}
 	
 	/**
@@ -124,10 +145,7 @@ public class TileMap extends CanvasGraphic {
 		}
 		column %= mColumns;
 		row %= mRows;
-		int newX = column * mTile.width();
-		int newY = row * mTile.height();
-		mTile.offsetTo(newX, newY);
-		fill(mTile, 0);
+		mMap.setPixel(column, row, -1);
 	}
 	
 	/**
@@ -305,92 +323,6 @@ public class TileMap extends CanvasGraphic {
 	 */
 	public int getIndex(int tilesColumn, int tilesRow) {
 		return (tilesRow % mSetRows) * mSetColumns + (tilesColumn % mSetColumns);
-	}
-	
-	/**
-	 * Shifts all the tiles in the tilemap. Without wrapping.
-	 * @param	columns		Horizontal shift.
-	 * @param	rows		Vertical shift.
-	 */
-	public void shiftTiles(int columns, int rows) {
-		shiftTiles(columns, rows, false);
-	}
-	/**
-	 * Shifts all the tiles in the tilemap.
-	 * @param	columns		Horizontal shift.
-	 * @param	rows		Vertical shift.
-	 * @param	wrap		If tiles shifted off the canvas should wrap around to the other side.
-	 */
-	public void shiftTiles(int columns, int rows, boolean wrap) {
-		if (usePositions) {
-			columns /= mTile.width();
-			rows /= mTile.height();
-		}
-		mCanvas.setBitmap(mTemp);
-		if (!wrap) {
-			Draw.rect(0, 0, mTemp.getWidth(), mTemp.getHeight(), 0);
-		}
-
-		if (columns != 0) {
-			shift(columns * mTile.width(), 0);
-			if (wrap) {
-				mCanvas.setBitmap(mTemp);
-				mCanvas.drawBitmap(mMap, 0, 0, null);
-			}
-			mCanvas.setBitmap(mMap);
-			mCanvas.drawBitmap(mTemp, columns, 0, null);
-
-			mRect.offsetTo(columns > 0 ? 0 : mColumns + columns, 0);
-			mRect.right = mRect.left + Math.abs(columns);
-			mRect.bottom = mRows;
-			updateRect(mRect, !wrap);
-		}
-
-		if (rows != 0) {
-			shift(0, rows * mTile.height());
-			if (wrap) {
-				mCanvas.setBitmap(mTemp);
-				mCanvas.drawBitmap(mMap, 0, 0, null);
-			}
-			
-			mCanvas.setBitmap(mMap);
-			mCanvas.drawBitmap(mTemp, 0, rows, null);
-			
-			mRect.offsetTo(0, rows > 0 ? 0 : mRows + rows);
-			mRect.right = mRect.left + mColumns;
-			mRect.bottom = mRows + Math.abs(rows);
-			updateRect(mRect, !wrap);
-		}
-	}
-	
-	/** @private Used by shiftTiles to update a rectangle of tiles from the tilemap. */
-	private void updateRect(Rect rect, boolean clear) {
-		int x = rect.left;
-		int y = rect.top;
-		int w = rect.right;
-		int h = rect.bottom;
-		boolean u = usePositions;
-		usePositions = false;
-		if (clear) {
-			while (y < h) {
-				while (x < w) clearTile(x ++, y);
-				x = rect.left;
-				y++;
-			}
-		} else {
-			while (y < h) {
-				while (x < w)
-					updateTile(x++, y);
-				x = rect.left;
-				y++;
-			}
-		}
-		usePositions = u;
-	}
-	
-	/** @private Used by shiftTiles to update a tile from the tilemap. */
-	private void updateTile(int column, int row) {
-		setTile(column, row, mMap.getPixel(column % mColumns, row % mRows));
 	}
 	
 	/**

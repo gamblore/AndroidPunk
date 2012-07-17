@@ -5,11 +5,10 @@ import net.androidpunk.FP;
 import net.androidpunk.FP.TweenOptions;
 import net.androidpunk.World;
 import net.androidpunk.flashcompat.OnCompleteCallback;
-import net.androidpunk.graphics.Backdrop;
-import net.androidpunk.graphics.GraphicList;
-import net.androidpunk.graphics.Image;
-import net.androidpunk.graphics.SpriteMap;
-import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.Backdrop;
+import net.androidpunk.graphics.atlas.GraphicList;
+import net.androidpunk.graphics.atlas.Image;
+import net.androidpunk.graphics.atlas.SpriteMap;
 import net.androidpunk.masks.Hitbox;
 import net.androidpunk.masks.MaskList;
 import net.androidpunk.tweens.misc.AngleTween;
@@ -19,6 +18,9 @@ import net.androidpunk.tweens.motion.QuadMotion;
 import net.androidpunk.utils.Data;
 import net.androidpunk.utils.Ease;
 import net.androidpunk.utils.Input;
+
+import org.w3c.dom.Text;
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -76,7 +78,7 @@ public class MenuWorld extends World {
 		
 		mQuadMotion.setMotion(-(int) ogmoBm.getWidth()/6, 3*FP.screen.getHeight()/4,
 				FP.screen.getWidth(), FP.screen.getHeight(),
-				FP.screen.getWidth()/2 + logo.getWidth()/2, logo.y, 
+				FP.screen.getWidth()/2 + logo.getWidth()/2 + ogmoBm.getWidth()/6, logo.y, 
 				2.0f);
 		
 		VarTween vt = new VarTween();

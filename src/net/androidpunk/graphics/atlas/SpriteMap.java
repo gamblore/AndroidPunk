@@ -1,10 +1,14 @@
-package net.androidpunk.graphics;
+package net.androidpunk.graphics.atlas;
 
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import net.androidpunk.FP;
-import android.graphics.Bitmap;
+import net.androidpunk.graphics.opengl.SubTexture;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -12,7 +16,7 @@ import android.util.Log;
  * Performance-optimized animated Image. Can have multiple animations,
  * which draw frames from the provided source image to the screen.
  */
-public class SpriteMap extends Image {
+public class SpriteMap extends AtlasGraphic {
 	private static final String TAG = "SpriteMap";
 	
 	public abstract static class OnAnimationEndCallback {
@@ -46,13 +50,18 @@ public class SpriteMap extends Image {
 	protected int mFrame;
 	private float mTimer = 0;
 	
+	private int mFrameWidth;
+	private int mFrameHeight;
+	
+	private FloatBuffer mVertexBuffer = getDirectFloatBuffer(8);
+	private FloatBuffer mTextureBuffer = getDirectFloatBuffer(8);
 	
 	/**
 	 * Constructor. frame width = frame height = 0 and no callback.
 	 * @param	source			Source image.
 	 */
-	public SpriteMap(Bitmap source) {
-		this(source, 0, 0, null);
+	public SpriteMap(SubTexture subTexture) {
+		this(subTexture, 0, 0, null);
 	}
 	
 	/**
@@ -61,8 +70,8 @@ public class SpriteMap extends Image {
 	 * @param	frameWidth		Frame width.
 	 * @param	frameHeight		Frame height.
 	 */
-	public SpriteMap(Bitmap source, int frameWidth, int frameHeight) {
-		this(source, frameWidth, frameHeight, null);
+	public SpriteMap(SubTexture subTexture, int frameWidth, int frameHeight) {
+		this(subTexture, frameWidth, frameHeight, null);
 	}
 	
 	/**
@@ -72,52 +81,44 @@ public class SpriteMap extends Image {
 	 * @param	frameHeight		Frame height.
 	 * @param	callback		Optional callback function for animation end.
 	 */
-	public SpriteMap(Bitmap source, int frameWidth, int frameHeight, OnAnimationEndCallback callback) {
-		super(source, new Rect(0, 0, frameWidth, frameHeight));
-		Rect clipRect = getClipRect();
+	public SpriteMap(SubTexture subTexture, int frameWidth, int frameHeight, OnAnimationEndCallback callback) {
+		super(subTexture);
 		
-		if (frameWidth == 0)
-			clipRect.right = source.getWidth();
-		if (frameHeight == 0)
-			clipRect.bottom = source.getHeight();
+		mFrameWidth = frameWidth;
+		mFrameHeight = frameHeight;
 		
-		mWidth = source.getWidth();
-		mHeight = source.getHeight();
-		mColumns = mWidth / clipRect.width();
-		mRows = mHeight / clipRect.height();
+		mWidth = subTexture.getWidth();
+		mHeight = subTexture.getHeight();
+		mColumns = mWidth / frameWidth;
+		mRows = mHeight / frameHeight;
 		mFrameCount = mColumns * mRows;
 		this.callback = callback;
-		updateBuffer();
 		active = true;
+		
+		setGeometryBuffer(mVertexBuffer, 0, 0, mFrameWidth, mFrameHeight);
 	}
 	
-	/**
-	 * Updates the spritemap's buffer without clearing.
-	 */
-	public void updateBuffer() {
-		updateBuffer(true);
+	@Override
+	public void render(GL10 gl, Point point, Point camera) {
+		super.render(gl, point, camera);
+		mPoint.x = (int)(point.x + x - camera.x * scrollX);
+		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		
+		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
+		
+		setBuffers(gl, mVertexBuffer, mTextureBuffer);
+		
+		gl.glPushMatrix(); 
+		{
+			setMatrix(gl);
+			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		}
+		gl.glPopMatrix();
+		
+		unsetBuffers(gl);
 	}
 	
-	/**
-	 * Updates the spritemap's buffer.
-	 */
-	@Override 
-	public void updateBuffer(boolean clearBefore) {
-		// get position of the current frame
-		Rect clipRect = getClipRect();
-		int newX = (clipRect.width() * mFrame);
-		
-		// Happens in constructor call which does not have mWidth member.
-		int width = mSource.getWidth();
-		
-		clipRect.offsetTo(newX % width, (int)((int)(newX / width) * clipRect.height()));
 
-		mTexture.setCrop(clipRect);
-		//Log.d(TAG, String.format("Clipped to %s, frame %d", clipRect.toShortString(), mIndex));
-		// update the buffer
-		//super.updateBuffer(clearBefore);
-	}
-	
 	/** @private Updates the animation. */
 	@Override 
 	public void update() {
@@ -143,7 +144,6 @@ public class SpriteMap extends Image {
 				}
 				if (mAnim != null)
 					mFrame = (int)(mAnim.mFrames[mIndex]);
-				updateBuffer();
 			}
 		}
 	}
@@ -209,14 +209,12 @@ public class SpriteMap extends Image {
 		if (mAnim == null) {
 			mFrame = mIndex = 0;
 			complete = true;
-			updateBuffer();
 			return null;
 		}
 		mIndex = 0;
 		mTimer = 0;
 		mFrame = mAnim.mFrames[0];
 		complete = false;
-		updateBuffer();
 		return mAnim;
 	}
 	
@@ -271,7 +269,6 @@ public class SpriteMap extends Image {
 			return;
 		mFrame = frame;
 
-		updateBuffer();
 	}
 	
 	/**
@@ -314,7 +311,6 @@ public class SpriteMap extends Image {
 		if (mFrame == value) 
 			return;
 		mFrame = value;
-		updateBuffer();
 	}
 	
 	/**
@@ -332,7 +328,6 @@ public class SpriteMap extends Image {
 			return;
 		mIndex = value;
 		mFrame = mAnim.mFrames[mIndex];
-		updateBuffer();
 	}
 	
 	/**

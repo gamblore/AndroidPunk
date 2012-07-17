@@ -1,4 +1,4 @@
-package net.androidpunk.graphics;
+package net.androidpunk.graphics.atlas;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,14 +6,13 @@ import java.util.Map;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.FP;
-import net.androidpunk.Graphic;
 import net.androidpunk.android.OpenGLSystem;
-import net.androidpunk.android.OpenGLSystem.OpenGLRunnable;
 import net.androidpunk.flashcompat.OnEaseCallback;
+import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -23,7 +22,7 @@ import android.util.Log;
  * Particle emitter used for emitting and rendering particle sprites.
  * Good rendering performance with large amounts of particles.
  */
-public class Emitter extends Graphic {
+public class Emitter extends AtlasGraphic {
 
 	private static final String TAG = "Emitter";
 	
@@ -34,7 +33,6 @@ public class Emitter extends Graphic {
 	private int mParticleCount;
 
 	// Source information.
-	private Bitmap mSource;
 	private int mWidth;
 	private int mHeight;
 	private int mFrameWidth;
@@ -54,7 +52,7 @@ public class Emitter extends Graphic {
 	 * Constructor. Sets the source image to use for newly added particle types.
 	 * @param	source			Source image.
 	 */
-	public Emitter(Bitmap source) {
+	public Emitter(SubTexture source) {
 		this(source, source.getWidth(), source.getHeight());
 	}
 	
@@ -64,40 +62,32 @@ public class Emitter extends Graphic {
 	 * @param	frameWidth		Frame width.
 	 * @param	frameHeight		Frame height.
 	 */
-	public Emitter(Bitmap source, int frameWidth, int frameHeight)  {
+	public Emitter(SubTexture source, int frameWidth, int frameHeight)  {
+		super(source);
 		setSource(source, frameWidth, frameHeight);
 		active = true;
 	}
 	
 	
-	public void setSource(Bitmap source) {
+	public void setSource(SubTexture source) {
 		setSource(source, 0, 0);
 	}
+	
 	/**
 	 * Changes the source image to use for newly added particle types.
 	 * @param	source			Source image.
 	 * @param	frameWidth		Frame width.
 	 * @param	frameHeight		Frame height.
 	 */
-	public void setSource(Bitmap source, int frameWidth, int frameHeight) {
-		mSource = source;
-		if (mSource == null) {
-			Log.e(TAG, "Invalid source image.");
-			return;
-		}
-		mWidth = mSource.getWidth();
-		mHeight = mSource.getHeight();
+	public void setSource(SubTexture source, int frameWidth, int frameHeight) {
+		mSubTexture = source;
+		
+		mWidth = mSubTexture.getWidth();
+		mHeight = mSubTexture.getHeight();
 		
 		mFrameWidth = frameWidth != 0 ? frameWidth : mWidth;
 		mFrameHeight = frameHeight != 0 ? frameHeight : mHeight;
 		mFrameCount = (int)(mWidth / mFrameWidth) * (int)(mHeight / mFrameHeight);
-		
-		OpenGLSystem.postRunnable(new OpenGLRunnable() {
-			@Override
-			public void run(GL10 gl) {
-				mTexture.createTexture(gl, mSource);
-			}
-		});
 	}
 	
 	@Override 
@@ -142,12 +132,13 @@ public class Emitter extends Graphic {
 	
 	/** @private Renders the particles. */
 	@Override 
-	public void render(Bitmap target, Point point, Point camera) {
+	public void render(GL10 gl, Point point, Point camera) {
+		super.render(gl, point, camera);
+		
 		// quit if there are no particles
 		if (mParticle == null)
 			return;
 		
-		GL10 gl = OpenGLSystem.getGL();
 		// get rendering position
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
@@ -172,45 +163,35 @@ public class Emitter extends Graphic {
 			td = (type.mEase == null) ? t : type.mEase.ease(t);
 			mP.x = (int)(mPoint.x + p.mX + p.mMoveX * td);
 			mP.y = (int)(mPoint.y + p.mY + p.mMoveY * td);
+			
+			gl.glPushMatrix(); 
+			{
+				setGeometryBuffer(QUAD_FLOAT_BUFFER_1, mP.x, mP.y, rect.width(), rect.height());
+				if (type.mFrames != null) {
+					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSubTexture, type.mFrames[(int)(td * type.mFrameCount)], rect.width(), rect.height());
+				} else {
+					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSubTexture, 0, rect.width(), rect.height());
+				}
+				
+				setBuffers(gl, QUAD_FLOAT_BUFFER_1, QUAD_FLOAT_BUFFER_2);
+				
+				
+				// draw particle
 
-			// get frame
-			if (type.mFrames != null) {
-				rect.offsetTo(rect.width() * type.mFrames[(int)(td * type.mFrameCount)], (int)(rect.left / type.mWidth) * rect.height());
-				rect.offsetTo(rect.left % type.mWidth, 0);
-			} else {
-				rect.offsetTo(0, 0);
-			}
-			
-			type.mTexture.setCrop(rect);
-			
-			// draw particle
-			if (type.mBuffer != null) {
 				// get color
 				td = (type.mColorEase == null) ? t : type.mColorEase.ease(t);
-				
-				mTexture.red = (type.mRed + type.mRedRange * td) / 255.0f;
-				mTexture.green = (type.mGreen + type.mGreenRange * td) / 255.0f;
-				mTexture.blue = (type.mBlue + type.mBlueRange * td) / 255.0f;
-				mTexture.alpha = (type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t))) / 255.0f;
-				
-				OpenGLSystem.drawTexture(gl, mP.x, mP.y, rect.width(), rect.height(), mTexture);
-				/*
-				paint.reset();
-				paint.setColorFilter(mTint);
-				mCanvas.setBitmap(target);
-				Rect r = FP.rect;
-				r.set(mP.x, mP.y, mP.x + type.mBufferRect.width(), mP.y + type.mBufferRect.height());
-				//Log.d(TAG, String.format("Drawing particle w/ alpha %.2f from %s to %s", matrix[18], type.mBufferRect.toShortString(), r.toShortString()));
-				mCanvas.drawBitmap(type.mSource, type.mBufferRect, r, paint);
-				*/
+					
+				float red = (type.mRed + type.mRedRange * td) / 255.0f;
+				float green = (type.mGreen + type.mGreenRange * td) / 255.0f;
+				float blue = (type.mBlue + type.mBlueRange * td) / 255.0f;
+				float alpha = (type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t))) / 255.0f;
+				gl.glColor4f(red, green, blue, alpha);
+				gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 			}
-			else {
-				Rect r = FP.rect;
-				r.set(mP.x, mP.y, mP.x + rect.width(), mP.y + rect.height());
-				OpenGLSystem.drawTexture(gl, mP.x, mP.y, rect.width(), rect.height(), mTexture);
-				//mCanvas.setBitmap(target);
-				//mCanvas.drawBitmap(type.mSource, rect, r, null);
-			}
+			gl.glPopMatrix();
+			
+			unsetBuffers(gl);
+			
 
 			// get next particle
 			p = p.mNext;
@@ -237,7 +218,7 @@ public class Emitter extends Graphic {
 			Log.e(TAG, "Cannot add multiple particle types of the same name");
 			return mTypes.get(name);
 		}
-		ParticleType p = new ParticleType(name, frames, mSource, mFrameWidth, mFrameHeight);
+		ParticleType p = new ParticleType(name, frames, mSubTexture, mFrameWidth, mFrameHeight);
 		mTypes.put(name, p);
 		return p; 
 	}

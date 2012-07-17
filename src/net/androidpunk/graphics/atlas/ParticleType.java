@@ -1,8 +1,8 @@
-package net.androidpunk.graphics;
+package net.androidpunk.graphics.atlas;
 
 import net.androidpunk.FP;
-import net.androidpunk.android.Texture;
 import net.androidpunk.flashcompat.OnEaseCallback;
+import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
@@ -18,7 +18,6 @@ public class ParticleType {
 	
 	// Particle information.
 	protected String mName;
-	protected Bitmap mSource;
 	protected int mWidth;
 	protected Rect mFrame;
 	protected int[] mFrames;
@@ -51,7 +50,7 @@ public class ParticleType {
 	protected Bitmap mBuffer;
 	protected Rect mBufferRect = new Rect();
 	
-	protected Texture mTexture = new Texture();
+	protected SubTexture mSubTexture;
 	
 	/**
 	 * Constructor.
@@ -62,9 +61,9 @@ public class ParticleType {
 	 * @param	frameHeight		Frame height.
 	 * @param	frameCount		Frame count.
 	 */
-	public ParticleType(String name, int[] frames, Bitmap source, int frameWidth, int frameHeight) {
+	public ParticleType(String name, int[] frames, SubTexture source, int frameWidth, int frameHeight) {
 		mName = name;
-		mSource = source;
+		mSubTexture = source;
 		mWidth = source.getWidth();
 		mFrame = new Rect(0, 0, frameWidth, frameHeight);
 		mFrames = frames;

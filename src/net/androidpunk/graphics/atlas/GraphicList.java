@@ -1,9 +1,10 @@
-package net.androidpunk.graphics;
+package net.androidpunk.graphics.atlas;
 
 import java.util.Vector;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import net.androidpunk.Graphic;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 
 /**
@@ -41,7 +42,7 @@ public class GraphicList extends Graphic {
 	
 	/** @private Renders the Graphics in the list. */
 	@Override
-	public void render(Bitmap target, Point point, Point camera) {
+	public void render(GL10 gl, Point point, Point camera) {
 		point.x += x;
 		point.y += y;
 		camera.x *= scrollX;
@@ -58,7 +59,8 @@ public class GraphicList extends Graphic {
 					mPoint.x = mPoint.y = 0;
 				mCamera.x = camera.x;
 				mCamera.y = camera.y;
-				g.render(target, mPoint, mCamera);
+				
+				g.render(gl, mPoint, mCamera);
 			}
 		}
 	}

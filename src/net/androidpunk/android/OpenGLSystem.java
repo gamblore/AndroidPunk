@@ -8,7 +8,7 @@ import java.util.Queue;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.opengl.Matrix;
+import net.androidpunk.graphics.opengl.Texture;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -22,6 +22,7 @@ public class OpenGLSystem {
 	private static final float vertexArray[] = new float[8];
 	private static final float textureArray[] = new float[8];
 	
+	private static int mCurrentTexture = -1;
 	private static final Queue<OpenGLRunnable> mQueue = new LinkedList<OpenGLRunnable>();
 	
 	private static GL10 mGL;
@@ -39,31 +40,56 @@ public class OpenGLSystem {
     public static abstract class OpenGLRunnable {
     	public abstract void run(GL10 gl);
     }
+    
+    
     /**
      * Pop runnables off the queue until time is up.
      * @param ms the amount of time to process queue elements for.
      */
     public static void processQueue(long ms) {
-    	long start = SystemClock.uptimeMillis();
-    	long now = start;
     	OpenGLRunnable r;
-    	while(true) {
-    		now = SystemClock.uptimeMillis();
-    		if (now > start + ms) {
-    			// Time is up for this frame.
-    			return;
-    		}
-    		r = mQueue.poll();
-    		if (r == null) {
-    			// No more elements in the queue.
-    			return;
-    		}
-    		r.run(mGL);
+    	synchronized (mQueue) {
+    		long start = SystemClock.uptimeMillis();
+        	long now = start;
+	    	while(true) {
+	    		now = SystemClock.uptimeMillis();
+	    		if (now > start + ms) {
+	    			// Time is up for this frame.
+	    			Log.d(TAG, "Times up " + mQueue.size() + " left.");
+	    			return;
+	    		}
+	    		r = mQueue.poll();
+	    		if (r == null) {
+	    			// No more elements in the queue.
+	    			return;
+	    		}
+	    		r.run(mGL);
+	    	}
     	}
     }
     
+    /**
+     * Pop runnables off the queue until it is empty.
+     */
+    public static void processQueue() {
+    	OpenGLRunnable r;
+    	synchronized (mQueue) {
+	    	while(true) {
+	    		r = mQueue.poll();
+	    		if (r == null) {
+	    			// No more elements in the queue.
+	    			return;
+	    		}
+	    		r.run(mGL);
+	    	}
+    	}
+    }
+    
+    
     public static void postRunnable(OpenGLRunnable r) {
-    	mQueue.add(r);
+    	synchronized (mQueue) {
+    		mQueue.add(r);
+		}
     }
     
     public static final void setGL(GL10 gl) {
@@ -74,6 +100,16 @@ public class OpenGLSystem {
         return mGL;
     }
     
+    public static int getTextureName() {
+    	return mCurrentTexture;
+    }
+    
+    public static void setTexture(GL10 gl, Texture texture) {
+    	mCurrentTexture = texture.mTextureName;
+    	gl.glEnable(GL10.GL_TEXTURE_2D);
+    	gl.glBindTexture(GL10.GL_TEXTURE_2D, mCurrentTexture);
+    }
+    /*
     public static final void drawTexture(GL10 gl, int x, int y, int w, int h, Texture texture) {
     	if (!texture.isDrawable()) {
     		return;
@@ -110,11 +146,12 @@ public class OpenGLSystem {
     	gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
     }
-    
+    */
     public void reset() {
         
     }
     
+    /*
     private static String getGlErrStr(int error) {
     	switch (error) {
     	case GL10.GL_NO_ERROR:           return "GL_NO_ERROR";
@@ -134,4 +171,5 @@ public class OpenGLSystem {
     		Thread.dumpStack();
     	}
     }
+    */
 }

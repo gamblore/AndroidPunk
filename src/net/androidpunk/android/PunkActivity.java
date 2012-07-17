@@ -50,6 +50,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	private static APRenderer mRenderer;
 	//private SurfaceHolder mSurfaceHolder;
 		
+	private static final Object mUpdateLock = new Object();
+	
 	private Engine mEngine;
 	private Thread mGameThread;
 	//private Thread mRenderThread;
@@ -80,13 +82,15 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			OpenGLSystem.setGL(gl);
 			
 			// process queue runnables for a max of 8ms.
-			OpenGLSystem.processQueue(8);
-			
-			gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-			// Iterate loop and draw them.
-			//TODO remove FP.backbuffer once moved to OpenGL
-			if (mEngine != null && FP.backBuffer != null) {
-				mEngine.render();
+			synchronized (mUpdateLock) {
+				gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+	
+				OpenGLSystem.processQueue(14);
+				
+				// Iterate loop and draw them.
+				if (mEngine != null) {
+					mEngine.render();
+				}
 			}
 			OpenGLSystem.setGL(null);
 			
@@ -122,7 +126,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        
 	        //This should give it a bit of time to setup anything created during initial surface load.
 	        OpenGLSystem.setGL(gl);
-			OpenGLSystem.processQueue(32);
+			OpenGLSystem.processQueue();
 			OpenGLSystem.setGL(null);
 		}
 
@@ -131,10 +135,10 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	         * Some one-time OpenGL initialization can be made here probably based
 	         * on features of this particular context
 	         */
-			gl.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			
 	        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 
-	        gl.glClearColor(0.0f, 0.0f, 0.0f, 1);
+	        gl.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	        gl.glShadeModel(GL10.GL_FLAT);
 	       
 	        gl.glEnable(GL10.GL_TEXTURE_2D);
@@ -259,7 +263,9 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			if (mStarted) {
 				long now = SystemClock.uptimeMillis();
 				Engine.fire(Event.ENTER_FRAME);
-				Engine.checkEvents();
+				synchronized (mUpdateLock) {
+					Engine.checkEvents();
+				}
 				long delta = SystemClock.uptimeMillis() - now;
 				if (delta < 16) {
 					try {

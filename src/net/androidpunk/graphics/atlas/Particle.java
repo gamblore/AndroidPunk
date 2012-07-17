@@ -1,4 +1,4 @@
-package net.androidpunk.graphics;
+package net.androidpunk.graphics.atlas;
 
 /**
  * Used by the Emitter class to track an existing Particle.

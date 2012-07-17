@@ -2,12 +2,12 @@ package net.androidpunk;
 
 import java.util.Vector;
 
-import net.androidpunk.graphics.GraphicList;
+import net.androidpunk.android.OpenGLSystem;
+import net.androidpunk.graphics.atlas.GraphicList;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class Entity extends Tweener {
 
@@ -144,7 +144,8 @@ public class Entity extends Tweener {
 				mPoint.x = mPoint.y = 0;
 			mCamera.x = FP.camera.x;
 			mCamera.y = FP.camera.y;
-			mGraphic.render(renderTarget != null ? renderTarget : FP.buffer, mPoint, mCamera);
+			//TODO replace this with GL10 gl
+			mGraphic.render(OpenGLSystem.getGL(), mPoint, mCamera);
 			//Log.d(TAG, "Entity rendered to " + FP.buffer.toString());
 		}
 	}

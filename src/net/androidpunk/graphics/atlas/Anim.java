@@ -1,4 +1,4 @@
-package net.androidpunk.graphics;
+package net.androidpunk.graphics.atlas;
 
 /**
  * Template used by Spritemap to define animations. Don't create

@@ -38,7 +38,8 @@ public class Ogmo extends Entity {
 		mMap = new SpriteMap(ogmo, (int) ogmo.getWidth()/6, (int) ogmo.getHeight());
 		//mMap.add(ANIM_STANDING, new int[] {0}, 0);
 		mMap.add(ANIM_WALKING, FP.frames(0, 5), 20);
-		setStanding();
+		mMap.setFrame(0);
+		
 		//mMap.play(ANIM_STANDING);
 		setGraphic(mMap);
 		//setGraphic(new Image(FP.getBitmap(R.drawable.ogmo), new Rect(45,0,90,45)));
@@ -114,7 +115,7 @@ public class Ogmo extends Entity {
 		
 		if (Math.abs(deltax) < 1) {
 			mVelocity.x = 0;
-			setStanding();
+			mMap.setFrame(0);
 		} else {
 			mMap.play(ANIM_WALKING);
 			if (mVelocity.x > 0) {
@@ -124,14 +125,6 @@ public class Ogmo extends Entity {
 			}
 		}
 		//Log.d(TAG, String.format("Velocity %.2f %.2f", mVelocity.x, mVelocity.y));
-	}
-	
-	private void setStanding() {
-		if (mMap.getFlipped()) {
-			mMap.setFrame(5);
-		} else {
-			mMap.setFrame(0);
-		}
 	}
 	
 }
