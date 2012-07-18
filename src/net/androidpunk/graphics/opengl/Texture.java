@@ -45,10 +45,23 @@ public class Texture {
 	// Has the texture been loaded.
 	private boolean mLoaded = false;
 	
+	
+	public static final int nextHigher2(int v) {
+		if (v == 0)
+			return 1;
+		v--;
+		v |= v >> 1;
+		v |= v >> 2;
+		v |= v >> 4;
+		v |= v >> 8;
+		v |= v >> 16;
+		return ++v;
+	}
+	
 	/**
 	 * Do nothing 
 	 */
-	protected Texture() {
+	public Texture() {
 		
 	}
 	
@@ -63,7 +76,16 @@ public class Texture {
 	}
 	
 	/**
-	 * Set the texture bitmap to an asset. And load it.
+	 * Create a texture from an already in memory bitmap. This will recycle the bitmap.
+	 * @param source The bitmap to load in.
+	 */
+	public Texture(Bitmap source) {
+		mSource = source;
+		load();
+	}
+	
+	/**
+	 * Set the texture bitmap to an asset and load it.
 	 * @param texturePath Asset path to the image.
 	 */
 	public void setTextureBitmap(String texturePath) {
@@ -75,6 +97,16 @@ public class Texture {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		load();
+	}
+	
+	/**
+	 * Set the texture bitmap and load it.
+	 * @param texturePath Asset path to the image.
+	 */
+	public void setTextureBitmap(Bitmap texture) {
+		mSource = texture;
+
 		load();
 	}
 	
@@ -165,6 +197,7 @@ public class Texture {
 		int textures[] = new int[1];
 		textures[0] = mTextureName;
 		gl.glDeleteTextures(1, textures, 0);
+		mLoaded = false;
 	}
 	
 	/**

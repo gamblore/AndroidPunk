@@ -134,6 +134,9 @@ public class Emitter extends AtlasGraphic {
 	@Override 
 	public void render(GL10 gl, Point point, Point camera) {
 		super.render(gl, point, camera);
+		if (!getAtlas().isLoaded()) {
+			return;
+		}
 		
 		// quit if there are no particles
 		if (mParticle == null)

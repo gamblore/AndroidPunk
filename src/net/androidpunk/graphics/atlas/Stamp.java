@@ -42,6 +42,11 @@ public class Stamp extends AtlasGraphic {
 	/** @private Renders the Graphic. */
 	@Override 
 	public void render(GL10 gl, Point point, Point camera) {
+		super.render(gl, point, camera);
+		if (!getAtlas().isLoaded()) {
+			return;
+		}
+		
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		

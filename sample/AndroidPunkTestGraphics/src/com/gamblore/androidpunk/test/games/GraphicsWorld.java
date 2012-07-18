@@ -3,6 +3,7 @@ package com.gamblore.androidpunk.test.games;
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
+import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.Emitter;
 import net.androidpunk.graphics.atlas.GraphicList;
@@ -12,11 +13,7 @@ import net.androidpunk.graphics.atlas.Stamp;
 import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.utils.Input;
-
-import org.w3c.dom.Text;
-
-import android.graphics.Bitmap;
-import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.Log;
 
 public class GraphicsWorld extends World {
@@ -100,12 +97,12 @@ public class GraphicsWorld extends World {
 		
 		mEntities[5].setGraphic(mStamp);
 		
-		/*
+		
 		//Text
-		Text.size = 34;
-		mText = new Text("Hi there!", 0, 0);
+		Typeface tf = Text.getFontFromRes(R.raw.font_fixed_bold);
+		mText = new Text("Hi there!", 32, tf);
+		//mText.setColor(0xffffffff);
 		mEntities[6].setGraphic(mText);
-		*/
 		
 		/*
 		//TiledImage

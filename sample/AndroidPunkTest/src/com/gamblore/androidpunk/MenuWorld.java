@@ -67,8 +67,7 @@ public class MenuWorld extends World {
 		ogmo = new SpriteMap(ogmoBm, (int) ogmoBm.getWidth()/6, (int) ogmoBm.getHeight());
 		ogmo.add(ANIM_WALKING, FP.frames(0, 5), 20);
 		
-		Text.size = 36;
-		startText = new Text("Tap to Start", 0,0);
+		startText = new Text("Tap to Start", 36,0);
 		startText.x = FP.screen.getWidth()/2 - startText.getWidth()/2;
 		startText.y = 3*FP.screen.getHeight()/4;
 		

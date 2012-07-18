@@ -85,9 +85,9 @@ public class AtlasGraphic extends Graphic {
 	public void render(GL10 gl, Point point, Point camera) {
 		getAtlas().mColorFilter.setColor(mColor);
 		getAtlas().mColorFilter.applyColorFilter(gl);
-		if ( OpenGLSystem.getTextureName() != getAtlas().mTextureName) {
+		//if ( OpenGLSystem.getTextureName() != getAtlas().mTextureName) {
 			OpenGLSystem.setTexture(gl, getAtlas());
-		}
+		//}
 	}
 	
 	public static void setBuffers(GL10 gl, FloatBuffer vertexBuffer, FloatBuffer textureBuffer) {
