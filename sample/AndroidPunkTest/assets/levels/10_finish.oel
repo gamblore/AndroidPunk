@@ -63,10 +63,10 @@
   <Objects>
     <PlayerStart id="0" x="64" y="288" />
     <Exit id="1" x="64" y="864" />
-    <Lightning id="2" x="768" y="64" width="32" height="128" flipped="False" />
-    <Lightning id="3" x="416" y="640" width="64" height="32" flipped="False" />
-    <Lightning id="4" x="704" y="512" width="64" height="32" flipped="True" />
-    <Lightning id="5" x="1504" y="64" width="32" height="448" flipped="False" />
+    <Lightning id="2" x="800" y="64" width="128" height="32" angle="90" />
+    <Lightning id="3" x="416" y="640" width="64" height="32" angle="0" />
+    <Lightning id="4" x="768" y="544" width="64" height="32" angle="180" />
+    <Lightning id="5" x="1536" y="64" width="448" height="32" angle="90" />
     <Enemy id="6" x="848" y="288" speed="100">
       <node x="704" y="288" />
       <node x="960" y="288" />
@@ -82,14 +82,14 @@
       <node x="1312" y="480" />
       <node x="1104" y="480" />
     </Enemy>
-    <Lightning id="10" x="752" y="864" width="32" height="64" flipped="True" />
-    <Lightning id="11" x="560" y="800" width="32" height="80" flipped="False" />
+    <Lightning id="10" x="752" y="928" width="64" height="32" angle="270" />
+    <Lightning id="11" x="592" y="800" width="64" height="32" angle="90" />
     <Enemy id="12" x="288" y="896" speed="100">
       <node x="160" y="896" />
       <node x="560" y="896" />
       <node x="288" y="896" />
     </Enemy>
-    <Lightning id="13" x="768" y="640" width="64" height="32" flipped="False" />
+    <Lightning id="13" x="768" y="640" width="64" height="32" angle="0" />
     <Enemy id="9" x="544" y="480" speed="100">
       <node x="672" y="480" />
       <node x="432" y="480" />

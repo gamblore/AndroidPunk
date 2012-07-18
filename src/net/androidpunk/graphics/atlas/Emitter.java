@@ -193,9 +193,6 @@ public class Emitter extends AtlasGraphic {
 			}
 			gl.glPopMatrix();
 			
-			unsetBuffers(gl);
-			
-
 			// get next particle
 			p = p.mNext;
 		}

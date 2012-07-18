@@ -146,10 +146,7 @@ public class Text extends Graphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     	gl.glVertexPointer(2, GL10.GL_FLOAT, 0, mVertexBuffer);
     	
     	gl.glPushMatrix();
@@ -158,8 +155,6 @@ public class Text extends Graphic {
 			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
     	}
     	gl.glPopMatrix();
-    	gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 	}
 	
 	protected void setMatrix(GL10 gl) {
@@ -189,6 +184,14 @@ public class Text extends Graphic {
 	 */
 	public void setColor(int value) {
 		mColor = value;
+	}
+	
+	public int getWidth() {
+		return mRect.width();
+	}
+
+	public int getHeight() {
+		return mRect.height();
 	}
 	
 	public static final Typeface getFontFromRes(int resource)

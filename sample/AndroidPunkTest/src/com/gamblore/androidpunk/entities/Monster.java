@@ -2,11 +2,11 @@ package com.gamblore.androidpunk.entities;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
-import net.androidpunk.graphics.SpriteMap;
+import net.androidpunk.graphics.atlas.SpriteMap;
+import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.tweens.motion.LinearPath;
-import android.graphics.Bitmap;
 
-import com.gamblore.androidpunk.R;
+import com.gamblore.androidpunk.Main;
 
 public class Monster extends Entity {
 	
@@ -23,7 +23,7 @@ public class Monster extends Entity {
 	public Monster(int x, int y) {
 		super(x, y);
 		
-		Bitmap enemy = FP.getBitmap(R.drawable.enemy);
+		SubTexture enemy = Main.mAtlas.getSubTexture("enemy");
 		mMap = new SpriteMap(enemy, (int) enemy.getWidth()/6, (int) enemy.getHeight());
 		//mMap.add(ANIM_STANDING, new int[] {0}, 0);
 		mMap.add(ANIM_WALKING, FP.frames(0, 5), 20);
@@ -46,18 +46,14 @@ public class Monster extends Entity {
 			y = (int)mPath.y;
 		}
 		if (lastX > x) {
-			mMap.setFlipped(true);
+			mMap.scaleX = -1;
 		} else if (lastX < x) {
-			mMap.setFlipped(false);
+			mMap.scaleX = 1;
 		}
 	}
 
 	private void setStanding() {
-		if (mMap.getFlipped()) {
-			mMap.setFrame(5);
-		} else {
-			mMap.setFrame(0);
-		}
+		mMap.setFrame(0);
 	}
 	
 	public void setSpeed(float speed) {

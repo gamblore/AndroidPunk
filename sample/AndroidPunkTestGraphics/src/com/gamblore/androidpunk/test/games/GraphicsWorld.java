@@ -11,8 +11,11 @@ import net.androidpunk.graphics.atlas.Image;
 import net.androidpunk.graphics.atlas.SpriteMap;
 import net.androidpunk.graphics.atlas.Stamp;
 import net.androidpunk.graphics.atlas.TileMap;
+import net.androidpunk.graphics.atlas.TiledImage;
+import net.androidpunk.graphics.atlas.TiledSpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.utils.Input;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.Log;
 
@@ -27,8 +30,8 @@ public class GraphicsWorld extends World {
 	private SpriteMap mSpriteMap;
 	private Stamp mStamp;
 	private Text mText;
-	//private TiledImage mTiledImage1, mTiledImage2;
-	//private TiledSpriteMap mTiledSpriteMap;
+	private TiledImage mTiledImage1, mTiledImage2;
+	private TiledSpriteMap mTiledSpriteMap;
 	private TileMap mTileMap;
 	
 	private int counter = 0;
@@ -104,10 +107,10 @@ public class GraphicsWorld extends World {
 		//mText.setColor(0xffffffff);
 		mEntities[6].setGraphic(mText);
 		
-		/*
+		
 		//TiledImage
-		Bitmap cement = FP.getBitmap(R.drawable.grey_cement);
-		Bitmap grass = FP.getBitmap(R.drawable.grass);
+		SubTexture cement = Main.getAtlas().getSubTexture("grey_cement");
+		SubTexture grass = Main.getAtlas().getSubTexture("grass");
 		mTiledImage1 = new TiledImage(cement, cement.getWidth()*5 , cement.getHeight()*3);
 		Rect clipRect = new Rect();
 		clipRect.set(grass.getWidth()/6, grass.getHeight()/3, 2*grass.getWidth()/6, 2*grass.getHeight()/3);
@@ -115,17 +118,19 @@ public class GraphicsWorld extends World {
 		mTiledImage2.x = cement.getWidth()*6;
 		
 		mEntities[7].setGraphic(new GraphicList(mTiledImage1, mTiledImage2));
-		*/
 		
-		/*
+		
+		
 		//TiledSpriteMap
-		Bitmap lightning = FP.getBitmap(R.drawable.lightning);
+		SubTexture lightning = Main.getAtlas().getSubTexture("lightning");
 		mTiledSpriteMap = new TiledSpriteMap(lightning, lightning.getWidth()/5, lightning.getHeight(), 5*lightning.getWidth()/5, lightning.getHeight());
 		mTiledSpriteMap.add("test", FP.frames(0, 4), 15);
 		mTiledSpriteMap.play("test");
+		mTiledSpriteMap.x = FP.screen.getWidth()/2;
+		mTiledSpriteMap.y = FP.screen.getHeight()/2;
 		
 		mEntities[8].setGraphic(mTiledSpriteMap);
-		*/
+		
 		
 		//TileMap
 		SubTexture desert = Main.getAtlas().getSubTexture("desert");
@@ -170,6 +175,16 @@ public class GraphicsWorld extends World {
 				mImage.scaleX *= -1;
 			}
 			
+			counter++;
+			break;
+		case 8:
+			if (counter > 50) {
+				counter = 0;
+				mTiledSpriteMap.angle += 90;
+				if (mTiledSpriteMap.angle == 360) {
+					mTiledSpriteMap.angle = 0;
+				}
+			}
 			counter++;
 			break;
 		default:

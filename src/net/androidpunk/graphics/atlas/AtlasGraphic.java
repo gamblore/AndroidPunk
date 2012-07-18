@@ -14,7 +14,6 @@ import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.graphics.opengl.Texture;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class AtlasGraphic extends Graphic {
 	
@@ -55,7 +54,7 @@ public class AtlasGraphic extends Graphic {
 	protected static final FloatBuffer QUAD_FLOAT_BUFFER_1 = getDirectFloatBuffer(8);
 	protected static final FloatBuffer QUAD_FLOAT_BUFFER_2 = getDirectFloatBuffer(8);
 	
-	private int mColor = 0xffffffff;
+	protected int mColor = 0xffffffff;
 	
 	private Texture mAtlas;
 	
@@ -92,15 +91,8 @@ public class AtlasGraphic extends Graphic {
 	
 	public static void setBuffers(GL10 gl, FloatBuffer vertexBuffer, FloatBuffer textureBuffer) {
 		gl.glEnable(GL10.GL_TEXTURE_2D);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     	gl.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
-	}
-	
-	public static void unsetBuffers(GL10 gl) {
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 	}
 	
 	public static FloatBuffer setGeometryBuffer(FloatBuffer fb, int x, int y, int width, int height) {
@@ -185,4 +177,27 @@ public class AtlasGraphic extends Graphic {
 		mColor = value;
 	}
 	
+	/**
+	 * Get the width of the graphic.
+	 * @return width
+	 */
+	public int getWidth() {
+		return mSubTexture.getWidth();
+	}
+	
+	/**
+	 * Get the height of the graphic.
+	 * @return height
+	 */
+	public int getHeight() {
+		return mSubTexture.getHeight();
+	}
+	
+	/**
+	 * Centers the Image's originX/Y to its center.
+	 */
+	public void centerOrigin() {
+		originX = mSubTexture.getWidth() / 2;
+		originY = mSubTexture.getHeight() / 2;
+	}
 }

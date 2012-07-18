@@ -11,10 +11,10 @@ import android.test.MoreAsserts;
 
 public class Image extends AtlasGraphic {
 
-	public Rect mClipRect = new Rect();
+	protected Rect mClipRect = new Rect();
 	
-	private FloatBuffer mVertexBuffer = AtlasGraphic.getDirectFloatBuffer(8);
-	private FloatBuffer mTextureBuffer = AtlasGraphic.getDirectFloatBuffer(8);
+	protected FloatBuffer mVertexBuffer = AtlasGraphic.getDirectFloatBuffer(8);
+	protected FloatBuffer mTextureBuffer = AtlasGraphic.getDirectFloatBuffer(8);
 	
 	public Image(SubTexture subTexture) {
 		this(subTexture, null);
@@ -37,8 +37,8 @@ public class Image extends AtlasGraphic {
 		AtlasGraphic.setGeometryBuffer(mVertexBuffer, 0, 0, mClipRect.width(), mClipRect.height());
 		AtlasGraphic.setTextureBuffer(mTextureBuffer, subTexture.getTexture(), mClipRect);
 		
-		originX = mClipRect.width()/2;
-		originY = mClipRect.height()/2;
+		originX = mClipRect.left + mClipRect.width()/2;
+		originY = mClipRect.top + mClipRect.height()/2;
 	}
 
 	@Override
@@ -59,6 +59,17 @@ public class Image extends AtlasGraphic {
 			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		}
 		gl.glPopMatrix();
-		unsetBuffers(gl);
 	}
+
+	@Override
+	public int getWidth() {
+		return mClipRect.width();
+	}
+
+	@Override
+	public int getHeight() {
+		return mClipRect.height();
+	}
+	
+	
 }

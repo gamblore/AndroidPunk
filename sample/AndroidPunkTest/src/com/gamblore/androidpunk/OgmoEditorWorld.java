@@ -6,7 +6,8 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
 import net.androidpunk.graphics.Text;
-import net.androidpunk.graphics.TileMap;
+import net.androidpunk.graphics.atlas.TileMap;
+import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.masks.Grid;
 import net.androidpunk.utils.Data;
 
@@ -15,7 +16,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.gamblore.androidpunk.entities.Exit;
@@ -92,15 +92,16 @@ public class OgmoEditorWorld extends World {
 			String tileset = n.getAttributes().getNamedItem("tileset").getNodeValue();
 			int res;
 			int resWidth, resHeight;
-			Bitmap bm;
+			SubTexture st;
+			
 			if ("grass".equals(tileset)) {
-				bm = FP.getBitmap(R.drawable.grass);
-				resWidth = bm.getWidth()/6;
-				resHeight = bm.getHeight()/3;
+				st = Main.mAtlas.getSubTexture("grass");
+				resWidth = st.getWidth()/6;
+				resHeight = st.getHeight()/3;
 			} else if ("desert".equals(tileset)) {
-				bm = FP.getBitmap(R.drawable.desert);
-				resWidth = bm.getWidth()/6;
-				resHeight = bm.getHeight()/3;
+				st = Main.mAtlas.getSubTexture("desert");
+				resWidth = st.getWidth()/6;
+				resHeight = st.getHeight()/3;
 			/*	
 			} else if ("grass_box_tiles".equals(tileset)) {
 				bm = FP.getBitmap(R.drawable.grass_box_tiles);
@@ -108,15 +109,15 @@ public class OgmoEditorWorld extends World {
 				resHeight = bm.getHeight()/3;
 			*/
 			} else {
-				bm = FP.getBitmap(R.drawable.grey_cement);
+				st = Main.mAtlas.getSubTexture("grey_cement");
 				res = R.drawable.grey_cement;
-				resWidth = bm.getWidth();
-				resHeight = bm.getHeight();
+				resWidth = st.getWidth();
+				resHeight = st.getHeight();
 			}
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String tilescsv = child.getTextContent();
-				TileMap tileMap = new TileMap(bm, lWidth, lHeight, resWidth, resHeight);
+				TileMap tileMap = new TileMap(st, lWidth, lHeight, resWidth, resHeight);
 				tileMap.loadFromString(tilescsv);
 				mLevel.setGraphic(tileMap);
 			}
@@ -166,8 +167,7 @@ public class OgmoEditorWorld extends World {
 					
 					Entity e = new Entity(x, y);
 					e.setLayer(100);
-					Text.size = 26;
-					Text t = new Text(text, 0, 0);
+					Text t = new Text(text, 26, Main.mTypeface);
 					
 					e.setGraphic(t);
 					t.setColor(0xffffffff);
@@ -178,9 +178,9 @@ public class OgmoEditorWorld extends World {
 					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
 					int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
 					int height = Integer.parseInt(atts.getNamedItem("height").getNodeValue());
-					boolean flipped = Boolean.parseBoolean(atts.getNamedItem("flipped").getNodeValue());
+					int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
 					
-					Lightning l = new Lightning(x, y, width, height, flipped);
+					Lightning l = new Lightning(x, y, width, height, angle);
 					
 					add(l);
 				} else if ("Enemy".equals(n.getNodeName())) {

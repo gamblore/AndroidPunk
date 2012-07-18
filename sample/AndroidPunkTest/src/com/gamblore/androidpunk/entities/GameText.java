@@ -1,5 +1,7 @@
 package com.gamblore.androidpunk.entities;
 
+import com.gamblore.androidpunk.Main;
+
 import net.androidpunk.Entity;
 import net.androidpunk.graphics.Text;
 
@@ -11,7 +13,7 @@ public class GameText extends Entity {
 		super();
 		setLayer(99);
 		
-		mText = new Text(text, x, y);
+		mText = new Text(text, 20, Main.mTypeface);
 		setGraphic(mText);
 	}
 	

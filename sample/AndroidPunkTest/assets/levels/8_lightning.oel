@@ -31,7 +31,7 @@
 1111111111111111111111111
 1111111111111111111111111</Grid>
   <Objects>
-    <Lightning id="0" x="256" y="352" width="256" height="32" flipped="False" />
+    <Lightning id="0" x="256" y="352" width="256" height="32" angle="0" />
     <PlayerStart id="1" x="32" y="224" />
     <Text id="2" x="32" y="32" text="That looks dangerous" />
     <Exit id="3" x="704" y="288" />
@@ -40,8 +40,8 @@
       <node x="672" y="320" />
       <node x="592" y="320" />
     </Enemy>
-    <Lightning id="5" x="224" y="192" width="32" height="64" flipped="True" />
-    <Lightning id="6" x="560" y="32" width="32" height="192" flipped="False" />
-    <Lightning id="7" x="32" y="160" width="64" height="32" flipped="False" />
+    <Lightning id="5" x="224" y="256" width="64" height="32" angle="270" />
+    <Lightning id="6" x="592" y="32" width="192" height="32" angle="90" />
+    <Lightning id="7" x="32" y="160" width="64" height="32" angle="0" />
   </Objects>
 </level>

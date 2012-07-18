@@ -141,6 +141,9 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        gl.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	        gl.glShadeModel(GL10.GL_FLAT);
 	       
+	        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+	        gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+	        
 	        gl.glEnable(GL10.GL_TEXTURE_2D);
 	        /*
 	         * By default, OpenGL enables features that improve quality but reduce

@@ -168,7 +168,7 @@
       </ValueDefinitions>
       <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
     </EntityDefinition>
-    <EntityDefinition Name="Lightning" Limit="-1" ResizableX="true" ResizableY="true" Rotatable="false" RotateIncrement="90">
+    <EntityDefinition Name="Lightning" Limit="-1" ResizableX="true" ResizableY="true" Rotatable="true" RotateIncrement="90">
       <Size>
         <Width>32</Width>
         <Height>32</Height>
@@ -180,9 +180,7 @@
       <ImageDefinition DrawMode="Image" ImagePath="..\res\drawable-hdpi\lightning.png" Tiled="false">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
-      <ValueDefinitions>
-        <ValueDefinition xsi:type="BoolValueDefinition" Name="flipped" Default="false" />
-      </ValueDefinitions>
+      <ValueDefinitions />
       <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
     </EntityDefinition>
     <EntityDefinition Name="Volcano" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="true" RotateIncrement="90">

@@ -5,10 +5,12 @@ import net.androidpunk.FP;
 import net.androidpunk.FP.TweenOptions;
 import net.androidpunk.World;
 import net.androidpunk.flashcompat.OnCompleteCallback;
+import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.atlas.Image;
 import net.androidpunk.graphics.atlas.SpriteMap;
+import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.masks.Hitbox;
 import net.androidpunk.masks.MaskList;
 import net.androidpunk.tweens.misc.AngleTween;
@@ -18,12 +20,9 @@ import net.androidpunk.tweens.motion.QuadMotion;
 import net.androidpunk.utils.Data;
 import net.androidpunk.utils.Ease;
 import net.androidpunk.utils.Input;
-
-import org.w3c.dom.Text;
-
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.util.Log;
 
 public class MenuWorld extends World {
@@ -56,18 +55,18 @@ public class MenuWorld extends World {
 	
 	public MenuWorld() {
 		
-		Backdrop bd = new Backdrop(FP.getBitmap(R.drawable.jumper_background));
-		Backdrop bd2 = new Backdrop(FP.getBitmap(R.drawable.jumper_clouds));
+		Backdrop bd = new Backdrop(Main.mAtlas.getSubTexture("jumper_background"));
+		Backdrop bd2 = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"));
 		
-		logo = new Image(FP.getBitmap(R.drawable.jumper_mobile));
+		logo = new Image(Main.mAtlas.getSubTexture("jumper_mobile"));
 		logo.x = FP.screen.getWidth()/2 - logo.getWidth()/2;
 		logo.y = FP.screen.getHeight()/4;
 		
-		Bitmap ogmoBm = FP.getBitmap(R.drawable.ogmo);
+		SubTexture ogmoBm = Main.mAtlas.getSubTexture("ogmo");
 		ogmo = new SpriteMap(ogmoBm, (int) ogmoBm.getWidth()/6, (int) ogmoBm.getHeight());
 		ogmo.add(ANIM_WALKING, FP.frames(0, 5), 20);
 		
-		startText = new Text("Tap to Start", 36,0);
+		startText = new Text("Tap to Start", 30, Main.mTypeface);
 		startText.x = FP.screen.getWidth()/2 - startText.getWidth()/2;
 		startText.y = 3*FP.screen.getHeight()/4;
 		
@@ -113,13 +112,13 @@ public class MenuWorld extends World {
 		// Secondary options
 		mSecondDisplay.x = FP.screen.getWidth();
 		
-		Image menuNewGame = new Image(FP.getBitmap(R.drawable.menu_newgame));
+		Image menuNewGame = new Image(Main.mAtlas.getSubTexture("menu_newgame"));
 		menuNewGame.relative = true;
 		menuNewGame.x = FP.screen.getWidth()/4 - menuNewGame.getWidth()/2;
 		menuNewGame.y = 2*FP.screen.getHeight()/3;
 		Hitbox newHitbox = new Hitbox(menuNewGame.getWidth(), menuNewGame.getHeight(), (int)menuNewGame.x, (int)menuNewGame.y);
 		
-		Image menuContinue = new Image(FP.getBitmap(R.drawable.menu_continue));
+		Image menuContinue = new Image(Main.mAtlas.getSubTexture("menu_continue"));
 		menuContinue.relative = true;
 		menuContinue.x = 3*FP.screen.getWidth()/4 - menuContinue.getWidth()/2;
 		menuContinue.y = menuNewGame.y;

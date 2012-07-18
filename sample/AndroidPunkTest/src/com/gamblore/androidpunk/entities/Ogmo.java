@@ -2,15 +2,14 @@ package com.gamblore.androidpunk.entities;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
-import net.androidpunk.graphics.SpriteMap;
-import net.androidpunk.graphics.TileMap;
+import net.androidpunk.graphics.atlas.SpriteMap;
+import net.androidpunk.graphics.atlas.TileMap;
+import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.utils.Input;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 
 import com.gamblore.androidpunk.Main;
-import com.gamblore.androidpunk.R;
 
 public class Ogmo extends Entity {
 
@@ -34,7 +33,7 @@ public class Ogmo extends Entity {
 	public Ogmo(int x, int y) {
 		super(x, y);
 		
-		Bitmap ogmo = FP.getBitmap(R.drawable.ogmo);
+		SubTexture ogmo = Main.mAtlas.getSubTexture("ogmo");
 		mMap = new SpriteMap(ogmo, (int) ogmo.getWidth()/6, (int) ogmo.getHeight());
 		//mMap.add(ANIM_STANDING, new int[] {0}, 0);
 		mMap.add(ANIM_WALKING, FP.frames(0, 5), 20);
@@ -119,9 +118,9 @@ public class Ogmo extends Entity {
 		} else {
 			mMap.play(ANIM_WALKING);
 			if (mVelocity.x > 0) {
-				mMap.setFlipped(false);
+				mMap.scaleX = Math.abs(mMap.scaleX);
 			} else if (mVelocity.x < 0) {
-				mMap.setFlipped(true);
+				mMap.scaleX = -Math.abs(mMap.scaleX);
 			}
 		}
 		//Log.d(TAG, String.format("Velocity %.2f %.2f", mVelocity.x, mVelocity.y));

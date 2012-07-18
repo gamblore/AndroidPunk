@@ -1,6 +1,7 @@
 package net.androidpunk.graphics.atlas;
 
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -24,7 +25,13 @@ public class TileMap extends AtlasGraphic {
 	 */
 	public boolean usePositions = false;
 	
-	private FloatBuffer mVertexBuffer = getDirectFloatBuffer(8);
+	private FloatBuffer mVertexBuffer;
+	private FloatBuffer mTextureBuffer;
+	private ShortBuffer mIndexBuffer;
+	
+	private int mNumVertices;
+	private int mVerticiesAcross;
+	private int mVerticiesDown;
 	
 	// Tilemap information.
 	protected Bitmap mMap;
@@ -64,6 +71,27 @@ public class TileMap extends AtlasGraphic {
 		//mTemp = mMap.copy(Config.ARGB_8888, true);
 		mTile = new Rect(0, 0, tileWidth, tileHeight);
 		
+		/*
+         * Initialize triangle list mesh.
+         *
+         *     [0]------[1]   [2]------[3] ...
+         *      |    /   |     |    /   |
+         *      |   /    |     |   /    |
+         *      |  /     |     |  /     |
+         *     [w]-----[w+1] [w+2]----[w+3]...
+         *      |       |
+         *
+         */
+		mVerticiesAcross = mColumns * 2;
+		mVerticiesDown = mRows * 2;
+		mNumVertices = mVerticiesAcross * mVerticiesDown;
+		mVertexBuffer = getDirectFloatBuffer(mNumVertices);
+		mTextureBuffer = getDirectFloatBuffer(mNumVertices);
+		mIndexBuffer = getDirectShortBuffer(mColumns * mRows * 6);
+		
+		setTileVerticesBuffer();
+		setTileIndexBuffer();
+		
 		setGeometryBuffer(mVertexBuffer, mTile);
 
 		// load the tileset graphic
@@ -77,6 +105,64 @@ public class TileMap extends AtlasGraphic {
 		mSetCount = mSetColumns * mSetRows;
 	}
 	
+	private void setTileVerticesBuffer() {
+		mVertexBuffer.position(0);
+		for(int y = 0; y < mRows; y++) {
+			for(int x = 0; x < mColumns; x++) {
+				mVertexBuffer.put(x * mTile.width()).put(y * mTile.height());
+				mVertexBuffer.put((x+1) * mTile.width()).put(y * mTile.height());
+			}
+			for(int x = 0; x < mColumns; x++) {
+				mVertexBuffer.put(x * mTile.width()).put((y+1) * mTile.height());
+				mVertexBuffer.put((x+1) * mTile.width()).put((y+1) * mTile.height());
+			}
+		}
+		
+	}
+	
+	private void setTileTextureBuffer() {
+		Rect r = new Rect();
+		float texWidth = mSubTexture.getTexture().getWidth();
+		float texHeight = mSubTexture.getTexture().getHeight();
+		
+		mTextureBuffer.position(0);
+		for(int y = 0; y < mRows; y++) {
+			for(int x = 0; x < mColumns; x++) {
+				int tile = getTile(x, y);
+				mSubTexture.getFrame(r, tile, mTile.width(), mTile.height());
+				mTextureBuffer.put(r.left/texWidth).put(r.top/texHeight);
+				mTextureBuffer.put((r.left + r.width())/texWidth).put(r.top/texHeight);
+			}
+			for(int x = 0; x < mColumns; x++) {
+				int tile = getTile(x, y);
+				mSubTexture.getFrame(r, tile, mTile.width(), mTile.height());
+				mTextureBuffer.put(r.left/texWidth).put((r.top + r.height())/ texHeight);
+				mTextureBuffer.put((r.left + r.width())/texWidth).put((r.top + r.height())/ texHeight);
+			}
+		}
+	}
+	
+	private void setTileIndexBuffer() {
+			int i = 0;
+			for (int y = 0; y < mRows; y++) {
+				final int indexY = y * 2;
+				for (int x = 0; x < mColumns; x++) {
+					final int indexX = x * 2;
+					short a = (short) (indexY * mVerticiesAcross + indexX);
+					short b = (short) (indexY * mVerticiesAcross + indexX + 1);
+					short c = (short) ((indexY + 1) * mVerticiesAcross + indexX);
+					short d = (short) ((indexY + 1) * mVerticiesAcross + indexX + 1);
+					
+					mIndexBuffer.put(i++, a);
+					mIndexBuffer.put(i++, b);
+					mIndexBuffer.put(i++, c);
+					
+					mIndexBuffer.put(i++, b);
+					mIndexBuffer.put(i++, c);
+					mIndexBuffer.put(i++, d);
+				}
+			}
+	}
 	
 	@Override
 	public void render(GL10 gl, Point point, Point camera) {
@@ -92,7 +178,7 @@ public class TileMap extends AtlasGraphic {
 			gl.glPushMatrix(); 
 			gl.glTranslatef(mPoint.x, mPoint.y + y * mTile.height(), 0);
 			
-			for (int x = 0; x < mColumns; x++) {
+			for (int x = 0; x < mColumns && mPoint.x + x * mTile.width() < FP.screen.getWidth(); x++) {
 				int color = mMap.getPixel(x, y) & 0x00ffffff;
 				if (color != -1) {
 					
@@ -102,14 +188,11 @@ public class TileMap extends AtlasGraphic {
 				
 					gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 					gl.glTranslatef(mTile.width(), 0, 0);
-
+					
 				}
 			}
 			gl.glPopMatrix();
 		}
-		
-		unsetBuffers(gl);
-		
 		
 	}
 
@@ -290,6 +373,7 @@ public class TileMap extends AtlasGraphic {
 				setTile(x+xp, y, Integer.parseInt(col[x]));
 			}
 		}
+		setTileTextureBuffer();
 	}
 	
 	/**

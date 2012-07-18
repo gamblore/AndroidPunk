@@ -37,6 +37,9 @@ public class Stamp extends AtlasGraphic {
 		this.y = y;
 
 		AtlasGraphic.setTextureBuffer(mTextureBuffer, getAtlas(), subTexture.getBounds());
+		
+		originX = subTexture.getBounds().width()/2;
+		originY = subTexture.getBounds().height()/2;
 	}
 	
 	/** @private Renders the Graphic. */
@@ -55,7 +58,6 @@ public class Stamp extends AtlasGraphic {
 		
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		
-		unsetBuffers(gl);
 	}
 	
 	/**

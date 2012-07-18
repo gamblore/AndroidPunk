@@ -76,6 +76,5 @@ public class Backdrop extends AtlasGraphic {
 		}
 		gl.glPopMatrix();
 		
-		unsetBuffers(gl);
 	}
 }

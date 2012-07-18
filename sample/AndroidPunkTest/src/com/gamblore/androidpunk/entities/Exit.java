@@ -1,14 +1,11 @@
 package com.gamblore.androidpunk.entities;
 
-import com.gamblore.androidpunk.R;
-import com.gamblore.androidpunk.R.drawable;
-
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
-import net.androidpunk.FP.TweenOptions;
-import net.androidpunk.graphics.SpriteMap;
-import net.androidpunk.tweens.misc.AngleTween;
-import android.graphics.Bitmap;
+import net.androidpunk.graphics.atlas.SpriteMap;
+import net.androidpunk.graphics.opengl.SubTexture;
+
+import com.gamblore.androidpunk.Main;
 
 public class Exit extends Entity {
 
@@ -17,7 +14,7 @@ public class Exit extends Entity {
 	
 	public Exit(int x, int y) {
 		super(x, y);
-		Bitmap blackHole = FP.getBitmap(R.drawable.black_hole);
+		SubTexture blackHole = Main.mAtlas.getSubTexture("black_hole");
 		mMap = new SpriteMap(blackHole, blackHole.getWidth()/5, blackHole.getHeight());
 		mMap.add("blink", FP.frames(0, 4), 3);
 		setGraphic(mMap);

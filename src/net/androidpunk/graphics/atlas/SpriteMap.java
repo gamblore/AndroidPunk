@@ -50,11 +50,11 @@ public class SpriteMap extends AtlasGraphic {
 	protected int mFrame;
 	private float mTimer = 0;
 	
-	private int mFrameWidth;
-	private int mFrameHeight;
+	protected int mFrameWidth;
+	protected int mFrameHeight;
 	
-	private FloatBuffer mVertexBuffer = getDirectFloatBuffer(8);
-	private FloatBuffer mTextureBuffer = getDirectFloatBuffer(8);
+	protected FloatBuffer mVertexBuffer = getDirectFloatBuffer(8);
+	protected FloatBuffer mTextureBuffer = getDirectFloatBuffer(8);
 	
 	/**
 	 * Constructor. frame width = frame height = 0 and no callback.
@@ -108,6 +108,9 @@ public class SpriteMap extends AtlasGraphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
+		originX = (mFrame / mWidth) * mFrameWidth + mFrameWidth/2;
+		originY = (mFrame % mWidth) * mFrameHeight + mFrameHeight/2;;
+		
 		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 		
 		setBuffers(gl, mVertexBuffer, mTextureBuffer);
@@ -119,9 +122,7 @@ public class SpriteMap extends AtlasGraphic {
 		}
 		gl.glPopMatrix();
 		
-		unsetBuffers(gl);
 	}
-	
 
 	/** @private Updates the animation. */
 	@Override 
