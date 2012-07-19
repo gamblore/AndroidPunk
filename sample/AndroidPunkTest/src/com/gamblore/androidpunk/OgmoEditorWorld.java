@@ -6,6 +6,7 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
 import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.masks.Grid;
@@ -37,6 +38,8 @@ public class OgmoEditorWorld extends World {
 	private PlayerStart mPlayerStart = null;
 	private Exit mExit = null;
 	
+	private Entity mBackdropEntity;
+	
 	public OgmoEditorWorld(int level) {
 		
 		mCurrentLevel = level;
@@ -51,6 +54,16 @@ public class OgmoEditorWorld extends World {
 				break;
 			}
 		}
+		
+		mBackdropEntity = new Entity();
+		Backdrop bd = new Backdrop(Main.mAtlas.getSubTexture("jumper_background"));
+		bd.scale = 2.0f;
+		bd.scrollX = 0.25f;
+		bd.scrollY = 0.25f;
+		bd.setColor(0xff808080);
+		mBackdropEntity.setGraphic(bd);
+		mBackdropEntity.setLayer(200);
+		add(mBackdropEntity);
 	}
 	
 	private void parseOgmoEditorLevel(String assetFilename) {
@@ -110,7 +123,6 @@ public class OgmoEditorWorld extends World {
 			*/
 			} else {
 				st = Main.mAtlas.getSubTexture("grey_cement");
-				res = R.drawable.grey_cement;
 				resWidth = st.getWidth();
 				resHeight = st.getHeight();
 			}

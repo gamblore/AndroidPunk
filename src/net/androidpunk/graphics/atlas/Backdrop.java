@@ -50,7 +50,8 @@ public class Backdrop extends AtlasGraphic {
 		
 		gl.glPushMatrix(); 
 		{
-			gl.glTranslatef(mPoint.x, mPoint.y, 0);
+			//gl.glTranslatef(mPoint.x, mPoint.y, 0);
+			setMatrix(gl);
 			
 			while (yy  < FP.screen.getHeight()) {
 				while (xx < FP.screen.getWidth()) {

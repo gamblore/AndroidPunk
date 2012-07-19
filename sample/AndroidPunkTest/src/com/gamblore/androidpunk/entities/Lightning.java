@@ -45,6 +45,7 @@ public class Lightning extends Entity {
 		case 270:
 			setHitbox(height, width, x, -width);
 		}
+		mMap.angle = angle;
 		
 		setType("danger");
 	}

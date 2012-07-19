@@ -96,6 +96,7 @@ public class SpriteMap extends AtlasGraphic {
 		active = true;
 		
 		setGeometryBuffer(mVertexBuffer, 0, 0, mFrameWidth, mFrameHeight);
+		setTextureBuffer(mTextureBuffer, mSubTexture, 0, mFrameWidth, mFrameHeight);
 	}
 	
 	@Override
@@ -110,8 +111,6 @@ public class SpriteMap extends AtlasGraphic {
 		
 		originX = (mFrame / mWidth) * mFrameWidth + mFrameWidth/2;
 		originY = (mFrame % mWidth) * mFrameHeight + mFrameHeight/2;;
-		
-		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 		
 		setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		
@@ -147,8 +146,10 @@ public class SpriteMap extends AtlasGraphic {
 						}
 					}
 				}
-				if (mAnim != null)
+				if (mAnim != null) {
 					mFrame = (int)(mAnim.mFrames[mIndex]);
+					setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
+				}
 			}
 		}
 	}

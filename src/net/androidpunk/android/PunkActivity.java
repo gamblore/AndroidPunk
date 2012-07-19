@@ -111,6 +111,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        final int viewportHeight = (int)(mScreenRect.height() * scaleY);
 	        
 	        gl.glViewport(0, 0, viewportWidth, viewportHeight);
+	        gl.glScissor(0, 0, viewportWidth, viewportHeight);
 	        
 	        mScaleX = scaleX;
 	        mScaleY = scaleY;
@@ -145,6 +146,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	        
 	        gl.glEnable(GL10.GL_TEXTURE_2D);
+	        gl.glEnable(GL10.GL_SCISSOR_TEST);
+
 	        /*
 	         * By default, OpenGL enables features that improve quality but reduce
 	         * performance. One might want to tweak that especially on software
@@ -280,75 +283,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			}
 		}
 	}
-	/*
-	protected class RenderRunner extends Thread {
-		int mDebugCounter = 0; 
-		
-		@Override
-		public void run() {
-			while(mRunning) {
-				if (!mStarted || mSurfaceHolder.isCreating() || FP.backBuffer == null) {
-					try {
-						//Log.d(TAG, "RenderThread Sleeing some");
-						Thread.sleep(16);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					continue;
-				}
-				
-				Canvas c = mSurfaceHolder.lockCanvas();
-				if (c != null) {
-					if(FP.backBuffer != null) {
-						synchronized (FP.backBuffer) {
-							c.drawBitmap(FP.backBuffer, FP.bounds, mScreenRect, null);
-						}
-					}
-					if (FP.debug) {
-						if (mDebugCounter++ > 10) {
-							mDebugBitmap.eraseColor(0);
-							Canvas debugC = mDebugCanvas;
-							
-							mDebugCounter = 0;
-							Paint p = mDebugPaint;
-							p.reset();
-							
-							p.setStyle(Style.FILL);
-							p.setAntiAlias(true);
-							p.setColor(0x80000000);
-							
-							debugC.drawPath(mDebugPath, p);
-							
-							
-							// Draw the timers.
-							p.setColor(0xffffffff);
-							p.setAntiAlias(false);
-							
-							//Row 1
-							p.setTextSize(30);
-							String fps = String.format("FPS: %3d", (int)FP.frameRate);
-							debugC.drawText(fps, 0, -p.ascent(), p);
-							int step1 = (int) p.measureText(fps);
-							
-							//Row 2
-							p.setTextSize(20);
-							int step2 = step1 + (int) p.measureText("Update: 000ms");
-							debugC.drawText(String.format("Update: %3dms", FP.updateTime), step1 + FP.dip(2), -p.ascent(), p);
-							debugC.drawText(String.format("Render: %3dms", FP.renderTime), step1 + FP.dip(2), FP.dip(20)-p.ascent(), p);
-						
-							//Row 3
-							debugC.drawText(String.format("Game: %3dms", FP.gameTime), step2 + FP.dip(4), -p.ascent(), p);
-							debugC.drawText(String.format("Java: %3dms", FP.javaTime), step2 + FP.dip(4), FP.dip(20)-p.ascent(), p);
-						}
-						c.drawBitmap(mDebugBitmap, 0, 0, null);
-					}
-					mSurfaceHolder.unlockCanvasAndPost(c);
-				}
-				
-			}
-		}
-	}
-	*/
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

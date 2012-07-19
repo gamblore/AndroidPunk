@@ -63,7 +63,7 @@ public class Entity extends Tweener {
     protected boolean mAdded;
     protected String mType = "";
     private String mName;
-    private int mLayer;
+    private int mLayer = 0;
     protected Entity mUpdatePrev;
     protected Entity mUpdateNext;
     protected Entity mRenderPrev;

@@ -56,11 +56,6 @@ public class TiledSpriteMap extends SpriteMap {
 		super(source, frameWidth, frameHeight, callback);
 		mImageWidth = width;
 		mImageHeight = height;
-		
-		
-		//mTexture created in Image
-		//createBuffer();
-		//updateBuffer();
 	}
 	/**
 	 * The x-offset of the texture.
@@ -110,8 +105,6 @@ public class TiledSpriteMap extends SpriteMap {
 
 		int xx = mPoint.x;
 		int yy = mPoint.y;
-		
-		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 		
 		setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		

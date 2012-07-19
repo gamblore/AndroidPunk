@@ -2,6 +2,7 @@ package net.androidpunk.graphics.atlas;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
@@ -65,13 +66,16 @@ public class AtlasGraphic extends Graphic {
 		mAtlas = subTexture.getTexture();
 	}
 	
+	public static CharBuffer getDirectCharBuffer(int numByte) {
+		return ByteBuffer.allocateDirect(numByte * Character.SIZE).order(ByteOrder.nativeOrder()).asCharBuffer();
+	}
+	
 	public static ShortBuffer getDirectShortBuffer(int numShorts) {
-		return ByteBuffer.allocateDirect(numShorts * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
-		
+		return ByteBuffer.allocateDirect(numShorts * Short.SIZE).order(ByteOrder.nativeOrder()).asShortBuffer();
 	}
 	
 	public static FloatBuffer getDirectFloatBuffer(int numFloats) {
-		return ByteBuffer.allocateDirect(numFloats * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		return ByteBuffer.allocateDirect(numFloats * Float.SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
 	}
 	
 	public Texture getAtlas() {
@@ -84,13 +88,12 @@ public class AtlasGraphic extends Graphic {
 	public void render(GL10 gl, Point point, Point camera) {
 		getAtlas().mColorFilter.setColor(mColor);
 		getAtlas().mColorFilter.applyColorFilter(gl);
-		//if ( OpenGLSystem.getTextureName() != getAtlas().mTextureName) {
-			OpenGLSystem.setTexture(gl, getAtlas());
-		//}
+		OpenGLSystem.setTexture(gl, getAtlas());
+
 	}
 	
 	public static void setBuffers(GL10 gl, FloatBuffer vertexBuffer, FloatBuffer textureBuffer) {
-		gl.glEnable(GL10.GL_TEXTURE_2D);
+		//gl.glEnable(GL10.GL_TEXTURE_2D);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
     	gl.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
 	}

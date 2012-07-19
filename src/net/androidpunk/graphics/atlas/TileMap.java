@@ -1,7 +1,7 @@
 package net.androidpunk.graphics.atlas;
 
+import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -27,9 +27,10 @@ public class TileMap extends AtlasGraphic {
 	
 	private FloatBuffer mVertexBuffer;
 	private FloatBuffer mTextureBuffer;
-	private ShortBuffer mIndexBuffer;
+	private CharBuffer mIndexBuffer;
 	
-	private int mNumVertices;
+	private int mIndexCount;
+	private int mVerticesCount;
 	private int mVerticiesAcross;
 	private int mVerticiesDown;
 	
@@ -84,16 +85,18 @@ public class TileMap extends AtlasGraphic {
          */
 		mVerticiesAcross = mColumns * 2;
 		mVerticiesDown = mRows * 2;
-		mNumVertices = mVerticiesAcross * mVerticiesDown;
-		mVertexBuffer = getDirectFloatBuffer(mNumVertices);
-		mTextureBuffer = getDirectFloatBuffer(mNumVertices);
-		mIndexBuffer = getDirectShortBuffer(mColumns * mRows * 6);
+		mVerticesCount = mVerticiesAcross * mVerticiesDown;
+		mVertexBuffer = getDirectFloatBuffer(mVerticesCount * 2);
+		mTextureBuffer = getDirectFloatBuffer(mVerticesCount * 2);
+		
+		Log.d(TAG, String.format("%d vertices", mVerticesCount));
+		
+		mIndexCount = mColumns * mRows * 6;
+		mIndexBuffer = getDirectCharBuffer(mColumns * mRows * 6);
 		
 		setTileVerticesBuffer();
 		setTileIndexBuffer();
 		
-		setGeometryBuffer(mVertexBuffer, mTile);
-
 		// load the tileset graphic
 		mSet = tileset;
 		if (mSet == null) {
@@ -106,62 +109,108 @@ public class TileMap extends AtlasGraphic {
 	}
 	
 	private void setTileVerticesBuffer() {
+		float f[] = new float[mVerticesCount * 2];
+		int i = 0;
 		mVertexBuffer.position(0);
+		
 		for(int y = 0; y < mRows; y++) {
 			for(int x = 0; x < mColumns; x++) {
-				mVertexBuffer.put(x * mTile.width()).put(y * mTile.height());
-				mVertexBuffer.put((x+1) * mTile.width()).put(y * mTile.height());
+				//mVertexBuffer.put(x * mTile.width()).put(y * mTile.height());
+				f[i++] = x * mTile.width();
+				f[i++] = y * mTile.height();
+				//index += 2;
+				//mVertexBuffer.put((x+1) * mTile.width()).put(y * mTile.height());
+				f[i++] = (x+1) * mTile.width();
+				f[i++] = y * mTile.height();
+				//index += 2;
+				//Log.d(TAG, String.format("quad top %d,%d value %d,%d - %d,%d", x, y, 
+				//		x * mTile.width(), y * mTile.height(), (x+1) * mTile.width(), y * mTile.height()));
 			}
 			for(int x = 0; x < mColumns; x++) {
-				mVertexBuffer.put(x * mTile.width()).put((y+1) * mTile.height());
-				mVertexBuffer.put((x+1) * mTile.width()).put((y+1) * mTile.height());
+				//mVertexBuffer.put(x * mTile.width()).put((y+1) * mTile.height());
+				f[i++] = x * mTile.width();
+				f[i++] = (y+1) * mTile.height();
+				//index += 2;
+				//mVertexBuffer.put((x+1) * mTile.width()).put((y+1) * mTile.height());
+				f[i++] = (x+1) * mTile.width();
+				f[i++] = (y+1) * mTile.height();
+				//index += 2;
+				//Log.d(TAG, String.format("quad bottom %d,%d value %d,%d - %d,%d", x, y,
+				//		x * mTile.width(), (y+1) * mTile.height(), (x+1) * mTile.width(), (y+1) * mTile.height()));
 			}
 		}
-		
+		mVertexBuffer.put(f).position(0);
 	}
 	
 	private void setTileTextureBuffer() {
+		float f[] = new float[mVerticesCount * 2];
+		int i = 0;
 		Rect r = new Rect();
-		float texWidth = mSubTexture.getTexture().getWidth();
-		float texHeight = mSubTexture.getTexture().getHeight();
+		int texWidth = mSubTexture.getTexture().getWidth();
+		int texHeight = mSubTexture.getTexture().getHeight();
 		
 		mTextureBuffer.position(0);
 		for(int y = 0; y < mRows; y++) {
 			for(int x = 0; x < mColumns; x++) {
 				int tile = getTile(x, y);
 				mSubTexture.getFrame(r, tile, mTile.width(), mTile.height());
-				mTextureBuffer.put(r.left/texWidth).put(r.top/texHeight);
-				mTextureBuffer.put((r.left + r.width())/texWidth).put(r.top/texHeight);
+				//mTextureBuffer.put((float)r.left/texWidth).put((float)r.top/texHeight);
+				f[i++] = (float)r.left/texWidth;
+				f[i++] = (float)r.top/texHeight;
+				//mTextureBuffer.put((float)(r.left + r.width())/texWidth).put((float)r.top/texHeight);
+				f[i++] = (float)(r.left + r.width())/texWidth;
+				f[i++] = (float)r.top/texHeight;
+				//Log.d(TAG, String.format("texture quad top %d,%d value %d,%d - %d,%d", x, y, 
+				//		r.left, r.top, r.left + r.width(), r.top));
 			}
 			for(int x = 0; x < mColumns; x++) {
 				int tile = getTile(x, y);
 				mSubTexture.getFrame(r, tile, mTile.width(), mTile.height());
-				mTextureBuffer.put(r.left/texWidth).put((r.top + r.height())/ texHeight);
-				mTextureBuffer.put((r.left + r.width())/texWidth).put((r.top + r.height())/ texHeight);
+				//mTextureBuffer.put((float)r.left/texWidth).put((float)(r.top + r.height())/ texHeight);
+				f[i++] = (float)r.left/texWidth;
+				f[i++] = (float)(r.top + r.height())/ texHeight;
+				//mTextureBuffer.put((float)(r.left + r.width())/texWidth).put((float)(r.top + r.height())/ texHeight);
+				f[i++] = (float)(r.left + r.width())/texWidth;
+				f[i++] = (float)(r.top + r.height())/ texHeight;
+				//Log.d(TAG, String.format("texture quad bottom %d,%d value %d,%d - %d,%d", x, y,
+				//		r.left, r.top + r.height(), r.left + r.width(), r.top + r.height()));
 			}
 		}
+		
+		mTextureBuffer.put(f).position(0);
 	}
 	
 	private void setTileIndexBuffer() {
-			int i = 0;
-			for (int y = 0; y < mRows; y++) {
-				final int indexY = y * 2;
-				for (int x = 0; x < mColumns; x++) {
-					final int indexX = x * 2;
-					short a = (short) (indexY * mVerticiesAcross + indexX);
-					short b = (short) (indexY * mVerticiesAcross + indexX + 1);
-					short c = (short) ((indexY + 1) * mVerticiesAcross + indexX);
-					short d = (short) ((indexY + 1) * mVerticiesAcross + indexX + 1);
-					
-					mIndexBuffer.put(i++, a);
-					mIndexBuffer.put(i++, b);
-					mIndexBuffer.put(i++, c);
-					
-					mIndexBuffer.put(i++, b);
-					mIndexBuffer.put(i++, c);
-					mIndexBuffer.put(i++, d);
-				}
+		char indices[] = new char[mIndexCount];
+		mIndexBuffer.position(0);
+		int i = 0;
+		for (int y = 0; y < mRows; y++) {
+			final int indexY = y * 2;
+			for (int x = 0; x < mColumns; x++) {
+				final int indexX = x * 2;
+				char a = (char) (indexY * mVerticiesAcross + indexX);
+				char b = (char) (indexY * mVerticiesAcross + indexX + 1);
+				char c = (char) ((indexY + 1) * mVerticiesAcross + indexX);
+				char d = (char) ((indexY + 1) * mVerticiesAcross + indexX + 1);
+				
+				//Log.d(TAG, String.format("Quad %d, %d -> tl:%d tr:%d bl:%d br:%d", x, y, (int)a, (int)b, (int)c, (int)d));
+				
+				indices[i++] = a;
+				indices[i++] = b;
+				indices[i++] = c;
+				//mIndexBuffer.put(a);
+				//mIndexBuffer.put(b);
+				//mIndexBuffer.put(c);
+				
+				indices[i++] = b;
+				indices[i++] = d;
+				indices[i++] = c;
+				//mIndexBuffer.put(b);
+				//mIndexBuffer.put(c);
+				//mIndexBuffer.put(d);
 			}
+		}
+		mIndexBuffer.put(indices).position(0);
 	}
 	
 	@Override
@@ -174,6 +223,16 @@ public class TileMap extends AtlasGraphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
+		gl.glPushMatrix(); 
+		{
+			setMatrix(gl);
+			
+			setBuffers(gl, mVertexBuffer, mTextureBuffer);
+			gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
+		}
+		gl.glPopMatrix();
+
+		/*
 		for (int y = 0; y < mRows; y++) {
 			gl.glPushMatrix(); 
 			gl.glTranslatef(mPoint.x, mPoint.y + y * mTile.height(), 0);
@@ -193,7 +252,7 @@ public class TileMap extends AtlasGraphic {
 			}
 			gl.glPopMatrix();
 		}
-		
+		*/
 	}
 
 
@@ -217,7 +276,7 @@ public class TileMap extends AtlasGraphic {
 		row %= mRows;
 		
 		mMap.setPixel(column, row, 0xff << 24 | index);
-		Log.d(TAG, String.format("Setting %d %d to %d = %d", column, row, index, mMap.getPixel(column, row)));
+		//Log.d(TAG, String.format("Setting %d %d to %d = %d", column, row, index, getTile(column, row)));
 	}
 	
 	/**
@@ -246,7 +305,7 @@ public class TileMap extends AtlasGraphic {
 			column /= mTile.width();
 			row /= mTile.height();
 		}
-		return mMap.getPixel(column % mColumns, row % mRows);
+		return mMap.getPixel(column % mColumns, row % mRows) & 0x00ffffff;
 	}
 	
 	
@@ -438,7 +497,6 @@ public class TileMap extends AtlasGraphic {
 		super.release();
 		
 		mMap.recycle();
-		mTemp.recycle();
 	}
 
 }

@@ -58,8 +58,6 @@ public class GraphicsWorld extends World {
 		mEntities[0].setGraphic(new GraphicList(mBackdrop, spriteMap));
 		add(mEntities[0]);
 		
-		//add(mEntities[0]);
-		
 		/*
 		//CanvasGraphic
 		mCanvasGraphic = new CanvasGraphic(FP.width, FP.height);

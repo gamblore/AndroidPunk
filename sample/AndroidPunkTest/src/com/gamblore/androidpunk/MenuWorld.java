@@ -56,7 +56,7 @@ public class MenuWorld extends World {
 	public MenuWorld() {
 		
 		Backdrop bd = new Backdrop(Main.mAtlas.getSubTexture("jumper_background"));
-		Backdrop bd2 = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"));
+		Backdrop bd2 = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"), true, false);
 		
 		logo = new Image(Main.mAtlas.getSubTexture("jumper_mobile"));
 		logo.x = FP.screen.getWidth()/2 - logo.getWidth()/2;
