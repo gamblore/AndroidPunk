@@ -109,8 +109,8 @@ public class SpriteMap extends AtlasGraphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
-		originX = (mFrame / mWidth) * mFrameWidth + mFrameWidth/2;
-		originY = (mFrame % mWidth) * mFrameHeight + mFrameHeight/2;;
+		originX = mFrameWidth/2;
+		originY = mFrameHeight/2;
 		
 		setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		
@@ -120,7 +120,6 @@ public class SpriteMap extends AtlasGraphic {
 			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		}
 		gl.glPopMatrix();
-		
 	}
 
 	/** @private Updates the animation. */
@@ -220,6 +219,7 @@ public class SpriteMap extends AtlasGraphic {
 		mIndex = 0;
 		mTimer = 0;
 		mFrame = mAnim.mFrames[0];
+		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 		complete = false;
 		return mAnim;
 	}
@@ -274,7 +274,7 @@ public class SpriteMap extends AtlasGraphic {
 		if (mFrame == frame) 
 			return;
 		mFrame = frame;
-
+		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 	}
 	
 	/**
@@ -317,6 +317,7 @@ public class SpriteMap extends AtlasGraphic {
 		if (mFrame == value) 
 			return;
 		mFrame = value;
+		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 	}
 	
 	/**
@@ -334,6 +335,7 @@ public class SpriteMap extends AtlasGraphic {
 			return;
 		mIndex = value;
 		mFrame = mAnim.mFrames[mIndex];
+		setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 	}
 	
 	/**

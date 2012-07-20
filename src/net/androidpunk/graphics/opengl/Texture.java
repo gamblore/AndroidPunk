@@ -171,6 +171,7 @@ public class Texture {
 		// Select this OpenGL texture
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureName);
 		Log.d(TAG, "Texture is bound to " + mTextureName);
+		
 		// Set the texture parameters
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
@@ -178,8 +179,7 @@ public class Texture {
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE); 
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
 		
-		
-		// Allocate room for the texture
+		// Upload the texture to texture memory
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, mSource, 0);
 		mLoaded = true;
 	}
@@ -196,7 +196,7 @@ public class Texture {
 		}
 		int textures[] = new int[1];
 		textures[0] = mTextureName;
-		gl.glDeleteTextures(1, textures, 0);
+		//gl.glDeleteTextures(1, textures, 0);
 		mLoaded = false;
 	}
 	

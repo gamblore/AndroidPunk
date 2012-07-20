@@ -223,11 +223,12 @@ public class TileMap extends AtlasGraphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
+		setBuffers(gl, mVertexBuffer, mTextureBuffer);
+		
 		gl.glPushMatrix(); 
 		{
 			setMatrix(gl);
 			
-			setBuffers(gl, mVertexBuffer, mTextureBuffer);
 			gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
 		}
 		gl.glPopMatrix();

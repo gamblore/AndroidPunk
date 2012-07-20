@@ -115,6 +115,7 @@ public class Text extends Graphic {
 			mPaint.setTypeface(mTypeface);
 		}
 		mPaint.setTextSize(mTextSize);
+		
 		mPaint.setColor(0xffffffff);
 		mPaint.setStyle(Style.FILL);
 		
@@ -146,6 +147,9 @@ public class Text extends Graphic {
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
     	gl.glVertexPointer(2, GL10.GL_FLOAT, 0, mVertexBuffer);
     	
@@ -165,10 +169,10 @@ public class Text extends Graphic {
 		
 		gl.glTranslatef(originX + mPoint.x, originY + mPoint.y, 0f);
 		
-		gl.glScalef(sX, sY, 1.0f);
 		if (angle != 0) {
 			gl.glRotatef(angle, 0, 0, 1.0f);
 		}
+		gl.glScalef(sX, sY, 1.0f);
 		gl.glTranslatef(-originX, -originY, 0.0f);
 	}
 	

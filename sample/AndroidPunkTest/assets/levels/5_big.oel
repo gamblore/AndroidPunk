@@ -62,16 +62,16 @@
 11111111111111111111111111111111111111111111111111</Grid>
   <Objects>
     <PlayerStart id="0" x="48" y="112" />
-    <Enemy id="2" x="640" y="832" speed="100">
-      <node x="480" y="832" />
-      <node x="832" y="832" />
-      <node x="640" y="832" />
-    </Enemy>
     <Exit id="3" x="1504" y="864" />
     <Enemy id="1" x="1152" y="352" speed="100">
       <node x="1472" y="352" />
       <node x="832" y="352" />
       <node x="1152" y="352" />
+    </Enemy>
+    <Enemy id="2" x="624" y="832" speed="100">
+      <node x="480" y="832" />
+      <node x="800" y="832" />
+      <node x="624" y="832" />
     </Enemy>
   </Objects>
 </level>

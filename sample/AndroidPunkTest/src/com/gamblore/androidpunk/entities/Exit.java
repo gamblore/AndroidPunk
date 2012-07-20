@@ -19,7 +19,7 @@ public class Exit extends Entity {
 		mMap.add("blink", FP.frames(0, 4), 3);
 		setGraphic(mMap);
 		mMap.play("blink");
-		mMap.centerOrigin();
+		//mMap.centerOrigin();
 		
 		//mAngleTween.tween(0, 359, 10.0f);
 		//addTween(mAngleTween, true);

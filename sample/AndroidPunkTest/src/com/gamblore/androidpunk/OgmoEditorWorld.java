@@ -7,6 +7,7 @@ import net.androidpunk.FP;
 import net.androidpunk.World;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.Backdrop;
+import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.masks.Grid;
@@ -38,6 +39,8 @@ public class OgmoEditorWorld extends World {
 	private PlayerStart mPlayerStart = null;
 	private Exit mExit = null;
 	
+	private int mWidth = 0, mHeight = 0;
+	
 	private Entity mBackdropEntity;
 	
 	public OgmoEditorWorld(int level) {
@@ -57,11 +60,15 @@ public class OgmoEditorWorld extends World {
 		
 		mBackdropEntity = new Entity();
 		Backdrop bd = new Backdrop(Main.mAtlas.getSubTexture("jumper_background"));
+		Backdrop clouds = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"), true, false);
 		bd.scale = 2.0f;
-		bd.scrollX = 0.25f;
-		bd.scrollY = 0.25f;
+		bd.scrollX = 0.55f;
+		bd.scrollY = 0.55f;
 		bd.setColor(0xff808080);
-		mBackdropEntity.setGraphic(bd);
+		clouds.scrollX = 0.75f;
+		clouds.setColor(0xffb0b0b0);
+		clouds.y = FP.screen.getHeight()/3;
+		mBackdropEntity.setGraphic(new GraphicList(bd, clouds));
 		mBackdropEntity.setLayer(200);
 		add(mBackdropEntity);
 	}
@@ -81,10 +88,10 @@ public class OgmoEditorWorld extends World {
 			return;
 		}
 		NamedNodeMap levelatts = doc.getFirstChild().getAttributes();
-		int lWidth = Integer.parseInt(levelatts.getNamedItem("width").getNodeValue());
-		int lHeight = Integer.parseInt(levelatts.getNamedItem("height").getNodeValue());
-		Log.d(TAG, String.format("Level is %dx%d",lWidth,lHeight));
-		mLevel.setHitbox(lWidth, lHeight);
+		mWidth = Integer.parseInt(levelatts.getNamedItem("width").getNodeValue());
+		mHeight = Integer.parseInt(levelatts.getNamedItem("height").getNodeValue());
+		Log.d(TAG, String.format("Level is %dx%d",mWidth,mHeight));
+		mLevel.setHitbox(mWidth, mHeight);
 		
 		NodeList cameras = doc.getElementsByTagName("camera");
 		if (cameras.getLength() > 0) {
@@ -129,7 +136,7 @@ public class OgmoEditorWorld extends World {
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String tilescsv = child.getTextContent();
-				TileMap tileMap = new TileMap(st, lWidth, lHeight, resWidth, resHeight);
+				TileMap tileMap = new TileMap(st, mWidth, mHeight, resWidth, resHeight);
 				tileMap.loadFromString(tilescsv);
 				mLevel.setGraphic(tileMap);
 			}
@@ -140,7 +147,7 @@ public class OgmoEditorWorld extends World {
 			Node child = n.getFirstChild();
 			if (child.getNodeType() == Document.TEXT_NODE) {
 				String gridBitString = child.getTextContent();
-				Grid g = new Grid(lWidth, lHeight, 32, 32);
+				Grid g = new Grid(mWidth, mHeight, 32, 32);
 				mLevel.setType("level");
 				g.loadFromString(gridBitString, "", "\n");
 				mLevel.setMask(g);
@@ -169,7 +176,6 @@ public class OgmoEditorWorld extends World {
 					mExit = new Exit(x, y);
 					add(mExit);
 				} else if ("Text".equals(n.getNodeName())) {
-					
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
 					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
@@ -182,7 +188,6 @@ public class OgmoEditorWorld extends World {
 					Text t = new Text(text, 26, Main.mTypeface);
 					
 					e.setGraphic(t);
-					t.setColor(0xffffffff);
 					add(e);
 				} else if ("Lightning".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();

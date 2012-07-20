@@ -2,12 +2,15 @@ package net.androidpunk.graphics.atlas;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.graphics.Point;
 import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.graphics.opengl.SubTexture;
+import android.graphics.Point;
+import android.util.Log;
 
 public class TiledSpriteMap extends SpriteMap {
 
+	private static final String TAG = "TiledSpriteMap";
+	
 	private int mImageWidth;
 	private int mImageHeight;
 	private int mOffsetX = 0;
@@ -113,9 +116,8 @@ public class TiledSpriteMap extends SpriteMap {
 		{
 			setMatrix(gl);
 			//gl.glTranslatef(mPoint.x, mPoint.y, 0);
-			
-			while (yy  < mPoint.y + mHeight) {
-				while (xx < mPoint.x + mWidth) {
+			while (yy  < mPoint.y + mImageHeight) {
+				while (xx < mPoint.x + mImageWidth) {
 					gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 					
 					xx += mFrameWidth;

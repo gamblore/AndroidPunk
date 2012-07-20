@@ -36,7 +36,7 @@ public class GraphicsWorld extends World {
 	
 	private int counter = 0;
 	private Entity mEntities[] = new Entity[10];
-	private int mCurrentEntity = 0;
+	private int mCurrentEntity = 8;
 	
 	public GraphicsWorld() {
 		super();
@@ -56,7 +56,7 @@ public class GraphicsWorld extends World {
 		spriteMap.play("walking");
 		
 		mEntities[0].setGraphic(new GraphicList(mBackdrop, spriteMap));
-		add(mEntities[0]);
+		//add(mEntities[0]);
 		
 		/*
 		//CanvasGraphic
@@ -126,9 +126,10 @@ public class GraphicsWorld extends World {
 		mTiledSpriteMap.play("test");
 		mTiledSpriteMap.x = FP.screen.getWidth()/2;
 		mTiledSpriteMap.y = FP.screen.getHeight()/2;
+		mTiledSpriteMap.scale = 0.75f;
 		
 		mEntities[8].setGraphic(mTiledSpriteMap);
-		
+		add(mEntities[8]);
 		
 		//TileMap
 		SubTexture desert = Main.getAtlas().getSubTexture("desert");

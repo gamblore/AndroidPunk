@@ -66,14 +66,29 @@ public class AtlasGraphic extends Graphic {
 		mAtlas = subTexture.getTexture();
 	}
 	
+	/**
+	 * Get a char direct buffer that is native order. This is to be used in OpenGL calls.
+	 * @param numFloats the number of chars you want.
+	 * @return The allocated buffer.
+	 */
 	public static CharBuffer getDirectCharBuffer(int numByte) {
 		return ByteBuffer.allocateDirect(numByte * Character.SIZE).order(ByteOrder.nativeOrder()).asCharBuffer();
 	}
 	
+	/**
+	 * Get a short direct buffer that is native order. This is to be used in OpenGL calls.
+	 * @param numFloats the number of shorts you want.
+	 * @return The allocated buffer.
+	 */
 	public static ShortBuffer getDirectShortBuffer(int numShorts) {
 		return ByteBuffer.allocateDirect(numShorts * Short.SIZE).order(ByteOrder.nativeOrder()).asShortBuffer();
 	}
 	
+	/**
+	 * Get a float direct buffer that is native order. This is to be used in OpenGL calls.
+	 * @param numFloats the number of floats you want.
+	 * @return The allocated buffer.
+	 */
 	public static FloatBuffer getDirectFloatBuffer(int numFloats) {
 		return ByteBuffer.allocateDirect(numFloats * Float.SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
 	}
@@ -143,27 +158,24 @@ public class AtlasGraphic extends Graphic {
 	
  	
 	protected void setMatrix(GL10 gl) {
-		
-		//mMatrix.reset();
+		// Translate to origin
+		// scale the sprite
+		// rotate the sprite
+		// translate to position + origin.
 		float sX = scaleX * scale;
 		float sY = scaleY * scale;
-		//mMatrix.postScale(sX, sY);
-		
-		
-		//mMatrix.postTranslate(-originX * sX, -originY * sY);
-		//gl.glTranslatef(-originX * sX, -originY * sY, 0.0f);
-		
-		//mMatrix.postTranslate(originX + mPoint.x, originY + mPoint.y);
 		
 		gl.glTranslatef(originX + mPoint.x, originY + mPoint.y, 0f);
 		
-		gl.glScalef(sX, sY, 1.0f);
+		
 		if (angle != 0) {
 			gl.glRotatef(angle, 0, 0, 1.0f);
-			
 			//mMatrix.postRotate(angle);
 		}
+		
+		gl.glScalef(sX, sY, 1.0f);
 		gl.glTranslatef(-originX, -originY, 0.0f);
+		
 	}
 	
 	/**

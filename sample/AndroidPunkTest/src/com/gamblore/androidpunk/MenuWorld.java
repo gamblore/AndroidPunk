@@ -65,6 +65,7 @@ public class MenuWorld extends World {
 		SubTexture ogmoBm = Main.mAtlas.getSubTexture("ogmo");
 		ogmo = new SpriteMap(ogmoBm, (int) ogmoBm.getWidth()/6, (int) ogmoBm.getHeight());
 		ogmo.add(ANIM_WALKING, FP.frames(0, 5), 20);
+		ogmo.setFrame(0);
 		
 		startText = new Text("Tap to Start", 30, Main.mTypeface);
 		startText.x = FP.screen.getWidth()/2 - startText.getWidth()/2;
