@@ -110,6 +110,25 @@ public class Texture {
 		load();
 	}
 	
+	public class TextureLoadRunnable extends OpenGLSystem.OpenGLRunnable {
+		private Bitmap mSource;
+		
+		public TextureLoadRunnable(Bitmap bm) {
+			mSource = bm;
+		}
+
+		@Override
+		public void run(GL10 gl) {
+			if (createTexture(gl, mSource)) {
+				mSource.recycle();
+				mSource = null;
+			} else {
+				//Re-run when you get the context back.
+				OpenGLSystem.postRunnable(this);
+			}
+		}
+		
+	}
 	/**
 	 * Thread-safe creation the texture.
 	 * @param gl the GL context.
@@ -121,20 +140,12 @@ public class Texture {
 			return;
 		}
 		mRect.set(0, 0, mSource.getWidth(), mSource.getHeight());
+		TextureLoadRunnable runnable = new TextureLoadRunnable(mSource);
 		GL10 agl = OpenGLSystem.getGL();
 		if (agl != null) {
-			createTexture(agl, mSource);
-			mSource.recycle();
-			mSource = null;
+			runnable.run(agl);
 		} else {
-			OpenGLSystem.postRunnable(new OpenGLRunnable() {
-				@Override
-				public void run(GL10 gl) {
-					createTexture(gl, mSource);
-					mSource.recycle();
-					mSource = null;
-				}
-			});
+			OpenGLSystem.postRunnable(runnable);
 		}
 	}
 	
@@ -160,7 +171,7 @@ public class Texture {
 	 * @param gl the GL context.
 	 * @param bm The bitmap to put it. 
 	 */
-	private void createTexture(GL10 gl, Bitmap bm) {
+	private boolean createTexture(GL10 gl, Bitmap bm) {
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 				
 		int textures[] = new int[1];
@@ -171,7 +182,9 @@ public class Texture {
 		// Select this OpenGL texture
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureName);
 		Log.d(TAG, "Texture is bound to " + mTextureName);
-		
+		if (mTextureName == 0) { 
+			return false;
+		}
 		// Set the texture parameters
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
@@ -182,6 +195,7 @@ public class Texture {
 		// Upload the texture to texture memory
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, mSource, 0);
 		mLoaded = true;
+		return mLoaded;
 	}
 	
 	/**

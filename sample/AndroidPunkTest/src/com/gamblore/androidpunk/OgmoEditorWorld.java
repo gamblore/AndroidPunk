@@ -185,7 +185,7 @@ public class OgmoEditorWorld extends World {
 					
 					Entity e = new Entity(x, y);
 					e.setLayer(100);
-					Text t = new Text(text, 26, Main.mTypeface);
+					Text t = new Text(text, 20, Main.mTypeface);
 					
 					e.setGraphic(t);
 					add(e);
