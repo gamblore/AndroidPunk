@@ -67,26 +67,8 @@
   </LayerDefinitions>
   <Tilesets>
     <Tileset>
-      <Name>grass_tiles</Name>
-      <FilePath>..\res\drawable-hdpi\grass_tiles.png</FilePath>
-      <TileSize>
-        <Width>32</Width>
-        <Height>32</Height>
-      </TileSize>
-      <TileSep>0</TileSep>
-    </Tileset>
-    <Tileset>
-      <Name>grass_box_tiles</Name>
-      <FilePath>..\res\drawable-hdpi\grass_box_tiles.png</FilePath>
-      <TileSize>
-        <Width>32</Width>
-        <Height>32</Height>
-      </TileSize>
-      <TileSep>0</TileSep>
-    </Tileset>
-    <Tileset>
       <Name>grass</Name>
-      <FilePath>..\res\drawable-hdpi\grass.png</FilePath>
+      <FilePath>..\_drawables\grass.png</FilePath>
       <TileSize>
         <Width>32</Width>
         <Height>32</Height>
@@ -95,7 +77,7 @@
     </Tileset>
     <Tileset>
       <Name>desert</Name>
-      <FilePath>..\res\drawable-hdpi\desert.png</FilePath>
+      <FilePath>..\_drawables\desert.png</FilePath>
       <TileSize>
         <Width>32</Width>
         <Height>32</Height>
@@ -177,7 +159,7 @@
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Image" ImagePath="..\res\drawable-hdpi\lightning.png" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\lightning.png" Tiled="false">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions />
@@ -189,14 +171,29 @@
         <Height>32</Height>
       </Size>
       <Origin>
-        <X>16</X>
-        <Y>16</Y>
+        <X>0</X>
+        <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Image" ImagePath="..\res\drawable-hdpi\volcano.png" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\volcano.png" Tiled="false">
         <RectColor A="255" R="255" G="128" B="64" />
       </ImageDefinition>
       <ValueDefinitions />
       <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
+    </EntityDefinition>
+    <EntityDefinition Name="Bird" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+      <Size>
+        <Width>32</Width>
+        <Height>32</Height>
+      </Size>
+      <Origin>
+        <X>0</X>
+        <Y>0</Y>
+      </Origin>
+      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\bird.png" Tiled="false">
+        <RectColor A="255" R="255" G="0" B="0" />
+      </ImageDefinition>
+      <ValueDefinitions />
+      <NodesDefinition Enabled="true" Limit="-1" DrawMode="Circuit" Ghost="true" />
     </EntityDefinition>
   </EntityDefinitions>
 </project>

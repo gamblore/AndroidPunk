@@ -37,6 +37,8 @@ public class MenuWorld extends World {
 	private SpriteMap ogmo;
 	private Text startText;
 	
+	private Text newGame, continueGame;
+	
 	private OnCompleteCallback mAngleFlipperCallback = new OnCompleteCallback() {
 		
 		@Override
@@ -111,22 +113,23 @@ public class MenuWorld extends World {
 		add(mDisplay);
 		
 		// Secondary options
-		mSecondDisplay.x = FP.screen.getWidth();
+		mSecondDisplay.y = FP.screen.getHeight()/2;
 		
-		Image menuNewGame = new Image(Main.mAtlas.getSubTexture("menu_newgame"));
-		menuNewGame.relative = true;
-		menuNewGame.x = FP.screen.getWidth()/4 - menuNewGame.getWidth()/2;
-		menuNewGame.y = 2*FP.screen.getHeight()/3;
-		Hitbox newHitbox = new Hitbox(menuNewGame.getWidth(), menuNewGame.getHeight(), (int)menuNewGame.x, (int)menuNewGame.y);
+		newGame = new Text("New Game", 26, Main.mTypeface);
+		newGame.relative = true;
+		newGame.x = FP.screen.getWidth()/4 - newGame.getWidth()/2;
+		newGame.y = 2*FP.screen.getHeight()/3;
+		Hitbox newHitbox = new Hitbox((int)(newGame.getWidth()+FP.dip(10)), (int)(newGame.getHeight()+FP.dip(10)), (int)(newGame.x-FP.dip(5)), (int)(newGame.y-FP.dip(5)));
 		
-		Image menuContinue = new Image(Main.mAtlas.getSubTexture("menu_continue"));
-		menuContinue.relative = true;
-		menuContinue.x = 3*FP.screen.getWidth()/4 - menuContinue.getWidth()/2;
-		menuContinue.y = menuNewGame.y;
-		Hitbox contHitbox = new Hitbox(menuContinue.getWidth(), menuContinue.getHeight(), (int)menuContinue.x, (int)menuContinue.y);
+		continueGame = new Text("Continue", 26, Main.mTypeface);
+		continueGame.relative = true;
+		continueGame.x = 3*FP.screen.getWidth()/4 - continueGame.getWidth()/2;
+		continueGame.y = newGame.y;
+		Hitbox contHitbox = new Hitbox((int)(continueGame.getWidth()+FP.dip(10)), (int)(continueGame.getHeight()+FP.dip(10)), (int)(continueGame.x-FP.dip(5)), (int)(continueGame.y-FP.dip(5)));
 		
 		mSecondDisplay.setMask(new MaskList(newHitbox, contHitbox));
-		mSecondDisplay.setGraphic(new GraphicList(menuNewGame, menuContinue));
+		mSecondDisplay.setGraphic(new GraphicList(newGame, continueGame));
+		
 		add(mSecondDisplay);
 		//add(new Button(FP.screen.getWidth()/4, FP.screen.getHeight()/2, FP.screen.getWidth()/2, 40, "START"));
 	}
@@ -144,7 +147,7 @@ public class MenuWorld extends World {
 		
 		if (mTextTween.active && Input.mousePressed) {
 			if (Data.getData().contains(Main.DATA_CURRENT_LEVEL)) {
-				FP.tween(mSecondDisplay, FP.tweenmap("x", 0), 1.5f, new TweenOptions(ONESHOT, null, Ease.quadIn, this));
+				FP.tween(mSecondDisplay, FP.tweenmap("y", 0), 1.0f, new TweenOptions(ONESHOT, null, Ease.quadIn, this));
 				mTextTween.active = false;
 				startText.visible = false;
 				
@@ -166,7 +169,8 @@ public class MenuWorld extends World {
 					FP.setWorld(new OgmoEditorWorld(1));
 				} else {
 					//continue
-					FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
+					//FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
+					FP.setWorld(new OgmoEditorWorld(13));
 				}
 			}
 			

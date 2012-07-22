@@ -33,7 +33,7 @@
   <Objects>
     <Exit id="1" x="704" y="384" />
     <PlayerStart id="2" x="32" y="416" />
-    <Text id="0" x="32" y="32" text="Touch the screen in the direction you want to go" />
+    <Text id="0" x="32" y="32" text="Ogmo will follow your finger" />
     <Text id="3" x="32" y="96" text="Tap with a second finger to jump" />
   </Objects>
 </level>

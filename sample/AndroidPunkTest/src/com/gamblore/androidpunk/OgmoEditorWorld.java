@@ -20,11 +20,13 @@ import org.w3c.dom.NodeList;
 
 import android.util.Log;
 
+import com.gamblore.androidpunk.entities.Bird;
 import com.gamblore.androidpunk.entities.Exit;
 import com.gamblore.androidpunk.entities.Lightning;
 import com.gamblore.androidpunk.entities.Monster;
 import com.gamblore.androidpunk.entities.Ogmo;
 import com.gamblore.androidpunk.entities.PlayerStart;
+import com.gamblore.androidpunk.entities.Volcano;
 
 public class OgmoEditorWorld extends World {
 
@@ -200,6 +202,15 @@ public class OgmoEditorWorld extends World {
 					Lightning l = new Lightning(x, y, width, height, angle);
 					
 					add(l);
+				} else if ("Volcano".equals(n.getNodeName())) {
+					NamedNodeMap atts = n.getAttributes();
+					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+					int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
+					
+					Volcano v = new Volcano(x, y, angle);
+					
+					add(v);
 				} else if ("Enemy".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
@@ -227,6 +238,28 @@ public class OgmoEditorWorld extends World {
 					}
 					m.start();
 					add(m);
+				} else if ("Bird".equals(n.getNodeName())) {
+					NamedNodeMap atts = n.getAttributes();
+					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+					Log.d(TAG, String.format("New bird at %d,%d",x,y) );
+					
+					Bird b = new Bird(x, y);
+					
+					NodeList enemyPoints = n.getChildNodes();
+					for (int j = 0; j < enemyPoints.getLength(); j++) {
+						Node node = enemyPoints.item(j);
+						if ("node".equals(node.getNodeName())) {
+							NamedNodeMap natts = node.getAttributes();
+							int nx = Integer.parseInt(natts.getNamedItem("x").getNodeValue());
+							int ny = Integer.parseInt(natts.getNamedItem("y").getNodeValue());
+							b.addPoint(nx, ny);
+							Log.d(TAG, String.format("Path to %d %d", nx, ny));
+						}
+					}
+					b.addPoint(x, y);
+					b.start();
+					add(b);
 				}
 				
 			}

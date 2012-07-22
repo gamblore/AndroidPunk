@@ -17,8 +17,6 @@ public class Lightning extends Entity {
 	private TiledSpriteMap mMap;
 	private static final String ANIM_SHOCK = "shock";
 	
-	private Point mRenderPoints[];
-	
 	public Lightning(int x, int y, int width, int height, int angle) {
 		super(x, y);
 		
