@@ -196,7 +196,6 @@ public class ParticleType {
 		mAlpha = start;
 		mAlphaRange = finish - start;
 		mAlphaEase = ease;
-		createBuffer();
 		return this;
 	}
 	
@@ -225,15 +224,6 @@ public class ParticleType {
 		mGreenRange = Color.green(finish) - mGreen;
 		mBlueRange = Color.blue(finish) - mBlue;
 		mColorEase = ease;
-		createBuffer();
 		return this;
-	}
-	
-	/** @private Creates the buffer if it doesn't exist. */
-	private void createBuffer() {
-		if (mBuffer != null) 
-			return;
-		mBuffer = Bitmap.createBitmap(mFrame.width(), mFrame.height(), Config.ARGB_8888);
-		mBufferRect.set(0, 0, mBuffer.getWidth(), mBuffer.getHeight());
 	}
 }

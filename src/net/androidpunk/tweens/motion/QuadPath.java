@@ -175,7 +175,7 @@ public class QuadPath extends Motion {
 				c = mCurve.get(i - 1);
 			else {
 				c = new Point();
-				mCurve.set(i - 1, c);
+				mCurve.add(c);
 			}
 			if (i < mPoints.size() - 1) {
 				c.x = l.x + (p.x - l.x) / 2;
@@ -200,13 +200,13 @@ public class QuadPath extends Motion {
 		// find t for each point on the curve
 		float d = 0;
 		mCurveT.clear();
-		for (i = 1; i < mCurve.size(); i++) {
+		for (i = 1; i < mCurve.size()-1; i++) {
 			d += mCurveD.get(i);
 			float value = d / mDistance;
 			
 			mCurveT.add(value);
 		}
-		mCurveT.set(mCurve.size() -1, 1f);
+		mCurveT.add(1f);
 	}
 	
 	/**

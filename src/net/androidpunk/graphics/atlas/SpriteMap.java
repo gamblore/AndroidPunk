@@ -357,4 +357,14 @@ public class SpriteMap extends AtlasGraphic {
 	 * The currently playing animation.
 	 */
 	public String getCurrentAnim() { return mAnim != null ? mAnim.mName : ""; }
+	
+	/**
+	 * The framewidth of this spritemap.
+	 */
+	public int getFrameWidth() { return mFrameWidth; }
+	
+	/**
+	 * The frameheight of this spritemap.
+	 */
+	public int getFrameHeight() { return mFrameHeight; }
 }

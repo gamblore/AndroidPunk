@@ -3,6 +3,7 @@ package net.androidpunk.graphics.opengl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import net.androidpunk.FP;
 
@@ -21,6 +22,8 @@ import android.util.Log;
 public class Atlas extends Texture {
 
 	private static final String TAG = "Atlas";
+	
+	public static final Vector<Atlas> ATLAS = new Vector<Atlas>();
 	
 	private final Map<String, SubTexture> mSubTextures = new HashMap<String, SubTexture>();
 	
@@ -66,6 +69,10 @@ public class Atlas extends Texture {
 			height = Integer.parseInt(atts.getNamedItem("height").getNodeValue());
 			
 			mSubTextures.put(name, new SubTexture(this, x, y, width, height));
+		}
+		
+		if (!ATLAS.contains(this)) {
+			ATLAS.add(this);
 		}
 	}
 	

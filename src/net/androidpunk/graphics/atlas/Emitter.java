@@ -151,7 +151,6 @@ public class Emitter extends AtlasGraphic {
 		Particle p = mParticle;
 		ParticleType type;
 		Rect rect;
-		Paint paint = FP.paint;
 
 		// loop through the particles
 		while (p != null) {

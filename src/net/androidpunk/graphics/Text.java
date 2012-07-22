@@ -133,6 +133,11 @@ public class Text extends Graphic {
 		AtlasGraphic.setTextureBuffer(mTextureBuffer, mTexture, mRect);
 	}
 	
+	@Override 
+	public void reload() {
+		updateTexture();
+	}
+	
 	@Override
 	public void render(GL10 gl, Point point, Point camera) {
 		super.render(gl, point, camera);

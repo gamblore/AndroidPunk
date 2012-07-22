@@ -117,6 +117,7 @@ public class Engine {
 				mTimer = new Timer(tickRate);
 				addEventListener(onTimer);
 				mTimer.start();
+				TIMERS.add(mTimer);
 			} else {
 				// nonfixed framerate
 				mLast = SystemClock.uptimeMillis();
@@ -225,7 +226,7 @@ public class Engine {
 			
 			// update timer
 			mTime = mJavaTime = SystemClock.uptimeMillis();
-			FP.renderTime = mTime - mRenderTime;
+
 			FP.gameTime = mTime - mGameTime;
 		}
 	};
@@ -289,6 +290,10 @@ public class Engine {
 		if (found) {
 			mEventListenersCount--;
 		}
+	}
+	
+	public static void clearEventListeners() {
+		mEventListenersCount = 0;
 	}
 	
 	/** @private Switch Worlds if they've changed. */

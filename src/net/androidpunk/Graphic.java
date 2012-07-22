@@ -93,4 +93,8 @@ public class Graphic {
     protected void release() {
     	
     }
+    
+    public void reload() {
+    	
+    }
 }

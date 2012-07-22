@@ -119,9 +119,16 @@ public class Texture {
 
 		@Override
 		public void run(GL10 gl) {
+			if (mLoaded) {
+				Log.e(TAG, "Texture already loaded");
+				Thread.dumpStack();
+				return;
+			}
 			if (createTexture(gl, mSource)) {
-				mSource.recycle();
-				mSource = null;
+				if (mTexturePath != null) {
+					mSource.recycle();
+					mSource = null;
+				}
 			} else {
 				//Re-run when you get the context back.
 				OpenGLSystem.postRunnable(this);
@@ -134,11 +141,6 @@ public class Texture {
 	 * @param gl the GL context.
 	 */
 	public void load() {
-		if (mLoaded) {
-			Log.e(TAG, "Texture already loaded");
-			Thread.dumpStack();
-			return;
-		}
 		mRect.set(0, 0, mSource.getWidth(), mSource.getHeight());
 		TextureLoadRunnable runnable = new TextureLoadRunnable(mSource);
 		GL10 agl = OpenGLSystem.getGL();
@@ -163,6 +165,15 @@ public class Texture {
 					releaseTexture(gl);
 				}
 			});
+		}
+	}
+	
+	public void reload() {
+		release();
+		if (mTexturePath != null) {
+			setTextureBitmap(mTexturePath);
+		} else {
+			load();
 		}
 	}
 	

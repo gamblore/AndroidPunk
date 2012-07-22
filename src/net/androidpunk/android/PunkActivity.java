@@ -1,16 +1,22 @@
 package net.androidpunk.android;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Vector;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.Engine;
+import net.androidpunk.Entity;
 import net.androidpunk.FP;
+import net.androidpunk.Graphic;
 import net.androidpunk.R;
 import net.androidpunk.Sfx;
 import net.androidpunk.flashcompat.Event;
 import net.androidpunk.flashcompat.Timer;
+import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.GraphicList;
+import net.androidpunk.graphics.opengl.Atlas;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -18,10 +24,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.media.AudioManager;
@@ -32,8 +36,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceHolder.Callback;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
@@ -75,23 +77,60 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	
 	public class APRenderer implements GLSurfaceView.Renderer {
 		private float mScaleX, mScaleY;
+		long mRenderTime;
 		private OpenGLSystem mOpenGLSystem = new OpenGLSystem(); 
 		
+		// For debugging purposes
+		private int mDebugUpdateCount;
+		private GraphicList mDebug;
+		private Text mFPS, mUpdate, mRender;
+		
+		public APRenderer() {
+			if (FP.debug) {
+				Paint p = new Paint();
+				int fpsWidth = (int)p.measureText("FPS:   0");
+				mFPS = new Text("FPS:  0", 0);
+				mUpdate = new Text("update:  0ms", 0);
+				mUpdate.x = fpsWidth + FP.dip(5);
+				mRender = new Text("render:  0ms", 0);
+				mRender.x = mUpdate.x;
+				mRender.y = -p.ascent() + p.descent() + FP.dip(2);
+				
+				mDebug = new GraphicList(mFPS, mUpdate, mRender);
+				mDebugUpdateCount = 0;
+			}
+		}
 		
 		public void onDrawFrame(GL10 gl) {
 			OpenGLSystem.setGL(gl);
 			
+			mRenderTime = SystemClock.uptimeMillis();
 			// process queue runnables for a max of 8ms.
 			synchronized (mUpdateLock) {
+				
 				gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 	
 				OpenGLSystem.processQueue(14);
 				
 				// Iterate loop and draw them.
 				if (mEngine != null) {
+					gl.glScalef(mScaleX, mScaleY, 0.0f);
 					mEngine.render();
 				}
+				if (FP.debug) {
+					if (mDebugUpdateCount % 30 == 0) {
+						mFPS.setText(String.format("FPS: %3.0f", Math.min(FP.frameRate, 60)));
+						mUpdate.setText(String.format("update: %2dms", FP.updateTime));
+						mRender.setText(String.format("render: %2dms", FP.renderTime));
+						mDebugUpdateCount = 0;
+					}
+					mDebugUpdateCount++;
+					FP.point.set(0,0);
+					mDebug.render(gl, FP.point, FP.point);
+				}
 			}
+			
+			FP.renderTime = SystemClock.uptimeMillis() - mRenderTime;
 			OpenGLSystem.setGL(null);
 			
 		}
@@ -182,21 +221,27 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        FP.supportsVBOs = supportsVBOs;
 	        
 	        Log.d(TAG, "Graphics Support" + version + " (" + renderer + "): " +(supportsDrawTexture ?  "draw texture," : "") + (supportsVBOs ? "vbos" : ""));
-	        try {
-		        mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
-	        } catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			}
+	        if (mEngine == null) {
+		        try {
+			        mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);
+		        } catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				}
+	        } else {
+	        	mFPS.reload();
+	        	mUpdate.reload();
+	        	mRender.reload();
+	        }
 		}
 		
 	}
@@ -263,6 +308,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			while(mRunning) {
 				step();
 			}
+			Log.d(TAG, "Exiting Engine");
 		}
 		
 		private void step() {
@@ -272,7 +318,9 @@ public class PunkActivity extends Activity implements OnTouchListener {
 				synchronized (mUpdateLock) {
 					Engine.checkEvents();
 				}
+				mSurfaceView.requestRender();
 				long delta = SystemClock.uptimeMillis() - now;
+				
 				if (delta < 16) {
 					try {
 						Thread.sleep(16-delta);
@@ -295,7 +343,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		mSurfaceView.setOnTouchListener(this);
 		mRenderer = new APRenderer();
 		mSurfaceView.setRenderer(mRenderer);
-		mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+		mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		//mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
@@ -334,7 +383,6 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		*/
 		mSurfaceView.onResume();
 		
-		
 		for (Timer t : Engine.TIMERS) {
 			t.start();
 		}
@@ -347,6 +395,35 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 			Log.e(TAG, "Failed to request focus. No sound.");
 		}
+		// A real resume to game state.
+		if (mEngine != null) {
+			// Reload the atlas
+			int count = Atlas.ATLAS.size();
+			for (int i = 0; i < count; i++) {
+				Atlas.ATLAS.get(i).reload();
+			}
+			// TODO make bitmap font so I can load that atlas instead of scowring the entities for the Text to reload.
+			Vector<Entity> v = new Vector<Entity>();
+			FP.getWorld().getAll(v);
+			count = v.size();
+			for (int i = 0; i < count; i++) {
+				Entity e = v.get(i);
+				Graphic g = e.getGraphic();
+				if (g instanceof Text) {
+					g.reload();
+				} else if (g instanceof GraphicList) {
+					GraphicList list = (GraphicList)g;
+					Vector<Graphic> glist = list.getChildren();
+					int glistCount = glist.size();
+					for (int k = 0; k < glistCount; k++ ) {
+						Graphic listGraphic = glist.get(k);
+						if (listGraphic instanceof Text) {
+							listGraphic.reload();
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -354,6 +431,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		super.onDestroy();
 		Sfx.SOUND_POOL.release();
 		FP.clearCachedBitmaps();
+		Engine.clearEventListeners();
 	}
 /*
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
