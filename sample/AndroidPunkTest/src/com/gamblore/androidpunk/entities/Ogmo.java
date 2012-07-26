@@ -8,6 +8,7 @@ import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.utils.Input;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.view.KeyEvent;
 
 import com.gamblore.androidpunk.Main;
 
@@ -54,7 +55,7 @@ public class Ogmo extends Entity {
 		if (Input.mouseDown) {
 			
 			Point points[] = Input.getTouches();
-			if (Input.getTouchesCount() > 1 && mCanJump) {
+			if ((Input.getTouchesCount() > 1 || Input.checkKey(KeyEvent.KEYCODE_SPACE)) && mCanJump) {
 				Main.mJump.play();
 				mVelocity.y = JUMP_SPEED;
 				mCanJump = false;

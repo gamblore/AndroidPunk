@@ -95,7 +95,7 @@
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\ogmo.png" Tiled="true">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions />
@@ -110,7 +110,7 @@
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\black_hole.png" Tiled="true">
         <RectColor A="255" R="0" G="128" B="255" />
       </ImageDefinition>
       <ValueDefinitions />
@@ -125,7 +125,7 @@
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\enemy.png" Tiled="true">
         <RectColor A="255" R="255" G="128" B="0" />
       </ImageDefinition>
       <ValueDefinitions>
@@ -183,13 +183,13 @@
     <EntityDefinition Name="Bird" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
       <Size>
         <Width>32</Width>
-        <Height>32</Height>
+        <Height>16</Height>
       </Size>
       <Origin>
         <X>0</X>
         <Y>0</Y>
       </Origin>
-      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\bird.png" Tiled="false">
+      <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\bird.png" Tiled="true">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions />

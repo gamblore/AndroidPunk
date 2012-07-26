@@ -236,7 +236,10 @@ public class OgmoEditorWorld extends World {
 							Log.d(TAG, String.format("Path to %d %d", nx, ny));
 						}
 					}
-					m.start();
+					if (enemyPoints.getLength() > 0) {
+						m.start();
+					}
+					
 					add(m);
 				} else if ("Bird".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
@@ -257,8 +260,10 @@ public class OgmoEditorWorld extends World {
 							Log.d(TAG, String.format("Path to %d %d", nx, ny));
 						}
 					}
-					b.addPoint(x, y);
-					b.start();
+					if (enemyPoints.getLength() > 0) {
+						b.addPoint(x, y);
+						b.start();
+					}
 					add(b);
 				}
 				

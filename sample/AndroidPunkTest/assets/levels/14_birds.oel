@@ -39,17 +39,27 @@
       <node x="512" y="384" />
       <node x="256" y="384" />
     </Enemy>
-    <Bird id="3" x="192" y="80">
-      <node x="256" y="288" />
-      <node x="320" y="80" />
-      <node x="240" y="288" />
-      <node x="192" y="80" />
+    <Bird id="3" x="160" y="144">
+      <node x="160" y="256" />
+      <node x="160" y="144" />
     </Bird>
-    <Bird id="4" x="416" y="80">
-      <node x="480" y="288" />
-      <node x="544" y="80" />
-      <node x="464" y="288" />
-      <node x="416" y="80" />
+    <Bird id="4" x="576" y="144">
+      <node x="576" y="256" />
+      <node x="576" y="144" />
+    </Bird>
+    <Bird id="6" x="192" y="288">
+      <node x="544" y="288" />
+      <node x="512" y="368" />
+      <node x="224" y="368" />
+      <node x="192" y="288" />
+    </Bird>
+    <Bird id="7" x="352" y="272">
+      <node x="352" y="384" />
+      <node x="352" y="272" />
+    </Bird>
+    <Bird id="8" x="384" y="272">
+      <node x="384" y="384" />
+      <node x="384" y="272" />
     </Bird>
   </Objects>
 </level>
