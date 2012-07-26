@@ -47,6 +47,13 @@ public class Ogmo extends Entity {
 		setHitbox((int) ogmo.getWidth()/6, (int) ogmo.getHeight());
 	}
 
+	private boolean inCircle(int x, int y, float radius, Point p) {
+		float nx = p.x - x;
+		float ny = p.y - y;
+		
+		return (nx * nx) + (ny * ny) < (radius * radius);
+	}
+	
 	@Override
 	public void update() {
 		float deltax = 0, deltay = 0;
@@ -55,17 +62,26 @@ public class Ogmo extends Entity {
 		if (Input.mouseDown) {
 			
 			Point points[] = Input.getTouches();
-			if ((Input.getTouchesCount() > 1 || Input.checkKey(KeyEvent.KEYCODE_SPACE)) && mCanJump) {
+			boolean inJumpCircle = inCircle(FP.screen.getWidth()/2, 0, FP.dip(100), points[0]);
+			if (mCanJump && (Input.getTouchesCount() > 1 || Input.checkKey(KeyEvent.KEYCODE_SPACE) || inJumpCircle)) {
 				Main.mJump.play();
 				mVelocity.y = JUMP_SPEED;
 				mCanJump = false;
 			}
+			if (!inJumpCircle) { 
 			Point p = points[0];
+				if (p.x > FP.screen.getWidth()/2) {
+					mVelocity.x = X_SPEED;
+				} else {
+					mVelocity.x = -X_SPEED;
+				}
+			}
+			/*
 			if (p.x + FP.camera.x >= getRight() ) {
 					mVelocity.x = X_SPEED;
 			} else if (p.x + FP.camera.x <= getLeft()) {
 					mVelocity.x = -X_SPEED;
-			}
+			}*/
 			
 			//mVelocity.x = Math.max(Math.min(mVelocity.x, 200), -200);
 			
