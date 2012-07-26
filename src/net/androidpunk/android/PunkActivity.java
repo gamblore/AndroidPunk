@@ -17,6 +17,7 @@ import net.androidpunk.flashcompat.Timer;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.opengl.Atlas;
+import net.androidpunk.utils.Input;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -513,6 +514,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 				return mOnBackCallback.onBack();
 			}
 		}
+		Input.onKeyChange(keyCode, event);
 		return super.onKeyDown(keyCode, event);
 	}
 	

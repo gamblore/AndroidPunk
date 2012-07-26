@@ -8,6 +8,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.FP;
 import net.androidpunk.graphics.opengl.SubTexture;
+import net.androidpunk.graphics.opengl.Texture;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -95,8 +96,23 @@ public class SpriteMap extends AtlasGraphic {
 		this.callback = callback;
 		active = true;
 		
+		mTextureBuffer = getDirectFloatBuffer(8*mFrameCount);
+		
 		setGeometryBuffer(mVertexBuffer, 0, 0, mFrameWidth, mFrameHeight);
-		setTextureBuffer(mTextureBuffer, mSubTexture, 0, mFrameWidth, mFrameHeight);
+		
+		Rect r = new Rect();
+		
+		mTextureBuffer.position(0);
+		Texture t = subTexture.getTexture();
+		for( int i = 0; i < mFrameCount; i++) {
+			subTexture.getFrame(r, i, frameWidth, frameHeight);
+			
+			mTextureBuffer.put((float)r.left/t.getWidth()).put((float)r.top/t.getHeight());
+			mTextureBuffer.put((float)(r.left + r.width())/t.getWidth()).put((float)r.top/t.getHeight());
+			mTextureBuffer.put((float)r.left/t.getWidth()).put((float)(r.top + r.height())/t.getHeight());
+			mTextureBuffer.put((float)(r.left + r.width())/t.getWidth()).put((float)(r.top + r.height())/t.getHeight());
+		}
+		//setTextureBuffer(mTextureBuffer, mSubTexture, 0, mFrameWidth, mFrameHeight);
 	}
 	
 	@Override
@@ -112,6 +128,7 @@ public class SpriteMap extends AtlasGraphic {
 		originX = mFrameWidth/2;
 		originY = mFrameHeight/2;
 		
+		mTextureBuffer.position(8 * mFrame);
 		setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		
 		gl.glPushMatrix(); 
@@ -147,7 +164,7 @@ public class SpriteMap extends AtlasGraphic {
 				}
 				if (mAnim != null) {
 					mFrame = (int)(mAnim.mFrames[mIndex]);
-					setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
+					//setTextureBuffer(mTextureBuffer, mSubTexture, mFrame, mFrameWidth, mFrameHeight);
 				}
 			}
 		}

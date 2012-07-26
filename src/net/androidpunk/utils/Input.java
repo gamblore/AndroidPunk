@@ -1,10 +1,19 @@
 package net.androidpunk.utils;
 
-import android.graphics.Point;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.androidpunk.FP;
+import android.graphics.Point;
+import android.view.KeyEvent;
 
 public class Input {
 
+	/**
+	 * Map from KeyCode to Action (ACTION_DOWN, ACTION_UP)
+	 */
+	public static final Map<Integer, Integer>KEY_STATE = new HashMap<Integer, Integer>();
+	
 	/**
 	 * If the mouse button is down.
 	 */
@@ -53,6 +62,32 @@ public class Input {
 	 */
 	public static Point[] getTouches() {
 		return FP.screen.getTouches();
+	}
+	
+	/**
+	 * Store the state of the inputs.
+	 * @param keyCode
+	 * @param event
+	 */
+	public static void onKeyChange(int keyCode, KeyEvent event) {
+		switch(event.getAction()) {
+		case KeyEvent.ACTION_DOWN:
+			KEY_STATE.put(keyCode, 1);
+			break;
+		case KeyEvent.ACTION_UP:
+			KEY_STATE.put(keyCode, 0);
+			break;
+		case KeyEvent.ACTION_MULTIPLE:
+			String keys = event.getCharacters();
+			for (int i = 0; i < keys.length(); i++) {
+				KEY_STATE.put((int)keys.charAt(i), 1);
+			}
+			break;
+		}
+	}
+	
+	public static boolean checkKey(int keyCode) {
+		return KEY_STATE.containsKey(keyCode) && KEY_STATE.get(keyCode) == 1;
 	}
 	
 	/** @private Called by Engine to update the input. */

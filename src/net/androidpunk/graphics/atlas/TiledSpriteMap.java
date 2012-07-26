@@ -109,6 +109,7 @@ public class TiledSpriteMap extends SpriteMap {
 		int xx = mPoint.x;
 		int yy = mPoint.y;
 		
+		mTextureBuffer.position(8 * mFrame);
 		setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		
 		gl.glPushMatrix();
