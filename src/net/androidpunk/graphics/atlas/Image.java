@@ -37,8 +37,8 @@ public class Image extends AtlasGraphic {
 		AtlasGraphic.setGeometryBuffer(mVertexBuffer, 0, 0, mClipRect.width(), mClipRect.height());
 		AtlasGraphic.setTextureBuffer(mTextureBuffer, subTexture.getTexture(), mClipRect);
 		
-		originX = mClipRect.left + mClipRect.width()/2;
-		originY = mClipRect.top + mClipRect.height()/2;
+		originX = mClipRect.width()/2;
+		originY = mClipRect.height()/2;
 	}
 
 	@Override

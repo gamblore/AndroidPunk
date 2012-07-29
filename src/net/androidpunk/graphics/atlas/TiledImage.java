@@ -26,6 +26,9 @@ public class TiledImage extends Image {
 		
 		mWidth = width;
 		mHeight = height;
+		
+		originX = 0;
+		originY = 0;
 	}
 	
 	/**
@@ -77,8 +80,8 @@ public class TiledImage extends Image {
 		
 		gl.glPushMatrix(); 
 		{
-			gl.glTranslatef(mPoint.x, mPoint.y, 0);
-			
+			setMatrix(gl);
+			//gl.glTranslatef(mPoint.x, mPoint.y, 0);
 			while (yy  < mPoint.y + mHeight) {
 				while (xx < mPoint.x + mWidth) {
 					gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);

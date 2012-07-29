@@ -113,7 +113,6 @@ public class TiledSpriteMap extends SpriteMap {
 		setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		
 		gl.glPushMatrix();
-		
 		{
 			setMatrix(gl);
 			//gl.glTranslatef(mPoint.x, mPoint.y, 0);
