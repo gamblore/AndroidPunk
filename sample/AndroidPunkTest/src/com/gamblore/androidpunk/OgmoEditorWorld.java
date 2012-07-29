@@ -26,6 +26,7 @@ import com.gamblore.androidpunk.entities.Lightning;
 import com.gamblore.androidpunk.entities.Monster;
 import com.gamblore.androidpunk.entities.Ogmo;
 import com.gamblore.androidpunk.entities.PlayerStart;
+import com.gamblore.androidpunk.entities.TreeSpikes;
 import com.gamblore.androidpunk.entities.Volcano;
 
 public class OgmoEditorWorld extends World {
@@ -202,6 +203,17 @@ public class OgmoEditorWorld extends World {
 					Lightning l = new Lightning(x, y, width, height, angle);
 					
 					add(l);
+				} else if ("TreeSpikes".equals(n.getNodeName())) {
+					NamedNodeMap atts = n.getAttributes();
+					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+					int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
+					int height = Integer.parseInt(atts.getNamedItem("height").getNodeValue());
+					int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
+					
+					TreeSpikes t = new TreeSpikes(x, y, width, height, angle);
+					
+					add(t);
 				} else if ("Volcano".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
@@ -269,6 +281,14 @@ public class OgmoEditorWorld extends World {
 				
 			}
 		}
+	}
+	
+	public int getWidth() {
+		return mWidth;
+	}
+	
+	public int getHeight() {
+		return mHeight;
 	}
 
 	@Override

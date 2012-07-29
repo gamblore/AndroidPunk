@@ -1,6 +1,7 @@
 package com.gamblore.androidpunk.entities;
 
 import com.gamblore.androidpunk.Main;
+import com.gamblore.androidpunk.OgmoEditorWorld;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
@@ -25,6 +26,7 @@ public class FireBall extends Entity {
 	private SpriteMap mMap;
 	private Emitter mEmiterMap;
 	private Point mVelocity = new Point();
+	OgmoEditorWorld mWorld;
 	
 	public FireBall(Volcano v) {
 		this(v, 0.0f);
@@ -82,12 +84,16 @@ public class FireBall extends Entity {
 		setHitbox(mMap.getWidth()/3, mMap.getHeight());
 		
 		setType("danger");
+		
 	}
 
 	@Override
 	public void update() {
 		super.update();
 		
+		if (mWorld == null) {
+			mWorld = (OgmoEditorWorld)getWorld();
+		}
 		if (mEmiterMap.getParticleCount() < 5 && FP.random() < .10) {
 			mEmiterMap.emit("spark", 0, 0);
 		}
@@ -104,6 +110,9 @@ public class FireBall extends Entity {
 		y += mVelocity.y * FP.elapsed + 0.5f;
 		
 		if (collide("level", x, y) != null) {
+			getWorld().remove(this);
+			collidable = false;
+		} else if (x < 0 || y < 0 || x > mWorld.getWidth() || y > mWorld.getHeight()) {
 			getWorld().remove(this);
 			collidable = false;
 		}

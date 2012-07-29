@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://texturepacker.com-->
-<!-- $TexturePacker:SmartUpdate:78f9a39bab3b3273b55113c9105ef0ca$ -->
+<!-- $TexturePacker:SmartUpdate:8748fa4e0675d9ac0eaabde99ba42e26$ -->
 <TextureAtlas imagePath="texture1.png">
     <SubTexture name="bird" x="2" y="2" width="128" height="18"/>
     <SubTexture name="black_hole" x="132" y="2" width="320" height="64"/>
@@ -15,5 +15,6 @@
     <SubTexture name="jumper_mobile" x="2" y="792" width="464" height="61"/>
     <SubTexture name="lightning" x="468" y="792" width="160" height="32"/>
     <SubTexture name="ogmo" x="630" y="792" width="180" height="30"/>
-    <SubTexture name="volcano" x="812" y="792" width="128" height="32"/>
+    <SubTexture name="tree_spikes" x="812" y="792" width="32" height="32"/>
+    <SubTexture name="volcano" x="846" y="792" width="128" height="32"/>
 </TextureAtlas>

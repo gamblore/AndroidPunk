@@ -28,6 +28,8 @@ public class Main extends Engine {
 		
 		FP.setWorld(new MenuWorld());
 	
+		Log.d(TAG, "Loading sounds");
+		
 		mBonk = new Sfx(R.raw.bonk);
 		mJump = new Sfx(R.raw.jump);
 		mDeath = new Sfx(R.raw.death);
