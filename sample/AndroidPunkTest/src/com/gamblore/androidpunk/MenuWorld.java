@@ -57,12 +57,24 @@ public class MenuWorld extends World {
 	
 	public MenuWorld() {
 		
-		Backdrop bd = new Backdrop(Main.mAtlas.getSubTexture("jumper_background"));
+		int level = Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1);
+		Log.d(TAG, "Level: " +level);
+		Backdrop bd = Main.getLevelBackdrop(level);
+		bd.setColor(0xb0ffffff);
+		
 		Backdrop bd2 = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"), true, false);
 		
-		logo = new Image(Main.mAtlas.getSubTexture("jumper_mobile"));
+		logo = new Image(Main.mAtlas.getSubTexture("logo_text"));
 		logo.x = FP.screen.getWidth()/2 - logo.getWidth()/2;
 		logo.y = FP.screen.getHeight()/4;
+		switch((level/10)+1) {
+		case 2:
+			logo.setColor(0xff0000ff);
+			break;
+		case 1:
+		default:
+			logo.setColor(0xffff0000);
+		}
 		
 		SubTexture ogmoBm = Main.mAtlas.getSubTexture("ogmo");
 		ogmo = new SpriteMap(ogmoBm, (int) ogmoBm.getWidth()/6, (int) ogmoBm.getHeight());
@@ -170,7 +182,7 @@ public class MenuWorld extends World {
 				} else {
 					//continue
 					FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
-					//FP.setWorld(new OgmoEditorWorld(20));
+					//FP.setWorld(new OgmoEditorWorld(18));
 				}
 			}
 			

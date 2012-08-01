@@ -62,7 +62,8 @@ public class OgmoEditorWorld extends World {
 		}
 		
 		mBackdropEntity = new Entity();
-		Backdrop bd = new Backdrop(Main.mAtlas.getSubTexture("jumper_background"));
+		Backdrop bd = Main.getLevelBackdrop(mCurrentLevel);
+		
 		Backdrop clouds = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"), true, false);
 		bd.scale = 2.0f;
 		bd.scrollX = 0.55f;
