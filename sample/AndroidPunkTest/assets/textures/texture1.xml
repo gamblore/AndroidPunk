@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://texturepacker.com-->
-<!-- $TexturePacker:SmartUpdate:1ee952b3b6e846e70121286dec6dac1a$ -->
+<!-- $TexturePacker:SmartUpdate:e4119d8da26efab29a8c9fbac82ac572$ -->
 <TextureAtlas imagePath="texture1.png">
     <SubTexture name="background_city" x="2" y="2" width="800" height="480"/>
     <SubTexture name="background_desert" x="2" y="484" width="800" height="480"/>
