@@ -69,9 +69,10 @@ public class OgmoEditorWorld extends World {
 		bd.scrollX = 0.55f;
 		bd.scrollY = 0.55f;
 		bd.setColor(0xff808080);
+		clouds.x = -FP.rand(800);
 		clouds.scrollX = 0.75f;
 		clouds.setColor(0xffb0b0b0);
-		clouds.y = FP.screen.getHeight()/3;
+		clouds.y = FP.screen.getHeight()/3 + (FP.rand(FP.screen.getHeight()/4)-FP.screen.getHeight()/8);
 		mBackdropEntity.setGraphic(new GraphicList(bd, clouds));
 		mBackdropEntity.setLayer(200);
 		add(mBackdropEntity);
@@ -124,6 +125,10 @@ public class OgmoEditorWorld extends World {
 				resHeight = st.getHeight()/3;
 			} else if ("desert".equals(tileset)) {
 				st = Main.mAtlas.getSubTexture("desert");
+				resWidth = st.getWidth()/6;
+				resHeight = st.getHeight()/3;
+			} else if ("city".equals(tileset)) {
+				st = Main.mAtlas.getSubTexture("city");
 				resWidth = st.getWidth()/6;
 				resHeight = st.getHeight()/3;
 			/*	

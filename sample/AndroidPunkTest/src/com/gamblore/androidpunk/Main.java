@@ -38,7 +38,10 @@ public class Main extends Engine {
 
 	public static Backdrop getLevelBackdrop(int level) {
 		Backdrop bd;
-		switch((level/10)+1) {
+		switch(((level-1)/10)+1) {
+		case 3: 
+			bd = new Backdrop(Main.mAtlas.getSubTexture("background_city"));
+			break;
 		case 2:
 			bd = new Backdrop(Main.mAtlas.getSubTexture("background_desert"));
 			break;

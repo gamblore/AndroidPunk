@@ -84,6 +84,15 @@
       </TileSize>
       <TileSep>0</TileSep>
     </Tileset>
+    <Tileset>
+      <Name>city</Name>
+      <FilePath>..\_drawables\city.png</FilePath>
+      <TileSize>
+        <Width>32</Width>
+        <Height>32</Height>
+      </TileSize>
+      <TileSep>0</TileSep>
+    </Tileset>
   </Tilesets>
   <EntityDefinitions>
     <EntityDefinition Name="PlayerStart" Limit="1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">

@@ -67,7 +67,7 @@ public class MenuWorld extends World {
 		logo = new Image(Main.mAtlas.getSubTexture("logo_text"));
 		logo.x = FP.screen.getWidth()/2 - logo.getWidth()/2;
 		logo.y = FP.screen.getHeight()/4;
-		switch((level/10)+1) {
+		switch(((level-1)/10)+1) {
 		case 2:
 			logo.setColor(0xff0000ff);
 			break;
@@ -181,8 +181,8 @@ public class MenuWorld extends World {
 					FP.setWorld(new OgmoEditorWorld(1));
 				} else {
 					//continue
-					FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
-					//FP.setWorld(new OgmoEditorWorld(18));
+					//FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
+					FP.setWorld(new OgmoEditorWorld(21));
 				}
 			}
 			
