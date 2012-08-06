@@ -115,8 +115,10 @@ public class PunkActivity extends Activity implements OnTouchListener {
 				
 				// Iterate loop and draw them.
 				if (mEngine != null) {
-					gl.glScalef(mScaleX, mScaleY, 0.0f);
+					
 					mEngine.render();
+					
+					
 				}
 				if (FP.debug) {
 					if (mDebugUpdateCount % 30 == 0) {
@@ -147,8 +149,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        float scaleX = (float)width / static_width;
 	        float scaleY =  (float)height / static_height;
 	        
-	        final int viewportWidth = (int)(mScreenRect.width() * scaleX);
-	        final int viewportHeight = (int)(mScreenRect.height() * scaleY);
+	        final int viewportWidth = (int)(mScreenRect.width());
+	        final int viewportHeight = (int)(mScreenRect.height());
 	        
 	        gl.glViewport(0, 0, viewportWidth, viewportHeight);
 	        gl.glScissor(0, 0, viewportWidth, viewportHeight);
@@ -163,6 +165,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        gl.glLoadIdentity();
 	        
 	        gl.glOrthof(0, viewportWidth, viewportHeight, 0, -1, 1);
+	        gl.glScalef(mScaleX, mScaleY, 0.0f);
 	        mStarted = true;
 	        
 	        //This should give it a bit of time to setup anything created during initial surface load.
@@ -345,7 +348,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		mRenderer = new APRenderer();
 		mSurfaceView.setRenderer(mRenderer);
 		mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-		//mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+		mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
