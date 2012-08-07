@@ -22,7 +22,7 @@ public class Sfx {
 	private static float GLOBAL_VOLUME = 1.0f;
 	private static float GLOBAL_PAN = 0.0f;
 	
-	public static final SoundPool SOUND_POOL = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
+	public static SoundPool SOUND_POOL = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
 	public static final Vector<Sfx> SOUNDS = new Vector<Sfx>();
 	
 	private int mSoundId;
@@ -67,6 +67,7 @@ public class Sfx {
 	 */
 	public Sfx(int resId, OnCompleteCallback completeFunction) {
 		complete = completeFunction;
+		initSoundPool();
 		mSoundId = SOUND_POOL.load(FP.context, resId, 1);
 		if (mSoundId > 0) {
 			SOUNDS.add(this);
@@ -90,6 +91,7 @@ public class Sfx {
 	 */
 	public Sfx(AssetFileDescriptor assetFd, OnCompleteCallback completeFunction) {
 		complete = completeFunction;
+		initSoundPool();
 		mSoundId = SOUND_POOL.load(assetFd, 1);
 		if (mSoundId > 0) {
 			SOUNDS.add(this);
@@ -113,9 +115,16 @@ public class Sfx {
 	 */
 	public Sfx(String path, OnCompleteCallback completeFunction) {
 		complete = completeFunction;
+		initSoundPool();
 		mSoundId = SOUND_POOL.load(path, 1);
 		if (mSoundId > 0) {
 			SOUNDS.add(this);
+		}
+	}
+	
+	private void initSoundPool() {
+		if (SOUND_POOL == null) {
+			SOUND_POOL = new SoundPool(32, AudioManager.STREAM_MUSIC, 0);
 		}
 	}
 	
@@ -266,5 +275,13 @@ public class Sfx {
 	public void release() {
 		SOUND_POOL.unload(mStreamId);
 		SOUNDS.remove(this);
+	}
+	
+	public static void releaseAll() {
+		if (SOUND_POOL != null) {
+			SOUND_POOL.release();
+			SOUND_POOL = null;
+		}
+		SOUNDS.clear();
 	}
 }

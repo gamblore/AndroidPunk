@@ -433,7 +433,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Sfx.SOUND_POOL.release();
+		Sfx.releaseAll();
 		FP.clearCachedBitmaps();
 		Engine.clearEventListeners();
 	}
