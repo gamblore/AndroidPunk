@@ -312,6 +312,8 @@ public class OgmoEditorWorld extends World {
 			if (mCurrentLevel + 1 > mNumLevels) {
 				Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
 				FP.setWorld(new MenuWorld());
+				Main.mBGM.stopLooping();
+				Main.mBGM.setVolume(0);
 			} else {
 				FP.setWorld(new OgmoEditorWorld(mCurrentLevel + 1));
 				Data.getData().edit().putInt(Main.DATA_CURRENT_LEVEL, mCurrentLevel + 1).commit();

@@ -15,6 +15,7 @@ public class Main extends Engine {
 	public static Sfx mBonk;
 	public static Sfx mJump;
 	public static Sfx mDeath;
+	public static Sfx mBGM;
 	
 	public static final String DATA_CURRENT_LEVEL = "current_level";
 	
@@ -34,6 +35,7 @@ public class Main extends Engine {
 		mBonk = new Sfx(R.raw.bonk);
 		mJump = new Sfx(R.raw.jump);
 		mDeath = new Sfx(R.raw.death);
+		mBGM = new Sfx(R.raw.bgm);
 	}
 
 	public static Backdrop getLevelBackdrop(int level) {
