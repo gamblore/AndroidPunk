@@ -48,5 +48,10 @@
       <node x="1472" y="352" />
       <node x="1328" y="352" />
     </Enemy>
+    <AcidPit id="5" x="0" y="448" width="64" />
+    <AcidPit id="6" x="288" y="448" width="96" />
+    <AcidPit id="7" x="576" y="448" width="64" />
+    <AcidPit id="8" x="736" y="448" width="64" />
+    <AcidPit id="9" x="1120" y="448" width="128" />
   </Objects>
 </level>

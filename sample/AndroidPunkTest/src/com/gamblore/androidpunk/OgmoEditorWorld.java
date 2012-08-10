@@ -4,7 +4,9 @@ import java.io.File;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
+import net.androidpunk.R;
 import net.androidpunk.World;
+import net.androidpunk.android.PunkActivity.OnBackCallback;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.GraphicList;
@@ -18,8 +20,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.util.Log;
 
+import com.gamblore.androidpunk.entities.AcidPit;
 import com.gamblore.androidpunk.entities.Bird;
 import com.gamblore.androidpunk.entities.Exit;
 import com.gamblore.androidpunk.entities.Lightning;
@@ -46,7 +52,36 @@ public class OgmoEditorWorld extends World {
 	
 	private Entity mBackdropEntity;
 	
+	private final OnBackCallback mGameOnBack = new OnBackCallback() {
+		
+		@Override
+		public boolean onBack() {
+			if (FP.engine != null)
+				FP.engine.paused = true;
+			AlertDialog.Builder builder = new AlertDialog.Builder(FP.context);
+			
+			builder.setTitle(R.string.return_to_menu_title);
+			builder.setMessage(R.string.return_to_menu_message);
+			
+			OnClickListener ocl = new OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					if (which == DialogInterface.BUTTON_POSITIVE) {
+						FP.setWorld(new MenuWorld());
+					}
+					if (FP.engine != null)
+						FP.engine.paused = false;
+				}
+			};
+			builder.setPositiveButton(R.string.yes, ocl);
+			builder.setNegativeButton(R.string.no, ocl);
+			builder.create().show();
+			return true;
+		}
+	};
 	public OgmoEditorWorld(int level) {
+		
+		FP.activity.setOnBackCallback(mGameOnBack);
 		
 		mCurrentLevel = level;
 		String levels[] = FP.getAssetList(LEVEL_FOLDER);
@@ -220,6 +255,15 @@ public class OgmoEditorWorld extends World {
 					TreeSpikes t = new TreeSpikes(x, y, width, height, angle);
 					
 					add(t);
+				} else if ("AcidPit".equals(n.getNodeName())) {
+					NamedNodeMap atts = n.getAttributes();
+					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+					int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
+					
+					AcidPit p = new AcidPit(x, y, width);
+					
+					add(p);
 				} else if ("Volcano".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
@@ -312,8 +356,8 @@ public class OgmoEditorWorld extends World {
 			if (mCurrentLevel + 1 > mNumLevels) {
 				Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
 				FP.setWorld(new MenuWorld());
-				Main.mBGM.stopLooping();
-				Main.mBGM.setVolume(0);
+				//Main.mBGM.stopLooping();
+				//Main.mBGM.setVolume(0);
 			} else {
 				FP.setWorld(new OgmoEditorWorld(mCurrentLevel + 1));
 				Data.getData().edit().putInt(Main.DATA_CURRENT_LEVEL, mCurrentLevel + 1).commit();

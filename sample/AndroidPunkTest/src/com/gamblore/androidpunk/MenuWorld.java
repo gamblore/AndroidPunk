@@ -4,6 +4,7 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.FP.TweenOptions;
 import net.androidpunk.World;
+import net.androidpunk.android.PunkActivity;
 import net.androidpunk.flashcompat.OnCompleteCallback;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.Backdrop;
@@ -33,9 +34,14 @@ public class MenuWorld extends World {
 	
 	private Entity mDisplay = new Entity();
 	private Entity mSecondDisplay = new Entity();
+	
+	private Entity mSoundEntity = new Entity();
+	
 	private Image logo;
 	private SpriteMap ogmo;
 	private Text startText;
+	
+	private SpriteMap sound;
 	
 	private Text newGame, continueGame;
 	
@@ -56,6 +62,9 @@ public class MenuWorld extends World {
 	private ColorTween mTextTween = new ColorTween(null, LOOPING);
 	
 	public MenuWorld() {
+		
+		// Ask to close.
+		FP.activity.setOnBackCallback(PunkActivity.DEFAULT_ON_BACK);
 		
 		int level = Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1);
 		Log.d(TAG, "Level: " +level);
@@ -144,6 +153,21 @@ public class MenuWorld extends World {
 		
 		add(mSecondDisplay);
 		//add(new Button(FP.screen.getWidth()/4, FP.screen.getHeight()/2, FP.screen.getWidth()/2, 40, "START"));
+		
+		// Setup the mute button
+		SubTexture soundTexture = Main.mAtlas.getSubTexture("sound");
+		sound = new SpriteMap(soundTexture, soundTexture.getWidth()/2, soundTexture.getHeight());
+		sound.scale = 2.0f;
+		boolean muted = Main.isMute();
+		Log.d(TAG, "Muted "+ muted);
+		sound.setFrame(muted ? 1 : 0);
+		sound.setColor(0xff000000);
+		//Main.setMute(muted);
+		mSoundEntity.x = FP.screen.getWidth() - (soundTexture.getWidth()/2 *2);
+		mSoundEntity.setGraphic(sound);
+		mSoundEntity.setHitbox((int)(soundTexture.getWidth()/2* sound.scale), (int)(soundTexture.getHeight() * sound.scale));
+		mSoundEntity.setType("muter");
+		add(mSoundEntity);
 	}
 
 	@Override
@@ -156,38 +180,45 @@ public class MenuWorld extends World {
 		ogmo.angle = mAngleTween.angle;
 		
 		startText.setColor(mTextTween.color);
-		
-		if (mTextTween.active && Input.mousePressed) {
-			if (Data.getData().contains(Main.DATA_CURRENT_LEVEL)) {
-				FP.tween(mSecondDisplay, FP.tweenmap("y", 0), 1.0f, new TweenOptions(ONESHOT, null, Ease.quadIn, this));
-				mTextTween.active = false;
-				startText.visible = false;
+		if (Input.mousePressed) {
+			Point touch = FP.screen.getTouches()[0];
+			Entity e = collidePoint("muter", touch.x, touch.y);
+			if (e != null) {
+				boolean muted = Main.isMute();
+				Main.setMute(!muted);
+				sound.setFrame(!muted ? 1 : 0);
 				
-				
-			} else {
-				//FP.setWorld(new OgmoEditorWorld(8));
-				FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
 			}
-		}
-		
-		// In secondary menu
-		if (mSecondDisplay.x < 5 && Input.mousePressed) {
-			Point p = FP.screen.getTouches()[0];
-			Log.d(TAG, String.format("Touch at %d %d", p.x, p.y));
-			if (mSecondDisplay.collidePoint(mSecondDisplay.x, mSecondDisplay.y, p.x, p.y)) {
-				if (p.x < FP.screen.getWidth()/2) {
-					// new game
-					Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
-					FP.setWorld(new OgmoEditorWorld(1));
+			else if (mTextTween.active) {
+				if (Data.getData().contains(Main.DATA_CURRENT_LEVEL)) {
+					FP.tween(mSecondDisplay, FP.tweenmap("y", 0), 1.0f, new TweenOptions(ONESHOT, null, Ease.quadIn, this));
+					mTextTween.active = false;
+					startText.visible = false;
+					
+					
 				} else {
-					//continue
-					//FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
-					FP.setWorld(new OgmoEditorWorld(21));
+					//FP.setWorld(new OgmoEditorWorld(8));
+					FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
 				}
-				Main.mBGM.loop(0.2f);
 			}
 			
+			// In secondary menu
+			else if (mSecondDisplay.y < 50) {
+				Point p = FP.screen.getTouches()[0];
+				Log.d(TAG, String.format("Touch at %d %d", p.x, p.y));
+				if (mSecondDisplay.collidePoint(mSecondDisplay.x, mSecondDisplay.y, p.x, p.y)) {
+					if (p.x < FP.screen.getWidth()/2) {
+						// new game
+						Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
+						FP.setWorld(new OgmoEditorWorld(1));
+					} else {
+						//continue
+						//FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
+						FP.setWorld(new OgmoEditorWorld(10));
+					}
+					//Main.mBGM.loop(0.2f);
+				}
+			}
 		}
 	}
-	
 }

@@ -6,6 +6,7 @@ import net.androidpunk.Sfx;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.opengl.Atlas;
+import net.androidpunk.utils.Data;
 import android.graphics.Typeface;
 import android.util.Log;
 
@@ -19,6 +20,7 @@ public class Main extends Engine {
 	
 	public static final String DATA_CURRENT_LEVEL = "current_level";
 	
+	public static final String MUTE_PREF = "mute";
 	public static Atlas mAtlas;
 	public static Typeface mTypeface;
 
@@ -38,6 +40,15 @@ public class Main extends Engine {
 		mBGM = new Sfx(R.raw.bgm);
 	}
 
+	public static void setMute(boolean mute) {
+		Data.getData().edit().putBoolean(MUTE_PREF, mute).commit();
+		Sfx.setMasterVolume(mute ? 0 : 1);
+	}
+	
+	public static boolean isMute() {
+		return Data.getData().getBoolean(MUTE_PREF, false);
+	}
+	
 	public static Backdrop getLevelBackdrop(int level) {
 		Backdrop bd;
 		switch(((level-1)/10)+1) {

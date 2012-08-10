@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://texturepacker.com-->
-<!-- $TexturePacker:SmartUpdate:e4119d8da26efab29a8c9fbac82ac572$ -->
+<!-- $TexturePacker:SmartUpdate:0490b9cde03e300458fee6c73f0de0e8$ -->
 <TextureAtlas imagePath="texture1.png">
-    <SubTexture name="background_city" x="2" y="2" width="800" height="480"/>
+    <SubTexture name="acid_pit" x="2" y="2" width="96" height="32"/>
+    <SubTexture name="background_city" x="100" y="2" width="800" height="480"/>
     <SubTexture name="background_desert" x="2" y="484" width="800" height="480"/>
     <SubTexture name="background_forest" x="2" y="966" width="800" height="480"/>
     <SubTexture name="bird" x="804" y="966" width="128" height="18"/>
@@ -19,6 +20,8 @@
     <SubTexture name="lightning" x="468" y="1756" width="160" height="32"/>
     <SubTexture name="logo_text" x="2" y="1819" width="464" height="61"/>
     <SubTexture name="ogmo" x="468" y="1819" width="180" height="30"/>
-    <SubTexture name="tree_spikes" x="650" y="1819" width="32" height="32"/>
-    <SubTexture name="volcano" x="684" y="1819" width="128" height="32"/>
+    <SubTexture name="platform" x="650" y="1819" width="32" height="15"/>
+    <SubTexture name="sound" x="684" y="1819" width="64" height="32"/>
+    <SubTexture name="tree_spikes" x="750" y="1819" width="32" height="32"/>
+    <SubTexture name="volcano" x="784" y="1819" width="128" height="32"/>
 </TextureAtlas>

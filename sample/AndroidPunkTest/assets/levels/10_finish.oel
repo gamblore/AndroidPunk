@@ -90,10 +90,10 @@
     </Enemy>
     <TreeSpikes id="14" x="800" y="192" width="32" height="128" angle="180" />
     <TreeSpikes id="2" x="1536" y="512" width="32" height="448" angle="180" />
-    <TreeSpikes id="5" x="704" y="544" width="32" height="64" angle="270" />
-    <TreeSpikes id="4" x="480" y="640" width="32" height="64" angle="90" />
-    <TreeSpikes id="15" x="832" y="640" width="32" height="64" angle="90" />
     <TreeSpikes id="3" x="752" y="864" width="32" height="64" angle="0" />
     <TreeSpikes id="10" x="592" y="864" width="32" height="64" angle="180" />
+    <AcidPit id="5" x="704" y="512" width="64" />
+    <AcidPit id="4" x="416" y="640" width="64" />
+    <AcidPit id="11" x="768" y="640" width="64" />
   </Objects>
 </level>
