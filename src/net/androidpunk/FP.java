@@ -11,6 +11,8 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.androidpunk.android.PunkActivity;
+import net.androidpunk.android.PunkActivity.OnBackCallback;
 import net.androidpunk.debug.Console;
 import net.androidpunk.flashcompat.OnCompleteCallback;
 import net.androidpunk.flashcompat.OnEaseCallback;
@@ -138,6 +140,15 @@ public class FP {
      */
     public static boolean supportsVBOs = false;
     
+    /**
+     * Callback to be used when the back button is pressed.
+     */
+    public static OnBackCallback onBack = PunkActivity.DEFAULT_ON_BACK;
+    
+    /**
+     * The PunkActivity that is currently running. Used to finalize from the engine.
+     */
+    public static PunkActivity activity;
     /**
      *  Used in graphics drawing to see if there is a the fastest way to blit.
      */

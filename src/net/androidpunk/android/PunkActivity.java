@@ -250,12 +250,13 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		
 	}
 	
-	public final OnBackCallback DEFAULT_ON_BACK = new OnBackCallback() {
+	public static final OnBackCallback DEFAULT_ON_BACK = new OnBackCallback() {
 		
 		@Override
 		public boolean onBack() {
-			if (mEngine != null)
-				mEngine.paused = true;
+			
+			if (FP.engine != null)
+				FP.engine.paused = true;
 			AlertDialog.Builder builder = new AlertDialog.Builder(FP.context);
 			
 			builder.setTitle(R.string.exit_dialog_title);
@@ -265,10 +266,10 @@ public class PunkActivity extends Activity implements OnTouchListener {
 				
 				public void onClick(DialogInterface dialog, int which) {
 					if (which == DialogInterface.BUTTON_POSITIVE) {
-						finish();
+						FP.activity.finish();
 					}
-					if (mEngine != null)
-						mEngine.paused = false;
+					if (FP.engine != null)
+						FP.engine.paused = false;
 				}
 			};
 			builder.setPositiveButton(R.string.yes, ocl);
@@ -277,8 +278,6 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			return true;
 		}
 	}; 
-	
-	private OnBackCallback mOnBackCallback = DEFAULT_ON_BACK;
 	
 	private OnAudioFocusChangeListener afChangeListener = new OnAudioFocusChangeListener() {
 		private boolean mDucking = false;
@@ -339,6 +338,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		FP.activity = this;
 		FP.resources = getResources();
 		FP.context = this;
 		setContentView(R.layout.main);
@@ -504,17 +505,17 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	 */
 	public void setOnBackCallback(OnBackCallback callback) {
 		if (callback == null) {
-			mOnBackCallback = DEFAULT_ON_BACK;
+			FP.onBack = DEFAULT_ON_BACK;
 		} else {
-			mOnBackCallback = callback;
+			FP.onBack = callback;
 		}
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			if (mOnBackCallback != null) {
-				return mOnBackCallback.onBack();
+			if (FP.onBack != null) {
+				return FP.onBack.onBack();
 			}
 		}
 		Input.onKeyChange(keyCode, event);
