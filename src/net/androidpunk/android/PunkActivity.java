@@ -115,10 +115,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 				
 				// Iterate loop and draw them.
 				if (mEngine != null) {
-					
 					mEngine.render();
-					
-					
 				}
 				if (FP.debug) {
 					if (mDebugUpdateCount % 30 == 0) {
@@ -129,6 +126,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 					}
 					mDebugUpdateCount++;
 					FP.point.set(0,0);
+					OpenGLSystem.processQueue(4);
 					mDebug.render(gl, FP.point, FP.point);
 				}
 			}

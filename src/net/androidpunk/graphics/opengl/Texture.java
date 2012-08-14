@@ -143,12 +143,8 @@ public class Texture {
 	public void load() {
 		mRect.set(0, 0, mSource.getWidth(), mSource.getHeight());
 		TextureLoadRunnable runnable = new TextureLoadRunnable(mSource);
-		GL10 agl = OpenGLSystem.getGL();
-		if (agl != null) {
-			runnable.run(agl);
-		} else {
-			OpenGLSystem.postRunnable(runnable);
-		}
+		OpenGLSystem.postRunnable(runnable);
+
 	}
 	
 	/**

@@ -165,7 +165,7 @@ public class AtlasGraphic extends Graphic {
 		float sX = scaleX * scale;
 		float sY = scaleY * scale;
 		
-		gl.glTranslatef((originX * sX) + mPoint.x, (originY * sY) + mPoint.y, 0f);
+		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x, (originY * Math.abs(sY)) + mPoint.y, 0f);
 		
 		
 		if (angle != 0) {
