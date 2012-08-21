@@ -62,6 +62,7 @@ public class Monster extends Entity {
 			mPath.setMotionSpeed(mSpeed);
 		}
 	}
+	
 	public void addPoint(int x, int y) {
 		if (mPath == null) {
 			mPath = new LinearPath(null, LOOPING);

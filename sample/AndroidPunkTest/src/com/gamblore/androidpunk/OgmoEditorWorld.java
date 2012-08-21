@@ -31,6 +31,7 @@ import com.gamblore.androidpunk.entities.Exit;
 import com.gamblore.androidpunk.entities.Lightning;
 import com.gamblore.androidpunk.entities.Monster;
 import com.gamblore.androidpunk.entities.Ogmo;
+import com.gamblore.androidpunk.entities.Platform;
 import com.gamblore.androidpunk.entities.PlayerStart;
 import com.gamblore.androidpunk.entities.TreeSpikes;
 import com.gamblore.androidpunk.entities.Volcano;
@@ -238,10 +239,15 @@ public class OgmoEditorWorld extends World {
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
 					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
 					int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
-					int height = Integer.parseInt(atts.getNamedItem("height").getNodeValue());
+					//int height = Integer.parseInt(atts.getNamedItem("height").getNodeValue());
 					int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
+					Node dur = atts.getNamedItem("duration");
 					
-					Lightning l = new Lightning(x, y, width, height, angle);
+					Lightning l = new Lightning(x, y, width, angle);
+					
+					if (dur != null) {
+						l.setEnabledTime(Float.parseFloat(dur.getNodeValue()));
+					}
 					
 					add(l);
 				} else if ("TreeSpikes".equals(n.getNodeName())) {
@@ -328,7 +334,32 @@ public class OgmoEditorWorld extends World {
 					}
 					add(b);
 				}
-				
+				 else if ("Platform".equals(n.getNodeName())) {
+						NamedNodeMap atts = n.getAttributes();
+						int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+						int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+						int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
+						Log.d(TAG, String.format("New platform at %d,%d",x,y) );
+						
+						Platform p = new Platform(x, y, width);
+						
+						NodeList enemyPoints = n.getChildNodes();
+						for (int j = 0; j < enemyPoints.getLength(); j++) {
+							Node node = enemyPoints.item(j);
+							if ("node".equals(node.getNodeName())) {
+								NamedNodeMap natts = node.getAttributes();
+								int nx = Integer.parseInt(natts.getNamedItem("x").getNodeValue());
+								int ny = Integer.parseInt(natts.getNamedItem("y").getNodeValue());
+								p.addPoint(nx, ny);
+								Log.d(TAG, String.format("Path to %d %d", nx, ny));
+							}
+						}
+						if (enemyPoints.getLength() > 0) {
+							p.addPoint(x, y);
+							p.start();
+						}
+						add(p);
+					}
 			}
 		}
 	}

@@ -214,7 +214,7 @@ public class MenuWorld extends World {
 					} else {
 						//continue
 						FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
-						//FP.setWorld(new OgmoEditorWorld(10));
+						FP.setWorld(new OgmoEditorWorld(23));
 					}
 					//Main.mBGM.loop(0.2f);
 				}

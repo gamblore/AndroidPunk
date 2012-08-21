@@ -1,5 +1,7 @@
 package com.gamblore.androidpunk.entities;
 
+import java.util.Vector;
+
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.graphics.atlas.SpriteMap;
@@ -29,7 +31,7 @@ public class Ogmo extends Entity {
 	
 	private boolean mCanJump = false;
 	
-	
+	private static final Vector<String> CollidableTypes = new Vector<String>();
 	
 	public Ogmo(int x, int y) {
 		super(x, y);
@@ -45,6 +47,10 @@ public class Ogmo extends Entity {
 		//setGraphic(new Image(FP.getBitmap(R.drawable.ogmo), new Rect(45,0,90,45)));
 		
 		setHitbox((int) ogmo.getWidth()/6, (int) ogmo.getHeight());
+		
+		CollidableTypes.clear();
+		CollidableTypes.add("level");
+		CollidableTypes.add(Switchable.TYPE);
 	}
 
 	private boolean inCircle(int x, int y, float radius, Point p) {
@@ -92,9 +98,18 @@ public class Ogmo extends Entity {
 		deltax = (int)(mVelocity.x * FP.elapsed);
 		deltay = (int)(mVelocity.y * FP.elapsed);
 		//Log.d(TAG, String.format("delta %.2f %.2f", deltax, deltay));
-		Entity e;
 		float previousXVelocity = mVelocity.x;
-		if ((e = collide("level", (int) (x + deltax), y)) != null) {
+		
+		// Check for moving platforms
+		Entity e;
+		Entity platformVertical = collide(Platform.TYPE, x, (int) (y + deltay));
+		if ((e = collide(Platform.TYPE, (int) (x + deltax), y)) != null && platformVertical == null) {
+			if (previousXVelocity < 0) {
+				x = e.x + e.width;
+			} else {
+				x = e.x - width;
+			}
+		} else if ((e = collideTypes(CollidableTypes, (int) (x + deltax), y)) != null) {
 			//mCanJump = true;
 			
 			if (mVelocity.y > 0) {
@@ -113,7 +128,15 @@ public class Ogmo extends Entity {
 			Main.mBonk.stopLooping();
 			x += deltax;
 		}
-		if (collide("level", x, (int) (y + deltay)) != null) {
+		
+		if ((e = collide(Platform.TYPE, x, (int) (y + deltay))) != null) {
+			Point delta = ((Platform)e).getDelta();
+			deltax += delta.x;
+			deltay += delta.y;
+			x += deltax;
+			y = e.y - (height+1);
+			mCanJump = true;
+		} else if (collideTypes(CollidableTypes, x, (int) (y + deltay)) != null) {
 			if (mVelocity.y >= 0) {
 				mCanJump = true;
 			} else {
@@ -129,7 +152,7 @@ public class Ogmo extends Entity {
 		// Decay x
 		mVelocity.x *= 0.75;
 		
-		if (Math.abs(deltax) < 1) {
+		if (Math.abs(mVelocity.x) < 1) {
 			mVelocity.x = 0;
 			mMap.setFrame(0);
 		} else {
