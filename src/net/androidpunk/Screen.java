@@ -318,40 +318,44 @@ public class Screen {
 	
 	public void setMotionEvent(MotionEvent me) {
 		synchronized (this) {
-			if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
-				mPointIndicesCount = 0;
-				mPointIndices[mPointIndicesCount++] = me.getPointerId(0);
-				Input.mouseDown = true;
-				Input.mouseUp = false;
-				Input.mousePressed = true;
-				
-			}
-			if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
-				int id = me.getPointerId(me.getActionIndex());
-				//Log.d(TAG, "Adding " + id);
-				if (mPointIndicesCount < 4) {
-					mPointIndices[mPointIndicesCount++] = me.getPointerId(id);
+			try {
+				if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
+					mPointIndicesCount = 0;
+					mPointIndices[mPointIndicesCount++] = me.getPointerId(0);
+					Input.mouseDown = true;
+					Input.mouseUp = false;
+					Input.mousePressed = true;
+					
 				}
-			}
-			if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
-				int id = me.getPointerId(me.getActionIndex());
-				//Log.d(TAG, "Removing " + id);
-				boolean found = false;
-				for (int i = 0; i < mPointIndicesCount; i++) {
-					if (found) {
-						if (i+1 < 4) {
-							mPointIndices[i] = mPointIndices[i+1];
-						} else { 
-							mPointIndices[i] = -1;
-						}
-					} else if (mPointIndices[i] == id) {
-						found = true;
-						mPointIndices[i] = mPointIndices[i+1];
+				if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+					int id = me.getPointerId(me.getActionIndex());
+					//Log.d(TAG, "Adding " + id);
+					if (mPointIndicesCount < 4) {
+						mPointIndices[mPointIndicesCount++] = me.getPointerId(id);
 					}
 				}
-				if (found) {
-					mPointIndicesCount--;
+				if ( me.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
+					int id = me.getPointerId(me.getActionIndex());
+					//Log.d(TAG, "Removing " + id);
+					boolean found = false;
+					for (int i = 0; i < mPointIndicesCount; i++) {
+						if (found) {
+							if (i+1 < 4) {
+								mPointIndices[i] = mPointIndices[i+1];
+							} else { 
+								mPointIndices[i] = -1;
+							}
+						} else if (mPointIndices[i] == id) {
+							found = true;
+							mPointIndices[i] = mPointIndices[i+1];
+						}
+					}
+					if (found) {
+						mPointIndicesCount--;
+					}
 				}
+			} catch (IllegalArgumentException e) {
+				Log.i(TAG, "Protected against pointer id mislabel");
 			}
 			
 			mInput = me;

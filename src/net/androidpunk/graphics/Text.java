@@ -69,7 +69,7 @@ public class Text extends Graphic {
 	private int mColor = 0xffffffff;
 	
 	private static final Canvas mCanvas = new Canvas();
-	private static final Paint mPaint = new Paint();
+	private final Paint mPaint = new Paint();
 	
 	private FloatBuffer mVertexBuffer = AtlasGraphic.getDirectFloatBuffer(8);
 	private FloatBuffer mTextureBuffer = AtlasGraphic.getDirectFloatBuffer(8);
