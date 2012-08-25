@@ -11,6 +11,7 @@ import javax.microedition.khronos.opengles.GL10;
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
 import net.androidpunk.android.OpenGLSystem;
+import net.androidpunk.graphics.opengl.Atlas;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.graphics.opengl.Texture;
 import android.graphics.Point;
@@ -61,9 +62,17 @@ public class AtlasGraphic extends Graphic {
 	
 	protected SubTexture mSubTexture;
 
+	public AtlasGraphic(Atlas atlas) {
+		mAtlas = atlas;
+	}
+	
 	public AtlasGraphic(SubTexture subTexture) {
 		mSubTexture = subTexture;
 		mAtlas = subTexture.getTexture();
+	}
+	
+	public void setAtlas(Atlas atlas) {
+		mAtlas = atlas;
 	}
 	
 	/**

@@ -12,6 +12,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.util.Log;
 
 /**
@@ -26,6 +28,15 @@ public class Atlas extends Texture {
 	public static final Vector<Atlas> ATLAS = new Vector<Atlas>();
 	
 	private final Map<String, SubTexture> mSubTextures = new HashMap<String, SubTexture>();
+	
+	public Atlas() {
+		ATLAS.add(this);
+	}
+	
+	public Atlas(Bitmap texture) {
+		setTextureBitmap(texture);
+		ATLAS.add(this);
+	}
 	
 	/**
 	 * Loads a texture atlas in the Sparrow format.
@@ -74,6 +85,10 @@ public class Atlas extends Texture {
 		if (!ATLAS.contains(this)) {
 			ATLAS.add(this);
 		}
+	}
+	
+	public void addSubTexture(String name, Rect clip) {
+		mSubTextures.put(name, new SubTexture(this, clip.left, clip.top, clip.width(), clip.height()));
 	}
 	
 	public SubTexture getSubTexture(String name) {

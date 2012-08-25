@@ -97,6 +97,9 @@ public class Texture {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		if (mLoaded) {
+			release();
+		}
 		load();
 	}
 	
@@ -107,6 +110,9 @@ public class Texture {
 	public void setTextureBitmap(Bitmap texture) {
 		mSource = texture;
 
+		if (mLoaded) {
+			release();
+		}
 		load();
 	}
 	

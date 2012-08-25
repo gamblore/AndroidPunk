@@ -4,6 +4,7 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.World;
 import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.Emitter;
 import net.androidpunk.graphics.atlas.GraphicList;
@@ -14,6 +15,7 @@ import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.atlas.TiledImage;
 import net.androidpunk.graphics.atlas.TiledSpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
+import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.utils.Input;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -29,14 +31,14 @@ public class GraphicsWorld extends World {
 	private Image mImage;
 	private SpriteMap mSpriteMap;
 	private Stamp mStamp;
-	private Text mText;
+	private AtlasText mText;
 	private TiledImage mTiledImage1, mTiledImage2;
 	private TiledSpriteMap mTiledSpriteMap;
 	private TileMap mTileMap;
 	
 	private int counter = 0;
 	private Entity mEntities[] = new Entity[10];
-	private int mCurrentEntity = 8;
+	private int mCurrentEntity = 6;
 	
 	public GraphicsWorld() {
 		super();
@@ -56,7 +58,6 @@ public class GraphicsWorld extends World {
 		spriteMap.play("walking");
 		
 		mEntities[0].setGraphic(new GraphicList(mBackdrop, spriteMap));
-		//add(mEntities[0]);
 		
 		/*
 		//CanvasGraphic
@@ -101,7 +102,10 @@ public class GraphicsWorld extends World {
 		
 		//Text
 		Typeface tf = Text.getFontFromRes(R.raw.font_fixed_bold);
-		mText = new Text("Hi there!", 32, tf);
+		//TextAtlas textAtlas = new TextAtlas(32, tf);
+		mText = new AtlasText("Hi there!", 33, tf);
+		//mText = new AtlasText("Hi there!", textAtlas);
+		//mText = new Text("Hi there!", 32, tf);
 		//mText.setColor(0xffffffff);
 		mEntities[6].setGraphic(mText);
 		
@@ -129,7 +133,7 @@ public class GraphicsWorld extends World {
 		mTiledSpriteMap.scale = 0.75f;
 		
 		mEntities[8].setGraphic(mTiledSpriteMap);
-		add(mEntities[8]);
+		
 		
 		//TileMap
 		SubTexture desert = Main.getAtlas().getSubTexture("desert");
@@ -137,6 +141,8 @@ public class GraphicsWorld extends World {
 		mTileMap.loadFromString("0,1,1,1,2-6,7,5,7,8-12,13,13,13,14", ",", "-");
 		
 		mEntities[9].setGraphic(mTileMap);
+		
+		add(mEntities[mCurrentEntity]);
 	}
 
 
@@ -172,6 +178,15 @@ public class GraphicsWorld extends World {
 			if (counter > 50) {
 				counter = 0;
 				mImage.scaleX *= -1;
+			}
+			
+			counter++;
+			break;
+		
+		case 6:
+			if (counter > 50) {
+				counter = 0;
+				mText.setSize(mText.getSize()+1);
 			}
 			
 			counter++;
