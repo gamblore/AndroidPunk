@@ -102,7 +102,7 @@ public class Texture {
 	
 	/**
 	 * Set the texture bitmap and load it.
-	 * @param texturePath Asset path to the image.
+	 * @param texturePath Bitmap image.
 	 */
 	public void setTextureBitmap(Bitmap texture) {
 		mSource = texture;
@@ -151,17 +151,12 @@ public class Texture {
 	 * Thread-safe release of the texture.
 	 */
 	public void release() {
-		GL10 agl = OpenGLSystem.getGL();
-		if (agl != null) {
-			releaseTexture(agl);
-		} else {
-			OpenGLSystem.postRunnable(new OpenGLRunnable() {
-				@Override
-				public void run(GL10 gl) {
-					releaseTexture(gl);
-				}
-			});
-		}
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			@Override
+			public void run(GL10 gl) {
+				releaseTexture(gl);
+			}
+		});
 	}
 	
 	public void reload() {
@@ -188,7 +183,7 @@ public class Texture {
 		
 		// Select this OpenGL texture
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureName);
-		Log.d(TAG, "Texture is bound to " + mTextureName);
+		//Log.d(TAG, "Texture is bound to " + mTextureName);
 		if (mTextureName == 0) { 
 			return false;
 		}
