@@ -15,6 +15,7 @@ import net.androidpunk.Sfx;
 import net.androidpunk.flashcompat.Event;
 import net.androidpunk.flashcompat.Timer;
 import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.opengl.Atlas;
 import net.androidpunk.utils.Input;
@@ -84,16 +85,16 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		// For debugging purposes
 		private int mDebugUpdateCount;
 		private GraphicList mDebug;
-		private Text mFPS, mUpdate, mRender;
+		private AtlasText mFPS, mUpdate, mRender;
 		
 		public APRenderer() {
 			if (FP.debug) {
 				Paint p = new Paint();
 				int fpsWidth = (int)p.measureText("FPS:   0");
-				mFPS = new Text("FPS:  0", 0);
-				mUpdate = new Text("update:  0ms", 0);
+				mFPS = new AtlasText("FPS:  0", 0);
+				mUpdate = new AtlasText("update:  0ms", 0);
 				mUpdate.x = fpsWidth + FP.dip(5);
-				mRender = new Text("render:  0ms", 0);
+				mRender = new AtlasText("render:  0ms", 0);
 				mRender.x = mUpdate.x;
 				mRender.y = -p.ascent() + p.descent() + FP.dip(2);
 				
@@ -139,6 +140,10 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		public void onSurfaceChanged(GL10 gl, int width, int height) {
 			Log.d(TAG, "Surface Size Change: " + width + ", " + height);
 			mScreenRect.set(0, 0, width, height);
+			
+			FP.displayWidth = width;
+			FP.displayHeight = height;
+			
 			Engine.fire(Event.ADDED_TO_STAGE);
 			
 	        //mWidth = w;0
@@ -239,10 +244,6 @@ public class PunkActivity extends Activity implements OnTouchListener {
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				}
-	        } else {
-	        	mFPS.reload();
-	        	mUpdate.reload();
-	        	mRender.reload();
 	        }
 		}
 		

@@ -2,6 +2,7 @@ package net.androidpunk;
 
 import java.util.Vector;
 
+import net.androidpunk.android.PunkActivity;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -295,6 +296,8 @@ public class Screen {
 	}
 	
 	public Point[] getTouches() {
+		float xRatio = (float)PunkActivity.static_width / FP.displayWidth;
+		float yRatio = (float)PunkActivity.static_height / FP.displayHeight;
 		synchronized (this) {
 			if (mInput == null) {
 				return mPoints;
@@ -305,8 +308,8 @@ public class Screen {
 				int id = mPointIndices[k];
 				for(int i = 0; i < mInput.getPointerCount() && index < mPoints.length; i++) {
 					if (mInput.getPointerId(i) == id) {
-						mPoints[index].x = (int)mInput.getX(i);
-						mPoints[index].y = (int)mInput.getY(i);
+						mPoints[index].x = (int)(mInput.getX(i) * xRatio);
+						mPoints[index].y = (int)(mInput.getY(i) * yRatio);
 						index++;
 						break;
 					}

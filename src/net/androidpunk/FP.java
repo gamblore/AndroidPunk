@@ -55,6 +55,16 @@ public class FP {
     public static int height;
     
     /**
+     * Width of the display that is being rendered to.
+     */
+    public static int displayWidth;
+    
+    /**
+     * Height of the display that is being rendered to.
+     */
+    public static int displayHeight;
+    
+    /**
      * Half width of the game.
      */
     public static float halfWidth;

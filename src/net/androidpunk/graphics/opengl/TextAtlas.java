@@ -134,10 +134,13 @@ public class TextAtlas {
 			String character = s.substring(i, i+1);
 			
 			if ("\n".equals(character)) {
+				character = " ";
 				y += -mPaint.ascent() + mPaint.descent();
-				continue;
+				x = (int) -mPaint.measureText(character);
+				
 			} else if ("\t".equals(character)) {
-				x += mPaint.measureText("\t");
+				character = " ";
+				x += mPaint.measureText("\t") - mPaint.measureText(character);
 			}
 			SubTexture subTexture = mAtlas.getSubTexture(character);
 			Rect r = subTexture.getBounds();
