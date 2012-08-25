@@ -142,14 +142,14 @@ public class TextAtlas {
 			SubTexture subTexture = mAtlas.getSubTexture(character);
 			Rect r = subTexture.getBounds();
 			
-			Log.d(TAG, String.format("drawing '%s' at %d,%d to %d,%d", character, x, y, x + r.width(), y + r.height()));
+			//Log.d(TAG, String.format("drawing '%s' at %d,%d to %d,%d", character, x, y, x + r.width(), y + r.height()));
 			
 			vertex.put(x).put(y);
 			vertex.put(x+r.width()).put(y);
 			vertex.put(x).put(y+r.height());
 			vertex.put(x+r.width()).put(y+r.height());
 			
-			Log.d(TAG, "Character texture at " + r.toShortString());
+			//Log.d(TAG, "Character texture at " + r.toShortString());
 			
 			texture.put((float)r.left/textureWidth).put((float)r.top/textureHeight);
 			texture.put((float)(r.left + r.width())/textureWidth).put((float)r.top/textureHeight);

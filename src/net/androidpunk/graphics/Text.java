@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.Log;
 
+@Deprecated
 public class Text extends Graphic {
 
 	private static final String TAG = "Text";
