@@ -245,6 +245,10 @@ public class Engine {
 		// global game properties
 		FP.width = width;
 		FP.height = height;
+		
+		FP.halfWidth = width/2;
+		FP.halfHeight = height/2;
+		
 		FP.assignedFrameRate = frameRate;
 		FP.fixed = fixed;
 

@@ -152,6 +152,9 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        float scaleX = (float)width / static_width;
 	        float scaleY =  (float)height / static_height;
 	        
+	        FP.halfWidth = static_width/2;
+	        FP.halfHeight = static_height/2;
+	        
 	        final int viewportWidth = (int)(mScreenRect.width());
 	        final int viewportHeight = (int)(mScreenRect.height());
 	        

@@ -387,7 +387,7 @@ public class World extends Tweener {
 		Entity e = mTypeFirst.get(type);
 		
 		while (e != null) {
-			if (e.collideRect(e.x, e.y, rX, rY, rWidth, rHeight)) 
+			if (e.collidable && e.collideRect(e.x, e.y, rX, rY, rWidth, rHeight)) 
 				return e;
 			e = e.mTypeNext;
 		}
@@ -404,7 +404,7 @@ public class World extends Tweener {
 	public Entity collidePoint(String type, int pX, int pY) {
 		Entity e = mTypeFirst.get(type);
 		while (e != null) {
-			if (e.collidePoint(e.x, e.y, pX, pY)) 
+			if (e.collidable && e.collidePoint(e.x, e.y, pX, pY)) 
 				return e;
 			e = e.mTypeNext;
 		}
