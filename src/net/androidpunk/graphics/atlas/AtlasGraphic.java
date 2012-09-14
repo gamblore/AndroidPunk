@@ -39,8 +39,7 @@ public class AtlasGraphic extends GLGraphic {
 	 * Sets the color filter and loads the texture if it is not already loaded.
 	 */
 	public void render(GL10 gl, Point point, Point camera) {
-		//getAtlas().mColorFilter.setColor(mColor);
-		//getAtlas().mColorFilter.applyColorFilter(gl);
+		applyColor(gl);
 		OpenGLSystem.setTexture(gl, getAtlas());
 
 	}

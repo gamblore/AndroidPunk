@@ -154,16 +154,20 @@ public class GLGraphic extends Graphic {
 		
 	}
 	
-	/**
-	 * Sets the color filter and loads the texture if it is not already loaded.
-	 */
-	public void render(GL10 gl, Point point, Point camera) {
+	public void applyColor(GL10 gl) {
 		float red = Color.red(mColor) / 255f;
 		float green = Color.green(mColor) / 255f;
 		float blue = Color.blue(mColor) / 255f;
 		float alpha = Color.alpha(mColor) / 255f;
 		
 		gl.glColor4f(red, green, blue, alpha);
+	}
+	
+	/**
+	 * Sets the color filter and loads the texture if it is not already loaded.
+	 */
+	public void render(GL10 gl, Point point, Point camera) {
+		applyColor(gl);
 		
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
