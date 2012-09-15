@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://texturepacker.com-->
+<!-- $TexturePacker:SmartUpdate:07c69821f1186e28e80bda3039f219ef$ -->
+<TextureAtlas imagePath="texture2.png">
+    <SubTexture name="grass" x="2" y="2" width="1000" height="433"/>
+    <SubTexture name="sky" x="2" y="437" width="1000" height="440"/>
+    <SubTexture name="trees_1" x="2" y="879" width="1000" height="486"/>
+    <SubTexture name="trees_2" x="2" y="1367" width="1000" height="486"/>
+</TextureAtlas>

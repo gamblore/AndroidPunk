@@ -2,6 +2,7 @@ package com.gamblore.androidpunk.test.games;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
+import net.androidpunk.Graphic;
 import net.androidpunk.World;
 import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.AtlasText;
@@ -15,7 +16,8 @@ import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.atlas.TiledImage;
 import net.androidpunk.graphics.atlas.TiledSpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
-import net.androidpunk.graphics.opengl.TextAtlas;
+import net.androidpunk.graphics.opengl.shapes.CircleShape;
+import net.androidpunk.graphics.opengl.shapes.Shape;
 import net.androidpunk.utils.Input;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -37,23 +39,25 @@ public class GraphicsWorld extends World {
 	private TileMap mTileMap;
 	
 	private int counter = 0;
-	private Entity mEntities[] = new Entity[10];
-	private int mCurrentEntity = 6;
+	private Entity mEntities[] = new Entity[20];
+	private int mCurrentEntity = 0;
 	
 	public GraphicsWorld() {
 		super();
 		
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 11; i++) {
 			mEntities[i] = new Entity();
 		}
 
 		SubTexture spritemap = Main.getAtlas().getSubTexture("ogmo");
 		
 		//Backdrop
-		mBackdrop = new Backdrop(Main.getAtlas().getSubTexture("jumper_background"));
-		mBackdrop.scrollX = 0.25f;
+		Graphic mBackdrop = new AwesomeBackdrop();
+		//mBackdrop = new Backdrop(Main.getAtlas().getSubTexture("jumper_background"));
+		//mBackdrop.scrollX = 0.25f;
 		
 		SpriteMap spriteMap = new SpriteMap(spritemap, (int) spritemap.getWidth()/6, (int) spritemap.getHeight());
+		spriteMap.y = FP.height - spritemap.getHeight();
 		spriteMap.add("walking", FP.frames(0, 5), 20);
 		spriteMap.play("walking");
 		
@@ -142,6 +146,29 @@ public class GraphicsWorld extends World {
 		
 		mEntities[9].setGraphic(mTileMap);
 		
+		//Shapes!
+		AtlasText shapeText = new AtlasText("SHAPES!", 18, tf);
+		shapeText.x = FP.width/2 - shapeText.getWidth()/2;
+		shapeText.y = FP.height/2 - 9;
+		
+		Shape line = Shape.line(25, 25, 115, 115, 4);
+		line.setColor(0xffff0000);
+		
+		Shape circle = CircleShape.circle(100, 100, 15);
+		circle.setColor(0xff00ff00);
+		
+		Shape rect2 = Shape.rect(0, 0, 30, 30);
+		rect2.setColor(0xff0000ff);
+		rect2.x = 85;
+		rect2.y = 85;
+		
+		Shape rect = Shape.rect(0, 0, 150, 25);
+		rect.x = 100;
+		rect.setColor(0xff0000ff);
+		
+		mEntities[10].setGraphic(new GraphicList(line, rect2, circle, rect, shapeText));
+		
+		
 		add(mEntities[mCurrentEntity]);
 	}
 
@@ -150,7 +177,7 @@ public class GraphicsWorld extends World {
 		if (mEntities[mCurrentEntity] != null) {
 			remove(mEntities[mCurrentEntity]);
 		}
-		mCurrentEntity = (mCurrentEntity + 1) % 10;
+		mCurrentEntity = (mCurrentEntity + 1) % 11;
 		if (mEntities[mCurrentEntity] != null) {
 			add(mEntities[mCurrentEntity]);
 		}
