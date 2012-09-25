@@ -83,8 +83,16 @@ public class FireBall extends Entity {
 		mMap.angle = mAngle;
 		setHitbox(mMap.getWidth()/3, mMap.getHeight());
 		
-		setType("danger");
+		setType(OgmoEditorWorld.TYPE_DANGER);
 		
+	}
+
+	
+	@Override
+	public void render() {
+		FP.rect.set(FP.camera.x, FP.camera.y, FP.camera.x+FP.width, FP.camera.y+FP.height);
+		if (FP.rect.contains(x, y))
+			super.render();
 	}
 
 	@Override

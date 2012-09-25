@@ -1,6 +1,7 @@
 package com.gamblore.androidpunk.entities;
 
 import com.gamblore.androidpunk.Main;
+import com.gamblore.androidpunk.OgmoEditorWorld;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
@@ -26,7 +27,7 @@ public class Bird extends Entity {
 		setGraphic(mMap);
 		
 		setHitbox(mMap.getFrameWidth(), mMap.getFrameHeight());
-		setType("danger");
+		setType(OgmoEditorWorld.TYPE_DANGER);
 	}
 	
 	@Override

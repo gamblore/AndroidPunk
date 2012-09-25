@@ -2,6 +2,8 @@ package com.gamblore.androidpunk.entities;
 
 import java.util.Vector;
 
+import com.gamblore.androidpunk.OgmoEditorWorld;
+
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
@@ -39,7 +41,7 @@ public class StaticDanger extends Entity {
 			break;
 		}
 		
-		setType("danger");
+		setType(OgmoEditorWorld.TYPE_DANGER);
 		mEnableCounter = 0;
 	}
 

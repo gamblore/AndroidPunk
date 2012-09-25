@@ -7,6 +7,7 @@ import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.tweens.motion.LinearPath;
 
 import com.gamblore.androidpunk.Main;
+import com.gamblore.androidpunk.OgmoEditorWorld;
 
 public class Monster extends Entity {
 	
@@ -33,7 +34,7 @@ public class Monster extends Entity {
 		//setGraphic(new Image(FP.getBitmap(R.drawable.ogmo), new Rect(45,0,90,45)));
 		mMap.play(ANIM_WALKING);
 		setHitbox((int) enemy.getWidth()/6, (int) enemy.getHeight());
-		setType("danger");
+		setType(OgmoEditorWorld.TYPE_DANGER);
 	}
 	
 	@Override

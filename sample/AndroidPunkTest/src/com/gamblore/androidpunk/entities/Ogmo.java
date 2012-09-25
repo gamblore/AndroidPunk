@@ -68,14 +68,15 @@ public class Ogmo extends Entity {
 		if (Input.mouseDown) {
 			
 			Point points[] = Input.getTouches();
-			boolean inJumpCircle = inCircle(FP.screen.getWidth()/2, 0, FP.dip(100), points[0]);
-			if (mCanJump && (Input.getTouchesCount() > 1 || Input.checkKey(KeyEvent.KEYCODE_SPACE) || inJumpCircle)) {
+			boolean vertJump = points[0].y < FP.height/4;
+			//boolean inJumpCircle = inCircle(FP.screen.getWidth()/2, 0, FP.dip(100), points[0]);
+			if (mCanJump && (Input.getTouchesCount() > 1 || Input.checkKey(KeyEvent.KEYCODE_SPACE) || vertJump)) {
 				Main.mJump.play();
 				mVelocity.y = JUMP_SPEED;
 				mCanJump = false;
 			}
-			if (!inJumpCircle) { 
-			Point p = points[0];
+			if (!vertJump) { 
+				Point p = points[0];
 				if (p.x > FP.screen.getWidth()/2) {
 					mVelocity.x = X_SPEED;
 				} else {

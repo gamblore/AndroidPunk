@@ -7,11 +7,12 @@ import net.androidpunk.FP;
 import net.androidpunk.R;
 import net.androidpunk.World;
 import net.androidpunk.android.PunkActivity.OnBackCallback;
-import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.opengl.SubTexture;
+import net.androidpunk.graphics.opengl.shapes.Shape;
 import net.androidpunk.masks.Grid;
 import net.androidpunk.utils.Data;
 
@@ -40,12 +41,16 @@ public class OgmoEditorWorld extends World {
 
 	private static final String TAG = "OgmoEditorWorld";
 	
+	public static final String TYPE_DANGER = "danger";
+	public static Ogmo mOgmo = null;
+	
 	private static final String LEVEL_FOLDER = "levels";
 	private int mCurrentLevel = 1;
 	private int mNumLevels;
 	
+	Entity blocker = new Entity();
 	private Entity mLevel = new Entity();
-	private Ogmo mOgmo = null;
+	
 	private PlayerStart mPlayerStart = null;
 	private Exit mExit = null;
 	
@@ -80,6 +85,7 @@ public class OgmoEditorWorld extends World {
 			return true;
 		}
 	};
+	
 	public OgmoEditorWorld(int level) {
 		
 		FP.activity.setOnBackCallback(mGameOnBack);
@@ -112,6 +118,35 @@ public class OgmoEditorWorld extends World {
 		mBackdropEntity.setGraphic(new GraphicList(bd, clouds));
 		mBackdropEntity.setLayer(200);
 		add(mBackdropEntity);
+		
+		// Setup the "HUD"
+		int jumpLine = FP.height/4;
+		
+		Shape leftBlocker = Shape.rect(0, 0, 40, FP.height);
+		leftBlocker.setColor(0xff330000);
+		
+		AtlasText leftJumpText = new AtlasText("JUMP", 16, Main.mTypeface); 
+		leftJumpText.angle = 270;
+		leftJumpText.x = 0;
+		leftJumpText.y = FP.halfHeight/2 - leftJumpText.getWidth()/2;
+		
+		Shape leftJumpLine = Shape.line(0, jumpLine, 40, jumpLine, 3);
+		leftJumpLine.setColor(0xffff3333);
+		
+		Shape rightBlocker = Shape.rect(FP.width-40, 0, 40, FP.height);
+		rightBlocker.setColor(0xff330000);
+		
+		AtlasText rightJumpText = new AtlasText("JUMP", 16, Main.mTypeface); 
+		rightJumpText.angle = 90;
+		rightJumpText.x = FP.width;
+		rightJumpText.y = FP.halfHeight/2 - 3*rightJumpText.getWidth()/2;
+		
+		Shape rightJumpLine = Shape.line(FP.width-40, jumpLine, FP.width, jumpLine, 3);
+		rightJumpLine.setColor(0xffff3333);
+		
+		blocker.setGraphic(new GraphicList(leftBlocker, rightBlocker, leftJumpText, rightJumpText, leftJumpLine, rightJumpLine));
+		blocker.setLayer(-1);
+		add(blocker);
 	}
 	
 	private void parseOgmoEditorLevel(String assetFilename) {
@@ -151,7 +186,7 @@ public class OgmoEditorWorld extends World {
 		for (int i = 0; i < tiles.getLength(); i++) {
 			Node n = tiles.item(i);
 			String tileset = n.getAttributes().getNamedItem("tileset").getNodeValue();
-			int res;
+			
 			int resWidth, resHeight;
 			SubTexture st;
 			
@@ -230,7 +265,7 @@ public class OgmoEditorWorld extends World {
 					
 					Entity e = new Entity(x, y);
 					e.setLayer(100);
-					Text t = new Text(text, 20, Main.mTypeface);
+					AtlasText t = new AtlasText(text, 20, Main.mTypeface);
 					
 					e.setGraphic(t);
 					add(e);
@@ -418,7 +453,7 @@ public class OgmoEditorWorld extends World {
 			}
 			if (mOgmo.y > mLevel.height) {
 				restart = true;
-			} else if (mOgmo.collide("danger", mOgmo.x, mOgmo.y) != null) {
+			} else if (mOgmo.collide(TYPE_DANGER, mOgmo.x, mOgmo.y) != null) {
 				Main.mDeath.play();
 				restart = true;
 			}
@@ -428,6 +463,8 @@ public class OgmoEditorWorld extends World {
 				FP.setWorld(new OgmoEditorWorld(mCurrentLevel));
 			}
 		}
+		blocker.x = FP.camera.x;
+		blocker.y = FP.camera.y;
 	}
 	
 }

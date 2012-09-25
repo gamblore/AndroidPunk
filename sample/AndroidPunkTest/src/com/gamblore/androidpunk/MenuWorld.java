@@ -7,6 +7,7 @@ import net.androidpunk.World;
 import net.androidpunk.android.PunkActivity;
 import net.androidpunk.flashcompat.OnCompleteCallback;
 import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.atlas.Image;
@@ -23,7 +24,6 @@ import net.androidpunk.utils.Ease;
 import net.androidpunk.utils.Input;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.util.Log;
 
 public class MenuWorld extends World {
@@ -39,11 +39,11 @@ public class MenuWorld extends World {
 	
 	private Image logo;
 	private SpriteMap ogmo;
-	private Text startText;
+	private AtlasText startText;
 	
 	private SpriteMap sound;
 	
-	private Text newGame, continueGame;
+	private AtlasText newGame, continueGame;
 	
 	private OnCompleteCallback mAngleFlipperCallback = new OnCompleteCallback() {
 		
@@ -90,7 +90,7 @@ public class MenuWorld extends World {
 		ogmo.add(ANIM_WALKING, FP.frames(0, 5), 20);
 		ogmo.setFrame(0);
 		
-		startText = new Text("Tap to Start", 30, Main.mTypeface);
+		startText = new AtlasText("Tap to Start", 30, Main.mTypeface);
 		startText.x = FP.screen.getWidth()/2 - startText.getWidth()/2;
 		startText.y = 3*FP.screen.getHeight()/4;
 		
@@ -136,13 +136,13 @@ public class MenuWorld extends World {
 		// Secondary options
 		mSecondDisplay.y = FP.screen.getHeight()/2;
 		
-		newGame = new Text("New Game", 26, Main.mTypeface);
+		newGame = new AtlasText("New Game", 26, Main.mTypeface);
 		newGame.relative = true;
 		newGame.x = FP.screen.getWidth()/4 - newGame.getWidth()/2;
 		newGame.y = 2*FP.screen.getHeight()/3;
 		Hitbox newHitbox = new Hitbox((int)(newGame.getWidth()+FP.dip(10)), (int)(newGame.getHeight()+FP.dip(10)), (int)(newGame.x-FP.dip(5)), (int)(newGame.y-FP.dip(5)));
 		
-		continueGame = new Text("Continue", 26, Main.mTypeface);
+		continueGame = new AtlasText("Continue", 26, Main.mTypeface);
 		continueGame.relative = true;
 		continueGame.x = 3*FP.screen.getWidth()/4 - continueGame.getWidth()/2;
 		continueGame.y = newGame.y;
@@ -214,7 +214,7 @@ public class MenuWorld extends World {
 					} else {
 						//continue
 						FP.setWorld(new OgmoEditorWorld(Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1)));
-						FP.setWorld(new OgmoEditorWorld(23));
+						//FP.setWorld(new OgmoEditorWorld(23));
 					}
 					//Main.mBGM.loop(0.2f);
 				}
