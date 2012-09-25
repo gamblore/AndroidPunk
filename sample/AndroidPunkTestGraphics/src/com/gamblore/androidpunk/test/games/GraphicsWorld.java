@@ -4,7 +4,6 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
 import net.androidpunk.World;
-import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.Emitter;
@@ -16,6 +15,7 @@ import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.atlas.TiledImage;
 import net.androidpunk.graphics.atlas.TiledSpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
+import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.graphics.opengl.shapes.CircleShape;
 import net.androidpunk.graphics.opengl.shapes.Shape;
 import net.androidpunk.utils.Input;
@@ -105,7 +105,7 @@ public class GraphicsWorld extends World {
 		
 		
 		//Text
-		Typeface tf = Text.getFontFromRes(R.raw.font_fixed_bold);
+		Typeface tf = TextAtlas.getFontFromRes(R.raw.font_fixed_bold);
 		//TextAtlas textAtlas = new TextAtlas(32, tf);
 		mText = new AtlasText("Hi there!", 33, tf);
 		//mText = new AtlasText("Hi there!", textAtlas);
@@ -154,7 +154,7 @@ public class GraphicsWorld extends World {
 		Shape line = Shape.line(25, 25, 115, 115, 4);
 		line.setColor(0xffff0000);
 		
-		Shape circle = CircleShape.circle(100, 100, 15);
+		Shape circle = Shape.circle(100, 100, 15);
 		circle.setColor(0xff00ff00);
 		
 		Shape rect2 = Shape.rect(0, 0, 30, 30);
