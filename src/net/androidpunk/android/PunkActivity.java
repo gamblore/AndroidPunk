@@ -54,7 +54,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	private static APRenderer mRenderer;
 	//private SurfaceHolder mSurfaceHolder;
 		
-	private static final Object mUpdateLock = new Object();
+	public static final Object mUpdateLock = new Object();
 	
 	private Engine mEngine;
 	private Thread mGameThread;
@@ -436,9 +436,13 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		if (FP.debug) {
+			FP.getConsole().shutdown();
+		}
 		Sfx.releaseAll();
 		FP.clearCachedBitmaps();
 		Engine.clearEventListeners();
+		
 	}
 /*
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {

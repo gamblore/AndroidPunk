@@ -266,6 +266,11 @@ public class Engine {
 
 		// on-stage event listener
 		addEventListener(onStage);
+		
+		//Initializes the console.
+		if (FP.debug) {
+			FP.getConsole();
+		}
 	}
 	
 	public void addEventListener(OnEventListener listener) {

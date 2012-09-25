@@ -3,8 +3,10 @@ package net.androidpunk;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import android.graphics.Point;
@@ -784,6 +786,17 @@ public class World extends Tweener {
 	 */
 	public int getUniqueTypes() {
 		return mTypeCount.keySet().size();
+	}
+	
+	public String[] getTypes() {
+		Set<String> types = mTypeCount.keySet();
+		String[] typesArray = new String[types.size()];
+		Iterator<String> it = types.iterator();
+		for (int i = 0; it.hasNext(); i++ ) {
+			String type = it.next();
+			typesArray[i] = type;
+		}
+		return typesArray;
 	}
 	
 	/**

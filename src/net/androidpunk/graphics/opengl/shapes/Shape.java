@@ -128,6 +128,10 @@ public class Shape extends GLGraphic {
 		return s;
 	}
 	
+	public static Shape circle(int cx, int cy, float radius) {
+		return CircleShape.circle(cx, cy, radius);
+	}
+	
 	/**
 	 * Set custom vertices will be set as a triangle strip. You can override this method to do more other rendering types.
 	 * @param v vertices to set into the native buffer for drawing.

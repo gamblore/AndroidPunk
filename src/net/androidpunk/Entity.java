@@ -109,6 +109,10 @@ public class Entity extends Tweener {
             
     }
     
+    public String toString() {
+    	return String.format("%s: %s xy<%d, %d> origin<%d, %d> wh<%d, %d>", getClass().getName(), mType, x, y, originX, originY, width, height);
+    }
+    
     /**
 	 * Override this, called when the Entity is added to a World.
 	 */
