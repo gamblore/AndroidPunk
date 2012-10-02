@@ -50,7 +50,6 @@ public class Ogmo extends Entity {
 		
 		CollidableTypes.clear();
 		CollidableTypes.add("level");
-		CollidableTypes.add(Switchable.TYPE);
 	}
 
 	private boolean inCircle(int x, int y, float radius, Point p) {

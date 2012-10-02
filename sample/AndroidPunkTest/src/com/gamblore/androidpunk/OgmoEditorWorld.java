@@ -1,10 +1,11 @@
 package com.gamblore.androidpunk;
 
 import java.io.File;
+import java.util.Map;
+import java.util.TreeMap;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
-import net.androidpunk.R;
 import net.androidpunk.World;
 import net.androidpunk.android.PunkActivity.OnBackCallback;
 import net.androidpunk.graphics.atlas.AtlasText;
@@ -28,6 +29,7 @@ import android.util.Log;
 
 import com.gamblore.androidpunk.entities.AcidPit;
 import com.gamblore.androidpunk.entities.Bird;
+import com.gamblore.androidpunk.entities.Cannon;
 import com.gamblore.androidpunk.entities.Exit;
 import com.gamblore.androidpunk.entities.Lightning;
 import com.gamblore.androidpunk.entities.Monster;
@@ -58,6 +60,27 @@ public class OgmoEditorWorld extends World {
 	
 	private Entity mBackdropEntity;
 	
+	public static abstract class XMLEntityConstructor {
+		public abstract Entity make(Node n);
+	}
+	
+	private static Map<String, XMLEntityConstructor> mXMLEntityConstructors = new TreeMap<String, XMLEntityConstructor>();
+	
+	static {
+		mXMLEntityConstructors.put("Cannon", new XMLEntityConstructor() {
+
+			@Override
+			public Cannon make(Node n) {
+				NamedNodeMap atts = n.getAttributes();
+				int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+				int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+				int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
+				
+				Cannon c = new Cannon(x, y, angle);
+				return c;
+			}
+		});
+	}
 	private final OnBackCallback mGameOnBack = new OnBackCallback() {
 		
 		@Override
@@ -241,7 +264,10 @@ public class OgmoEditorWorld extends World {
 			for (int i = 0; i < objects.getLength(); i++) {
 				Node n = objects.item(i);
 				//Log.d(TAG, String.format("tag '%s' in Objects", n.getNodeName()));
-				if ("PlayerStart".equals(n.getNodeName())) {
+				
+				if (mXMLEntityConstructors.containsKey(n.getNodeName())) {
+					add(mXMLEntityConstructors.get(n.getNodeName()).make(n));
+				} else if ("PlayerStart".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
 					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());

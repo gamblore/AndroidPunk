@@ -3,9 +3,11 @@ package com.gamblore.androidpunk;
 import net.androidpunk.Engine;
 import net.androidpunk.FP;
 import net.androidpunk.Sfx;
-import net.androidpunk.graphics.Text;
+import net.androidpunk.debug.Command;
+import net.androidpunk.debug.Console;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.opengl.Atlas;
+import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.utils.Data;
 import android.graphics.Typeface;
 import android.util.Log;
@@ -28,7 +30,7 @@ public class Main extends Engine {
 		super(width, height, frameRate, fixed);
 		
 		mAtlas = new Atlas("textures/texture1.xml");
-		mTypeface = Text.getFontFromRes(R.raw.font_fixed_bold);
+		mTypeface = TextAtlas.getFontFromRes(R.raw.font_fixed_bold);
 		
 		FP.setWorld(new MenuWorld());
 	
@@ -38,6 +40,25 @@ public class Main extends Engine {
 		mJump = new Sfx(R.raw.jump);
 		mDeath = new Sfx(R.raw.death);
 		mBGM = new Sfx(R.raw.bgm);
+		
+		if (FP.debug) {
+			Command changeLevel = new Command() {
+				
+				@Override
+				public String execute(String... args) {
+					try {
+						int level = Integer.parseInt(args[0]);
+						FP.setWorld(new OgmoEditorWorld(level));
+						return "Changing level to "+ level + "\r\n"; 
+					} catch (Exception e) {
+						e.printStackTrace();
+						return "Bad argument to \"level\": " + args[0] + "\r\n"; 
+					}
+				}
+			};
+			
+			Console.registerCommand("level", changeLevel);
+		}
 	}
 
 	public static void setMute(boolean mute) {
