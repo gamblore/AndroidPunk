@@ -1,5 +1,7 @@
 package com.gamblore.androidpunk.test.games;
 
+import java.io.IOException;
+
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
@@ -16,8 +18,8 @@ import net.androidpunk.graphics.atlas.TiledImage;
 import net.androidpunk.graphics.atlas.TiledSpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.graphics.opengl.TextAtlas;
-import net.androidpunk.graphics.opengl.shapes.CircleShape;
 import net.androidpunk.graphics.opengl.shapes.Shape;
+import net.androidpunk.script.LuaScript;
 import net.androidpunk.utils.Input;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -42,8 +44,17 @@ public class GraphicsWorld extends World {
 	private Entity mEntities[] = new Entity[20];
 	private int mCurrentEntity = 0;
 	
+	private LuaScript mLuaScript;
+	
 	public GraphicsWorld() {
 		super();
+		
+		try {
+			mLuaScript = new LuaScript("scripts/test_script.lua");
+		} catch (IOException e) {
+			e.printStackTrace();
+			FP.activity.finish();
+		}
 		
 		for (int i = 0; i < 11; i++) {
 			mEntities[i] = new Entity();
@@ -195,7 +206,10 @@ public class GraphicsWorld extends World {
 				FP.camera.x = 0;
 				((GraphicList)mEntities[0].getGraphic()).getChildren().get(1).x = 0;
 			}
-			((GraphicList)mEntities[0].getGraphic()).getChildren().get(1).x+=2;
+			if (mLuaScript != null) {
+				mLuaScript.callMain(((GraphicList)mEntities[0].getGraphic()).getChildren().get(1));
+			}
+			//((GraphicList)mEntities[0].getGraphic()).getChildren().get(1).x+=2;
 		case 2:
 			if (mEmitter.getParticleCount() < 3) {
 				mEmitter.emit("test", 25, 25);
