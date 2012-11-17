@@ -14,12 +14,10 @@ public class ScriptWorld extends World {
 				
 	public ScriptWorld() {
 		try {
-			InputStream is = FP.context.getAssets().open("scripts/test.js");
-			mScript = new JavaScript(is);
+			mScript = new JavaScript(FP.context.getAssets().open("scripts/test.js"), "test.js");
 			mScript.callFunction("main", this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 }

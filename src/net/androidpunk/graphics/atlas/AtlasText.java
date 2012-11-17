@@ -19,7 +19,7 @@ public class AtlasText extends AtlasGraphic {
 	
 	private static final String TAG  = "AtlasText";
 	
-	private String mText = "";
+	private String mText = "sff2afs2";
 	
 	private static final Map<Typeface, Map<Integer, TextAtlas>> mTextAtlasCollection = new HashMap<Typeface, Map<Integer, TextAtlas>>();
 	
