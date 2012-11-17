@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://texturepacker.com-->
+<!-- $TexturePacker:SmartUpdate:3097ff024b18349cc40bcde0f531746f$ -->
+<TextureAtlas imagePath="texture1.png">
+    <SubTexture name="black_hole" x="2" y="2" width="320" height="64"/>
+    <SubTexture name="desert" x="324" y="2" width="192" height="96"/>
+    <SubTexture name="enemy" x="518" y="2" width="192" height="32"/>
+    <SubTexture name="grass" x="712" y="2" width="192" height="96"/>
+    <SubTexture name="grass_box_tiles" x="906" y="2" width="96" height="96"/>
+    <SubTexture name="grass_tiles" x="2" y="100" width="128" height="96"/>
+    <SubTexture name="grey_cement" x="132" y="100" width="32" height="32"/>
+    <SubTexture name="jumper_background" x="166" y="100" width="800" height="480"/>
+    <SubTexture name="jumper_clouds" x="2" y="582" width="800" height="110"/>
+    <SubTexture name="jumper_mobile" x="2" y="694" width="464" height="61"/>
+    <SubTexture name="lightning" x="468" y="694" width="160" height="32"/>
+    <SubTexture name="menu_continue" x="630" y="694" width="142" height="30"/>
+    <SubTexture name="menu_newgame" x="774" y="694" width="164" height="30"/>
+    <SubTexture name="ogmo" x="2" y="757" width="180" height="30"/>
+    <SubTexture name="particle" x="184" y="757" width="10" height="10"/>
+    <SubTexture name="volcano" x="196" y="757" width="128" height="32"/>
+</TextureAtlas>
