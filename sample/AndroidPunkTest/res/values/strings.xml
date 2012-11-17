@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AndroidPunk Jumper</string>
+    <string name="app_name">Jumper Mobile</string>
     <string name="return_to_menu_title">Back?</string>
     <string name="return_to_menu_message">Return to menu?</string>
 </resources>
