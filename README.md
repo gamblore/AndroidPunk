@@ -36,3 +36,7 @@ Then create a class that extends PunkActivity and set the following to whatever 
             //FP.assignedFrameRate = 30
         }
     }
+    
+Legal
+============
+This project uses Rihno for JavaScript. You can find it more information on it [here](https://developer.mozilla.org/en-US/docs/Rhino).
