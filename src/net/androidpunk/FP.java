@@ -26,13 +26,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.opengl.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.opengl.Matrix;
 import android.util.TypedValue;
 
 public class FP {
@@ -133,7 +133,7 @@ public class FP {
     /**
      * Point used to determine drawing offset in the render loop.
      */
-    public static Point camera;
+    public static Point camera = new Point();
     
     /**
      * Global Tweener for tweening values across multiple worlds.
@@ -386,7 +386,7 @@ public class FP {
      * @param   y           Y position to step towards.
      * @param   distance    The distance to step (will not overshoot target).
      */
-    public static void stepTowards(Positionable object, int  x, int y, float distance) {
+    public static void stepTowards(Positionable object, int x, int y, float distance) {
         point.x = x - object.x;
         point.y = y - object.y;
         double len = PointF.length(point.x, point.y);
@@ -396,10 +396,10 @@ public class FP {
             object.y = y;
             return;
         }
-        point.x /= len;
-        point.y /= len;
-        object.x += point.x;
-        object.y += point.y;
+        float deltax = (float)(point.x / len) * distance;
+        float deltay = (float)(point.y / len) * distance;
+        object.x = object.x + FP.sign(deltax) * Math.round(Math.abs(deltax));
+        object.y = object.y + FP.sign(deltay) * Math.round(Math.abs(deltay));
     }
     
     /**

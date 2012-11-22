@@ -12,7 +12,7 @@ public class Input {
 	/**
 	 * Map from KeyCode to Action (ACTION_DOWN, ACTION_UP)
 	 */
-	public static final Map<Integer, Integer>KEY_STATE = new HashMap<Integer, Integer>();
+	public static final Map<Integer, Integer> KEY_STATE = new HashMap<Integer, Integer>();
 	
 	/**
 	 * If the mouse button is down.

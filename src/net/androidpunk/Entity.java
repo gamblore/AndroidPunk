@@ -26,12 +26,12 @@ public class Entity extends Tweener {
     /**
      * X position of the Entity in the World.
      */
-    public int x = 0;
+    //public int x = 0;
 
     /**
      * Y position of the Entity in the World.
      */
-    public int y = 0;
+    //public int y = 0;
 
     /**
      * Width of the Entity's hitbox.
