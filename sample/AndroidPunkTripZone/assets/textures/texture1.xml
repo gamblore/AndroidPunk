@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://texturepacker.com-->
+<!-- $TexturePacker:SmartUpdate:30b2af45951a4e22695d64e6d36d6eef$ -->
+<TextureAtlas imagePath="texture1.png">
+    <SubTexture name="Block" x="2" y="2" width="64" height="32"/>
+    <SubTexture name="EnemyBall" x="68" y="2" width="64" height="32"/>
+    <SubTexture name="Exit" x="2" y="36" width="128" height="32"/>
+    <SubTexture name="Guy" x="132" y="36" width="64" height="16"/>
+    <SubTexture name="Spawner" x="2" y="70" width="96" height="32"/>
+</TextureAtlas>

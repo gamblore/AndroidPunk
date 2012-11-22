@@ -1,0 +1,27 @@
+package com.gamblore.tripzone;
+
+import net.androidpunk.FP;
+import net.androidpunk.android.PunkActivity;
+import android.os.Bundle;
+
+public class MainActivity extends PunkActivity {
+	static {
+        // This is how big the screen is targeted for, it will resize the display
+        // to meet the device's size.
+        PunkActivity.static_width = 800; 
+        PunkActivity.static_height = 480;
+        
+        // Set this to a class that extends Engine
+        PunkActivity.engine_class = Main.class; 
+        
+        // If you want fixed time between frames set these. Value is in frames per second. 
+        //FP.fixed = true;
+        //FP.assignedFrameRate = 30;
+        
+        FP.debug = true;
+	}
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+}
