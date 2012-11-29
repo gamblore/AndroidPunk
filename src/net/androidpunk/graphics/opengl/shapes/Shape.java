@@ -14,6 +14,7 @@ import android.graphics.PointF;
 public class Shape extends GLGraphic {
 
 	protected FloatBuffer mVertexBuffer;
+	protected FloatBuffer mVertexColorBuffer;
 	protected int mVertices = 0;
 	
 	private int mWidth = 0;
@@ -187,6 +188,11 @@ public class Shape extends GLGraphic {
 			return;
 		}
 		
+		if (mVertexColorBuffer != null) {
+			gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+			gl.glColorPointer(4, GL10.GL_FLOAT, 0, mVertexColorBuffer);
+
+		}
 		GLGraphic.setBuffers(gl, mVertexBuffer, null);
 		
 		gl.glDisable(GL10.GL_TEXTURE_2D);
@@ -201,5 +207,9 @@ public class Shape extends GLGraphic {
 		
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		
+		if (mVertexColorBuffer != null) {
+			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+		}
 	}
 }

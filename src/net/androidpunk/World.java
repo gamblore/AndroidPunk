@@ -1,6 +1,5 @@
 package net.androidpunk;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,7 +9,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import android.graphics.Point;
-import android.util.Log;
 
 public class World extends Tweener {
 

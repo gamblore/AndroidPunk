@@ -5,7 +5,6 @@ import net.androidpunk.FP;
 import net.androidpunk.Graphic;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;

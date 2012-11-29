@@ -4,12 +4,8 @@ import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import net.androidpunk.FP;
-import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.graphics.opengl.SubTexture;
-import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.graphics.Rect;
 
 /**
  * A simple non-transformed, non-animated graphic.

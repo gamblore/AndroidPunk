@@ -8,14 +8,11 @@ import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.androidpunk.FP;
+import net.androidpunk.Graphic;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
-import net.androidpunk.FP;
-import net.androidpunk.Graphic;
-import net.androidpunk.android.OpenGLSystem;
-import net.androidpunk.graphics.opengl.SubTexture;
-import net.androidpunk.graphics.opengl.Texture;
 
 public class GLGraphic extends Graphic {
 

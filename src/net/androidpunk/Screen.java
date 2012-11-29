@@ -1,7 +1,5 @@
 package net.androidpunk;
 
-import java.util.Vector;
-
 import net.androidpunk.android.PunkActivity;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;

@@ -1,11 +1,8 @@
 package net.androidpunk.graphics.opengl.shapes;
 
-import java.nio.FloatBuffer;
-
 import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.graphics.opengl.GLGraphic;
-
 import android.graphics.Point;
 
 public class CircleShape extends Shape {

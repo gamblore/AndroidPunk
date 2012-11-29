@@ -5,7 +5,6 @@ import javax.microedition.khronos.opengles.GL10;
 import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Point;
-import android.util.Log;
 
 public class TiledSpriteMap extends SpriteMap {
 

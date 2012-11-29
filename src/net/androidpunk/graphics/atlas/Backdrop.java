@@ -4,11 +4,9 @@ import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.graphics.Bitmap;
-import android.graphics.Point;
 import net.androidpunk.FP;
-import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.graphics.opengl.SubTexture;
+import android.graphics.Point;
 
 public class Backdrop extends AtlasGraphic {
 

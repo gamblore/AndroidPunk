@@ -6,14 +6,10 @@ import java.util.Map;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.FP;
-import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.flashcompat.OnEaseCallback;
 import net.androidpunk.graphics.opengl.SubTexture;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;

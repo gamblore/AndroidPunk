@@ -7,7 +7,6 @@ import javax.microedition.khronos.opengles.GL10;
 import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.test.MoreAsserts;
 
 public class Image extends AtlasGraphic {
 

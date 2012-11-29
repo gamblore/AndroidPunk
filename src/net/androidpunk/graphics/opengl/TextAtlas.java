@@ -2,7 +2,6 @@ package net.androidpunk.graphics.opengl;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,10 +10,8 @@ import java.nio.ShortBuffer;
 
 import net.androidpunk.FP;
 import net.androidpunk.graphics.atlas.AtlasGraphic;
-import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
