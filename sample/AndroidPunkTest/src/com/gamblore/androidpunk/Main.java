@@ -48,6 +48,7 @@ public class Main extends Engine {
 				public String execute(String... args) {
 					try {
 						int level = Integer.parseInt(args[0]);
+						FP.getWorld().active = false;
 						FP.setWorld(new OgmoEditorWorld(level));
 						return "Changing level to "+ level + "\r\n"; 
 					} catch (Exception e) {

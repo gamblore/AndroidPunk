@@ -1,15 +1,13 @@
 package com.gamblore.androidpunk.entities;
 
-import com.gamblore.androidpunk.Main;
-import com.gamblore.androidpunk.OgmoEditorWorld;
-
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.graphics.atlas.SpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.tweens.motion.LinearPath;
-import net.androidpunk.tweens.motion.QuadPath;
-import net.androidpunk.utils.Ease;
+
+import com.gamblore.androidpunk.Main;
+import com.gamblore.androidpunk.OgmoEditorWorld;
 
 public class Bird extends Entity {
 

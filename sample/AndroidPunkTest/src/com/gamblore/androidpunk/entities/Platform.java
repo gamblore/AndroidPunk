@@ -43,12 +43,14 @@ public class Platform extends Entity {
 		
 		int lastX = x;
 		int lastY = y;
+		
 		if (mPath != null) {
+			mDelta.set((int)mPath.x - lastX, (int)mPath.y - lastY);
+			moveontop(Ogmo.TYPE_PLAYER);
 			x = (int)mPath.x;
 			y = (int)mPath.y;
 		}
 		
-		mDelta.set(x - lastX, y - lastY);
 	}
 	
 	public Point getDelta() {
@@ -67,6 +69,27 @@ public class Platform extends Entity {
 		if (mPath != null) {
 			mPath.setMotionSpeed(mSpeed);
 			addTween(mPath);
+		}
+	}
+	
+	/**
+	 * Moves an entity of the given type that is on top of this entity (if any). Also moves player if it's on top of the entity on top of this one. (confusing.. eh?).
+	 * Mostly used for moving platforms
+	 * @param	type	Entity type to check for
+	 */
+	public void moveontop(String type) {
+		
+		if (Math.abs(mDelta.x) != 0) {
+			Entity e = collide(type, x+mDelta.x, y);
+			if (e != null) {
+				e.x += mDelta.x;
+				e.y += mDelta.y;
+			}
+		}
+		Entity e = collide(type, x, y - 1);
+		if (e != null) {
+			e.x += mDelta.x;
+			e.y += mDelta.y;
 		}
 	}
 }

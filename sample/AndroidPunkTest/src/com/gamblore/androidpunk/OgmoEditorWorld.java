@@ -45,12 +45,12 @@ public class OgmoEditorWorld extends World {
 	
 	public static final String TYPE_DANGER = "danger";
 	public static Ogmo mOgmo = null;
+	public static boolean restart = false;
 	
 	private static final String LEVEL_FOLDER = "levels";
 	private int mCurrentLevel = 1;
 	private int mNumLevels;
 	
-	Entity blocker = new Entity();
 	private Entity mLevel = new Entity();
 	
 	private PlayerStart mPlayerStart = null;
@@ -59,6 +59,8 @@ public class OgmoEditorWorld extends World {
 	private int mWidth = 0, mHeight = 0;
 	
 	private Entity mBackdropEntity;
+	
+	
 	
 	public static abstract class XMLEntityConstructor {
 		public abstract Entity make(Node n);
@@ -110,6 +112,8 @@ public class OgmoEditorWorld extends World {
 	};
 	
 	public OgmoEditorWorld(int level) {
+		mOgmo = null;
+		restart = false;
 		
 		FP.activity.setOnBackCallback(mGameOnBack);
 		
@@ -142,8 +146,10 @@ public class OgmoEditorWorld extends World {
 		mBackdropEntity.setLayer(200);
 		add(mBackdropEntity);
 		
+		/*
 		// Setup the "HUD"
 		int jumpLine = FP.height/4;
+		
 		
 		Shape leftBlocker = Shape.rect(0, 0, 40, FP.height);
 		leftBlocker.setColor(0xff330000);
@@ -170,6 +176,7 @@ public class OgmoEditorWorld extends World {
 		blocker.setGraphic(new GraphicList(leftBlocker, rightBlocker, leftJumpText, rightJumpText, leftJumpLine, rightJumpLine));
 		blocker.setLayer(-1);
 		add(blocker);
+		*/
 	}
 	
 	private void parseOgmoEditorLevel(String assetFilename) {
@@ -436,29 +443,24 @@ public class OgmoEditorWorld extends World {
 	@Override
 	public void update() {
 		super.update();
-		
-		if (mOgmo == null) {
-			Log.d(TAG, "Spwaning Ogmo");
-			mOgmo = mPlayerStart.spawn();
-			add(mOgmo);
-		}
-		
-		if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
-			Log.d(TAG, "Level Compelete");
-			if (mCurrentLevel + 1 > mNumLevels) {
-				Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
-				FP.setWorld(new MenuWorld());
-				//Main.mBGM.stopLooping();
-				//Main.mBGM.setVolume(0);
-			} else {
-				FP.setWorld(new OgmoEditorWorld(mCurrentLevel + 1));
-				Data.getData().edit().putInt(Main.DATA_CURRENT_LEVEL, mCurrentLevel + 1).commit();
-			}
-			remove(mOgmo);
-			mOgmo = null;
-		}
 		if (mOgmo != null) {
-			boolean restart = false;
+			if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
+				Log.d(TAG, "Level Compelete");
+				if (mCurrentLevel + 1 > mNumLevels) {
+					Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
+					FP.setWorld(new MenuWorld());
+					//Main.mBGM.stopLooping();
+					//Main.mBGM.setVolume(0);
+				} else {
+					FP.setWorld(new OgmoEditorWorld(mCurrentLevel + 1));
+					Data.getData().edit().putInt(Main.DATA_CURRENT_LEVEL, mCurrentLevel + 1).commit();
+				}
+				return;
+				//remove(mOgmo);
+				//mOgmo = null;
+			}
+		
+			
 			int width = FP.screen.getWidth();
 			int height = FP.screen.getHeight();
 			// move the camera if you can.
@@ -485,12 +487,11 @@ public class OgmoEditorWorld extends World {
 			}
 
 			if (restart) {
+				restart = false;
 				mOgmo = null;
 				FP.setWorld(new OgmoEditorWorld(mCurrentLevel));
 			}
 		}
-		blocker.x = FP.camera.x;
-		blocker.y = FP.camera.y;
 	}
 	
 }

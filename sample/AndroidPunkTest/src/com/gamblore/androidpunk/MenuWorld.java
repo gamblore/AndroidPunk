@@ -6,7 +6,6 @@ import net.androidpunk.FP.TweenOptions;
 import net.androidpunk.World;
 import net.androidpunk.android.PunkActivity;
 import net.androidpunk.flashcompat.OnCompleteCallback;
-import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.Backdrop;
 import net.androidpunk.graphics.atlas.GraphicList;

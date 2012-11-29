@@ -13,14 +13,21 @@ import android.graphics.PointF;
 import android.view.KeyEvent;
 
 import com.gamblore.androidpunk.Main;
+import com.gamblore.androidpunk.OgmoEditorWorld;
 
 public class Ogmo extends Entity {
 
 	private static final String TAG = "Ogmo";
 	
+	public static final String TYPE_PLAYER = "player";
+	
 	private static final int X_SPEED = 200;
 	private static final int MAX_FALL_SPEED = 200;
 	private static final int JUMP_SPEED = -500;
+	
+	private boolean mMoveLeft = false;
+	private boolean mMoveRight = false;
+	private boolean mMoveJump = false;
 	
 	//private static final String ANIM_STANDING = "standing";
 	private static final String ANIM_WALKING = "walking";
@@ -48,69 +55,73 @@ public class Ogmo extends Entity {
 		
 		setHitbox((int) ogmo.getWidth()/6, (int) ogmo.getHeight());
 		
+		setType(TYPE_PLAYER);
+		
 		CollidableTypes.clear();
 		CollidableTypes.add("level");
 	}
-
-	private boolean inCircle(int x, int y, float radius, Point p) {
-		float nx = p.x - x;
-		float ny = p.y - y;
-		
-		return (nx * nx) + (ny * ny) < (radius * radius);
+	
+	private void updateMoveBooleans() {
+		mMoveJump = mMoveLeft = mMoveRight = false;
+		if (Input.mouseDown) {
+			Point points[] = Input.getTouches();
+			
+			if (points[0].y < FP.height/4) {
+				mMoveJump = true;
+				return;
+			}
+			
+			if (Input.getTouchesCount() > 1 || Input.checkKey(KeyEvent.KEYCODE_SPACE)) {
+				mMoveJump = true;	
+			}
+			
+			if (points[0].x > FP.screen.getWidth()/2) {
+				mMoveRight = true;
+			} else {
+				mMoveLeft = true;
+			}
+		}
 	}
 	
 	@Override
 	public void update() {
+		updateMoveBooleans();
 		float deltax = 0, deltay = 0;
 		
 		mVelocity.y = mVelocity.y > MAX_FALL_SPEED ? MAX_FALL_SPEED : mVelocity.y + (1000 * FP.elapsed);
-		if (Input.mouseDown) {
-			
-			Point points[] = Input.getTouches();
-			boolean vertJump = points[0].y < FP.height/4;
-			//boolean inJumpCircle = inCircle(FP.screen.getWidth()/2, 0, FP.dip(100), points[0]);
-			if (mCanJump && (Input.getTouchesCount() > 1 || Input.checkKey(KeyEvent.KEYCODE_SPACE) || vertJump)) {
-				Main.mJump.play();
-				mVelocity.y = JUMP_SPEED;
-				mCanJump = false;
-			}
-			if (!vertJump) { 
-				Point p = points[0];
-				if (p.x > FP.screen.getWidth()/2) {
-					mVelocity.x = X_SPEED;
-				} else {
-					mVelocity.x = -X_SPEED;
-				}
-			}
-			/*
-			if (p.x + FP.camera.x >= getRight() ) {
-					mVelocity.x = X_SPEED;
-			} else if (p.x + FP.camera.x <= getLeft()) {
-					mVelocity.x = -X_SPEED;
-			}*/
-			
-			//mVelocity.x = Math.max(Math.min(mVelocity.x, 200), -200);
-			
+		if (mMoveJump && mCanJump) {
+			Main.mJump.play();
+			y -= 1; // break locks to moving platforms.
+			mVelocity.y = JUMP_SPEED;
+			mCanJump = false;
+		}
+		if (mMoveLeft) {
+			mVelocity.x = -X_SPEED;
+		}
+		if (mMoveRight) {
+			mVelocity.x = X_SPEED;
 		}
 		
 		mCanJump = false;
 		
 		deltax = (int)(mVelocity.x * FP.elapsed);
 		deltay = (int)(mVelocity.y * FP.elapsed);
-		//Log.d(TAG, String.format("delta %.2f %.2f", deltax, deltay));
+		
 		float previousXVelocity = mVelocity.x;
 		
 		// Check for moving platforms
 		Entity e;
 		Entity platformVertical = collide(Platform.TYPE, x, (int) (y + deltay));
+		
 		if ((e = collide(Platform.TYPE, (int) (x + deltax), y)) != null && platformVertical == null) {
 			if (previousXVelocity < 0) {
-				x = e.x + e.width;
+				x = e.x + e.width + 1;
 			} else {
-				x = e.x - width;
+				x = e.x - width - 1;
 			}
+			if (!Main.mBonk.getPlaying())
+				Main.mBonk.loop(1);
 		} else if ((e = collideTypes(CollidableTypes, (int) (x + deltax), y)) != null) {
-			//mCanJump = true;
 			
 			if (mVelocity.y > 0) {
 				mVelocity.y *= 0.90;
@@ -129,21 +140,21 @@ public class Ogmo extends Entity {
 			x += deltax;
 		}
 		
-		if ((e = collide(Platform.TYPE, x, (int) (y + deltay))) != null) {
-			Point delta = ((Platform)e).getDelta();
-			deltax += delta.x;
-			deltay += delta.y;
-			x += deltax;
-			y = e.y - (height+1);
+		if (deltay >= 0 && (e = collide(Platform.TYPE, x, (int) (y + deltay))) != null) { // On top or falling through
 			mCanJump = true;
-		} else if (collideTypes(CollidableTypes, x, (int) (y + deltay)) != null) {
+			mVelocity.y = 0;
+			y = e.y - height;
+		} else if ((e = collide(Platform.TYPE, x, (int) (y + deltay))) != null) { // Spiked
+			Main.mDeath.play();
+			OgmoEditorWorld.restart = true;
+		} else if (collideTypes(CollidableTypes, x, (int) (y + deltay)) != null) { // on ground or hit roof
 			if (mVelocity.y >= 0) {
 				mCanJump = true;
 			} else {
 				Main.mBonk.play();
 			}
 			mVelocity.y = 0;
-		} else {
+		} else { // falling
 			y += deltay;
 		}
 		

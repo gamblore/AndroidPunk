@@ -4,7 +4,6 @@ import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.graphics.atlas.SpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
-import net.androidpunk.masks.Hitbox;
 
 import com.gamblore.androidpunk.Main;
 

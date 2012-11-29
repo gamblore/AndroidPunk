@@ -1,19 +1,19 @@
 package com.gamblore.androidpunk.entities;
 
-import com.gamblore.androidpunk.Main;
-
 import net.androidpunk.Entity;
-import net.androidpunk.graphics.Text;
+import net.androidpunk.graphics.atlas.AtlasText;
+
+import com.gamblore.androidpunk.Main;
 
 public class GameText extends Entity {
 	
-	private Text mText;
+	private AtlasText mText;
 	
 	public GameText(int x, int y, String text) {
 		super();
 		setLayer(99);
 		
-		mText = new Text(text, 20, Main.mTypeface);
+		mText = new AtlasText(text, 20, Main.mTypeface);
 		setGraphic(mText);
 	}
 	

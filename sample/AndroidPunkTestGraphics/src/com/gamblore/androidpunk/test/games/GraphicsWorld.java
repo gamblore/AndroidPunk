@@ -1,7 +1,5 @@
 package com.gamblore.androidpunk.test.games;
 
-import java.io.IOException;
-
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
