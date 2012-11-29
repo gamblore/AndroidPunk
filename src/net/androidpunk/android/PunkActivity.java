@@ -351,7 +351,9 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		mRenderer = new APRenderer();
 		mSurfaceView.setRenderer(mRenderer);
 		mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-		mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+		if (FP.debugOpenGL) {
+			mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+		}
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		

@@ -207,6 +207,8 @@ public class FP {
     
     public static Resources resources;
     public static Context context;
+
+	public static boolean debugOpenGL = false;
         
     public static final float MATRIX_VALUES[] = new float[9];
     
