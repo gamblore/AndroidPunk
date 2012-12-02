@@ -48,16 +48,14 @@ public class AtlasGraphic extends GLGraphic {
 		// Translate to origin
 		// scale the sprite
 		// rotate the sprite
-		// translate to position + origin.
+		// translate to position + origin * scale.
 		float sX = scaleX * scale;
 		float sY = scaleY * scale;
 		
 		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x, (originY * Math.abs(sY)) + mPoint.y, 0f);
 		
-		
 		if (angle != 0) {
 			gl.glRotatef(angle, 0, 0, 1.0f);
-			//mMatrix.postRotate(angle);
 		}
 		
 		gl.glScalef(sX, sY, 1.0f);
