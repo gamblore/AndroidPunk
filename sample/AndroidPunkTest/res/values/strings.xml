@@ -3,4 +3,10 @@
     <string name="app_name">Jumper Mobile</string>
     <string name="return_to_menu_title">Back?</string>
     <string name="return_to_menu_message">Return to menu?</string>
+    <string name="story_begining">Ogmo wakes up in a black room.\nUnsure of the dangers that await him.\nOgmo sees a portal.\nHe takes it.</string>
+    <string name="story_act1">That black room again.\nThe Jungle was a dangerous place.\nHopefully this next place is safer...\nHopefully.</string>
+    <string name="story_act2">Slightly singed, Ogmo escapes the flaming Desert.\nWhy Ogmo goes on, no one knows.\nOgmo just must.\nThe next place could be safe.</string>
+    <string name="story_final">Like always, Ogmo had no idea\n what was ahead of him,\nbut went on regardless.\n\nTo be continued?</string>
+    
+    <string name="credits">\'Ogmo\' and \'Jumper\' are property of: \nMatt Thorson  mattmakesgames.com\n\nProgramming, levels, art, and sound:\nAdam Metcalf  djgamblore.com</string>
 </resources>

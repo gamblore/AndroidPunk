@@ -30,12 +30,13 @@ public class Ogmo extends Entity {
 	private boolean mMoveJump = false;
 	
 	//private static final String ANIM_STANDING = "standing";
-	private static final String ANIM_WALKING = "walking";
+	public static final String ANIM_WALKING = "walking";
 	
 	private PointF mVelocity = new PointF();
 	
 	private SpriteMap mMap;
 	
+	private boolean mDead = false;
 	private boolean mCanJump = false;
 	
 	private static final Vector<String> CollidableTypes = new Vector<String>();
@@ -145,8 +146,7 @@ public class Ogmo extends Entity {
 			mVelocity.y = 0;
 			y = e.y - height;
 		} else if ((e = collide(Platform.TYPE, x, (int) (y + deltay))) != null) { // Spiked
-			Main.mDeath.play();
-			OgmoEditorWorld.restart = true;
+			setDead();	
 		} else if (collideTypes(CollidableTypes, x, (int) (y + deltay)) != null) { // on ground or hit roof
 			if (mVelocity.y >= 0) {
 				mCanJump = true;
@@ -175,6 +175,11 @@ public class Ogmo extends Entity {
 			}
 		}
 		//Log.d(TAG, String.format("Velocity %.2f %.2f", mVelocity.x, mVelocity.y));
+	}
+	
+	public void setDead() {
+		Main.mDeath.play();
+		OgmoEditorWorld.restart = true;
 	}
 	
 }

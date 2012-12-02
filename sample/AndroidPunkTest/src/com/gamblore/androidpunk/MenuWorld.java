@@ -35,12 +35,15 @@ public class MenuWorld extends World {
 	private Entity mSecondDisplay = new Entity();
 	
 	private Entity mSoundEntity = new Entity();
+	private Entity mCreditsEntity = new Entity();
+
 	
 	private Image logo;
 	private SpriteMap ogmo;
 	private AtlasText startText;
 	
 	private SpriteMap sound;
+	private Image credits;
 	
 	private AtlasText newGame, continueGame;
 	
@@ -167,6 +170,16 @@ public class MenuWorld extends World {
 		mSoundEntity.setHitbox((int)(soundTexture.getWidth()/2* sound.scale), (int)(soundTexture.getHeight() * sound.scale));
 		mSoundEntity.setType("muter");
 		add(mSoundEntity);
+		
+		SubTexture creditsTexture = Main.mAtlas.getSubTexture("credits");
+		credits = new Image(creditsTexture);
+		credits.scale = 2.0f;
+		credits.setColor(0xff000000);
+		mCreditsEntity.x = mSoundEntity.x - (mSoundEntity.width + 8);
+		mCreditsEntity.setGraphic(credits);
+		mCreditsEntity.setHitbox(creditsTexture.getWidth(), creditsTexture.getHeight());
+		mCreditsEntity.setType("credits");
+		add(mCreditsEntity);
 	}
 
 	@Override
@@ -181,14 +194,22 @@ public class MenuWorld extends World {
 		startText.setColor(mTextTween.color);
 		if (Input.mousePressed) {
 			Point touch = FP.screen.getTouches()[0];
+			boolean hitTarget = false;
 			Entity e = collidePoint("muter", touch.x, touch.y);
 			if (e != null) {
 				boolean muted = Main.isMute();
 				Main.setMute(!muted);
 				sound.setFrame(!muted ? 1 : 0);
+				hitTarget = true;
 				
 			}
-			else if (mTextTween.active) {
+			e = collidePoint("credits", touch.x, touch.y);
+			if (e != null) {
+				FP.setWorld(new StoryWorld(R.string.credits, new MenuWorld()));
+				hitTarget = true;
+			}
+			
+			if (!hitTarget && mTextTween.active) {
 				if (Data.getData().contains(Main.DATA_CURRENT_LEVEL)) {
 					FP.tween(mSecondDisplay, FP.tweenmap("y", 0), 1.0f, new TweenOptions(ONESHOT, null, Ease.quadIn, this));
 					mTextTween.active = false;

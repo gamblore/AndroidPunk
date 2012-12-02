@@ -9,34 +9,48 @@ import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.atlas.Image;
 import net.androidpunk.graphics.atlas.SpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
+import net.androidpunk.utils.TaskTimer;
+import net.androidpunk.utils.TaskTimer.OnTimeup;
 
 public class Cannon extends Entity {
 
-	private static final float SHOOT_INTERVAL = 5f;
+	private static final float SHOOT_INTERVAL = 3f;
 	
 	private Image mCannonImage;
-	private float mTimer;
+	private Image mBase;
+	
+	private TaskTimer mTimer;
 	
 	public Cannon(int x, int y, int angle) {
+		this(x, y, angle, SHOOT_INTERVAL);
+	}
+	
+	public Cannon(int x, int y, int angle, float interval) {
 		super(x, y);
 		SubTexture cannon = Main.mAtlas.getSubTexture("cannon");
 		width = (int) cannon.getWidth()/2;
 		height = (int) cannon.getHeight();
 		
 		FP.rect.set(0, 0, width, height);
-		Image mBase = new Image(cannon, FP.rect);
+		mBase = new Image(cannon, FP.rect);
 		
 		FP.rect.offset(width, 0);
 		mCannonImage = new Image(cannon, FP.rect);
-		mCannonImage.x = 5;
-		mCannonImage.originX = 21;
-		mCannonImage.originY = 25;
+		mCannonImage.originX = 16;
+		mCannonImage.originY = 16;
 		
 		mBase.angle = angle;
 		
 		setGraphic(new GraphicList(mBase, mCannonImage));
 		setLayer(5);
-		mTimer = SHOOT_INTERVAL/2;
+		
+		mTimer = new TaskTimer(interval, new OnTimeup() {
+			@Override
+			public void run() {
+				shoot();
+			}
+		});
+		mTimer.step(interval/2);
 	}
 	
 	@Override
@@ -46,20 +60,15 @@ public class Cannon extends Entity {
 		if (OgmoEditorWorld.mOgmo != null) {
 			setTarget(OgmoEditorWorld.mOgmo);
 		}
-		
-		mTimer += FP.elapsed;
-		if (mTimer >= SHOOT_INTERVAL) {
-			mTimer = 0.0f;
-			shoot();
-		}
+		mTimer.step(FP.elapsed);
 	}
 	
 	public void setTarget(Entity e) {
-		mCannonImage.angle = -(float)FP.angle(x, y, e.x, e.y);
+		mCannonImage.angle = -(float)FP.angle(x+16, y+16, e.x + e.width/4, e.y + e.height/4);
 	}
 	
 	private void shoot() {
-		getWorld().add(new CannonBall(x+21, y+25, -mCannonImage.angle));
+		getWorld().add(new CannonBall(x+8, y+8, -mCannonImage.angle));
 	}
 	
 }

@@ -60,6 +60,8 @@ public class OgmoEditorWorld extends World {
 	
 	private Entity mBackdropEntity;
 	
+	private boolean mPlayIntro = false;
+	
 	
 	
 	public static abstract class XMLEntityConstructor {
@@ -77,9 +79,42 @@ public class OgmoEditorWorld extends World {
 				int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
 				int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
 				int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
+				float interval = 3.0f;
+				try {
+					interval = Float.parseFloat(atts.getNamedItem("interval").getNodeValue());
+				} catch (NumberFormatException e) {
+				} catch (NullPointerException ex) {}
 				
-				Cannon c = new Cannon(x, y, angle);
+				Cannon c = new Cannon(x, y, angle, interval);
 				return c;
+			}
+		});
+		
+		mXMLEntityConstructors.put("Lightning", new XMLEntityConstructor() {
+
+			@Override
+			public Lightning make(Node n) {
+				NamedNodeMap atts = n.getAttributes();
+				int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
+				int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
+				int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
+				int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
+				
+				float duration = 0, offset = 0;
+				
+				try {
+					duration = Float.parseFloat(atts.getNamedItem("duration").getNodeValue());
+				} catch (NumberFormatException e) {
+				} catch (NullPointerException ex) {}
+				
+				try {
+					offset = Float.parseFloat(atts.getNamedItem("offset").getNodeValue());
+				} catch (NumberFormatException e) {
+				} catch (NullPointerException ex) {}
+				
+				Lightning l = new Lightning(x, y, width, 32, angle, duration, offset);
+
+				return l;
 			}
 		});
 	}
@@ -112,8 +147,23 @@ public class OgmoEditorWorld extends World {
 	};
 	
 	public OgmoEditorWorld(int level) {
+		this(level, true);
+	}
+	public OgmoEditorWorld(int level, boolean playIntro) {
 		mOgmo = null;
 		restart = false;
+		
+
+		switch(level) {
+		case 1:
+		case 11:
+		case 21:
+			mPlayIntro = playIntro;
+			break;
+		case 31:
+			mPlayIntro = playIntro;
+			return;
+		}
 		
 		FP.activity.setOnBackCallback(mGameOnBack);
 		
@@ -302,22 +352,6 @@ public class OgmoEditorWorld extends World {
 					
 					e.setGraphic(t);
 					add(e);
-				} else if ("Lightning".equals(n.getNodeName())) {
-					NamedNodeMap atts = n.getAttributes();
-					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
-					int y = Integer.parseInt(atts.getNamedItem("y").getNodeValue());
-					int width = Integer.parseInt(atts.getNamedItem("width").getNodeValue());
-					//int height = Integer.parseInt(atts.getNamedItem("height").getNodeValue());
-					int angle = Integer.parseInt(atts.getNamedItem("angle").getNodeValue());
-					Node dur = atts.getNamedItem("duration");
-					
-					Lightning l = new Lightning(x, y, width, angle);
-					
-					if (dur != null) {
-						l.setEnabledTime(Float.parseFloat(dur.getNodeValue()));
-					}
-					
-					add(l);
 				} else if ("TreeSpikes".equals(n.getNodeName())) {
 					NamedNodeMap atts = n.getAttributes();
 					int x = Integer.parseInt(atts.getNamedItem("x").getNodeValue());
@@ -443,6 +477,29 @@ public class OgmoEditorWorld extends World {
 	@Override
 	public void update() {
 		super.update();
+		
+		if (mPlayIntro) {
+			switch(mCurrentLevel) {
+			case 1:
+				Log.d(TAG, "Story 1 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_begining, new OgmoEditorWorld(mCurrentLevel, false)));
+				break;
+			case 11:
+				Log.d(TAG, "Story 2 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_act1, new OgmoEditorWorld(mCurrentLevel, false)));
+				break;
+			case 21:
+				Log.d(TAG, "Story 3 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_act2, new OgmoEditorWorld(mCurrentLevel, false)));
+				break;
+			case 31:
+				Log.d(TAG, "Story 4 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_final, new MenuWorld()));
+				return;
+			}
+			mPlayIntro = false;
+		}
+		
 		if (mOgmo != null) {
 			if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
 				Log.d(TAG, "Level Compelete");
@@ -480,10 +537,9 @@ public class OgmoEditorWorld extends World {
 				camera.y = Math.max(0, newTop);
 			}
 			if (mOgmo.y > mLevel.height) {
-				restart = true;
+				mOgmo.setDead();
 			} else if (mOgmo.collide(TYPE_DANGER, mOgmo.x, mOgmo.y) != null) {
-				Main.mDeath.play();
-				restart = true;
+				mOgmo.setDead();
 			}
 
 			if (restart) {

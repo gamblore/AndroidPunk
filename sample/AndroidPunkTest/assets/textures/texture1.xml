@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://texturepacker.com-->
-<!-- $TexturePacker:SmartUpdate:067feb24a9241f305b5c8ffbcd386dd1$ -->
+<!-- $TexturePacker:SmartUpdate:db1d37a7a72852556a9be2642ce3d2be$ -->
 <TextureAtlas imagePath="texture1.png">
     <SubTexture name="acid_pit" x="2" y="2" width="96" height="32"/>
     <SubTexture name="background_city" x="100" y="2" width="800" height="480"/>
@@ -8,10 +8,11 @@
     <SubTexture name="background_forest" x="2" y="966" width="800" height="480"/>
     <SubTexture name="bird" x="804" y="966" width="128" height="18"/>
     <SubTexture name="black_hole" x="2" y="1448" width="320" height="64"/>
-    <SubTexture name="cannon" x="324" y="1448" width="96" height="48"/>
-    <SubTexture name="city" x="422" y="1448" width="192" height="96"/>
-    <SubTexture name="desert" x="616" y="1448" width="192" height="96"/>
-    <SubTexture name="enemy" x="810" y="1448" width="192" height="32"/>
+    <SubTexture name="cannon" x="324" y="1448" width="64" height="32"/>
+    <SubTexture name="city" x="390" y="1448" width="192" height="96"/>
+    <SubTexture name="credits" x="584" y="1448" width="32" height="32"/>
+    <SubTexture name="desert" x="618" y="1448" width="192" height="96"/>
+    <SubTexture name="enemy" x="812" y="1448" width="192" height="32"/>
     <SubTexture name="fireball" x="2" y="1546" width="48" height="16"/>
     <SubTexture name="fireball_spark" x="52" y="1546" width="24" height="8"/>
     <SubTexture name="grass" x="78" y="1546" width="192" height="96"/>

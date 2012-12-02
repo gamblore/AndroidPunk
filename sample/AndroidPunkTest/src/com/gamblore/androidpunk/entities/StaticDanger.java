@@ -2,26 +2,29 @@ package com.gamblore.androidpunk.entities;
 
 import java.util.Vector;
 
-import com.gamblore.androidpunk.OgmoEditorWorld;
-
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
 import net.androidpunk.Graphic;
 import net.androidpunk.graphics.atlas.AtlasGraphic;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.masks.Hitbox;
+import net.androidpunk.utils.TaskTimer;
+
+import com.gamblore.androidpunk.OgmoEditorWorld;
 
 public class StaticDanger extends Entity {
 	
 	private int mAngle;
-	private float mEnableTime = 0;
-	private float mEnableCounter;
+	
+	private TaskTimer mTimer;
 	
 	public StaticDanger(int x, int y, int width, int height) {
-		this(x, y, width, height, 0);
+		this(x, y, width, height, 0, 0, 0);
 	}
-
 	public StaticDanger(int x, int y, int width, int height, int angle) {
+		this(x, y, width, height, angle, 0, 0);
+	}
+	public StaticDanger(int x, int y, int width, int height, int angle, float timer, float offset) {
 		super(x, y);
 		
 		mAngle = angle;
@@ -42,7 +45,14 @@ public class StaticDanger extends Entity {
 		}
 		
 		setType(OgmoEditorWorld.TYPE_DANGER);
-		mEnableCounter = 0;
+		if (timer != 0) {
+			mTimer = new TaskTimer(timer, new TaskTimer.OnTimeup() {
+				@Override
+				public void run() {
+					toggleEnabled();
+				}
+			}, offset);
+		}
 	}
 
 	@Override
@@ -65,22 +75,8 @@ public class StaticDanger extends Entity {
 	@Override
 	public void update() {
 		super.update();
-		
-		if (mEnableTime != 0) {
-			mEnableCounter -= FP.elapsed;
-			if (mEnableCounter <= 0) {
-				toggleEnabled();
-				mEnableCounter = mEnableTime;
-			}
-		}
-	}
-	
-	public void setEnabledTime(float t) {
-		mEnableTime = t;
-		mEnableCounter = t;
-		if (t == 0) {
-			collidable = true;
-			visible = true;
+		if (mTimer != null) {
+			mTimer.step(FP.elapsed);
 		}
 	}
 	

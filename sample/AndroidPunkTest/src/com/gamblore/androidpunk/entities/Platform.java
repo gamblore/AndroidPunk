@@ -7,6 +7,7 @@ import net.androidpunk.tweens.motion.LinearPath;
 import android.graphics.Point;
 
 import com.gamblore.androidpunk.Main;
+import com.gamblore.androidpunk.OgmoEditorWorld;
 
 public class Platform extends Entity {
 
@@ -87,9 +88,30 @@ public class Platform extends Entity {
 			}
 		}
 		Entity e = collide(type, x, y - 1);
-		if (e != null) {
+		if (e != null && e.y < y) {
+			if (Ogmo.TYPE_PLAYER.equals(e.getType()) ) {
+				Entity level = e.collide("level", e.x, e.y + mDelta.y);
+				if (level != null) {
+					if (mDelta.y < 0) { //Squish up into something.
+						OgmoEditorWorld.mOgmo.setDead();
+					} else {
+						return; // Player is still on ground.
+					}
+				}
+			}
 			e.x += mDelta.x;
 			e.y += mDelta.y;
+		}
+		if (mDelta.y > 0) {
+			e = collide(type, x, y + mDelta.y);
+			if (e != null && e.y > y) {
+				if (Ogmo.TYPE_PLAYER.equals(e.getType()) ) {
+					Entity level = e.collide("level", e.x, e.y + mDelta.y);
+					if (level != null && mDelta.y > 0) { // Squish
+						OgmoEditorWorld.mOgmo.setDead(); 
+					}
+				}
+			}
 		}
 	}
 }

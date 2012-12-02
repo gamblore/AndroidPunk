@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <OgmoVersion>2.1.0.1</OgmoVersion>
+  <OgmoVersion>2.1.0.5</OgmoVersion>
   <Name>JumperMobile</Name>
   <BackgroundColor A="255" R="125" G="160" B="255" />
   <GridColor A="255" R="255" G="240" B="90" />
@@ -184,7 +184,8 @@
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
       <ValueDefinitions>
-        <ValueDefinition xsi:type="FloatValueDefinition" Name="duration" Default="0" Min="1" Max="30" Round="0.1" />
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="duration" Default="0" Min="0" Max="30" Round="0.1" />
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="offset" Default="0" Min="0" Max="100" Round="0.1" />
       </ValueDefinitions>
       <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
     </EntityDefinition>
@@ -277,7 +278,9 @@
       <ImageDefinition DrawMode="Image" ImagePath="..\_drawables\cannon.png" Tiled="false">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
-      <ValueDefinitions />
+      <ValueDefinitions>
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="interval" Default="3" Min="0.5" Max="10" Round="0.1" />
+      </ValueDefinitions>
       <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
     </EntityDefinition>
   </EntityDefinitions>

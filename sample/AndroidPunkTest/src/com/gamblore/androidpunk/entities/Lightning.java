@@ -18,11 +18,11 @@ public class Lightning extends StaticDanger {
 	private static final String ANIM_SHOCK = "shock";
 	
 	public Lightning(int x, int y, int width, int angle) {
-		this(x, y, width, 32, angle);
+		this(x, y, width, 32, angle, 0, 0);
 	}
 	
-	public Lightning(int x, int y, int width, int height, int angle) {
-		super(x, y, width, height, angle);
+	public Lightning(int x, int y, int width, int height, int angle, float timer, float offset) {
+		super(x, y, width, height, angle, timer, offset);
 		
 		SubTexture lightning = Main.mAtlas.getSubTexture("lightning");
 		SubTexture lightningBall = Main.mAtlas.getSubTexture("lightning_ball");
