@@ -31,6 +31,7 @@ public class Main extends Engine {
 		
 		mAtlas = new Atlas("textures/texture1.xml");
 		mTypeface = TextAtlas.getFontFromRes(R.raw.font_fixed_bold);
+		mTypeface = TextAtlas.getFontFromAssets("fonts/periodic_three/periodic_three.ttf");
 		
 		FP.setWorld(new MenuWorld());
 	

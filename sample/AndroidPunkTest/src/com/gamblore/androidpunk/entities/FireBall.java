@@ -98,17 +98,19 @@ public class FireBall extends Entity {
 	@Override
 	public void update() {
 		super.update();
+		FP.rect.set(FP.camera.x, FP.camera.y, FP.camera.x+FP.width, FP.camera.y+FP.height);
 		
 		if (mWorld == null) {
 			mWorld = (OgmoEditorWorld)getWorld();
 		}
-		if (mEmiterMap.getParticleCount() < 5 && FP.random() < .10) {
+		if (FP.rect.contains(x, y) && 
+				mEmiterMap.getParticleCount() < 5 && FP.random() < .10) {
 			mEmiterMap.emit("spark", 0, 0);
 		}
 		if (mMaxLifetime != 0.0f) {
 			mLifetime += FP.elapsed;
 			if (mLifetime > mMaxLifetime) {
-				getWorld().remove(this);
+				mWorld.remove(this);
 				collidable = false;
 				return;
 			}
@@ -118,10 +120,10 @@ public class FireBall extends Entity {
 		y += mVelocity.y * FP.elapsed + 0.5f;
 		
 		if (collide("level", x, y) != null) {
-			getWorld().remove(this);
+			mWorld.remove(this);
 			collidable = false;
 		} else if (x < 0 || y < 0 || x > mWorld.getWidth() || y > mWorld.getHeight()) {
-			getWorld().remove(this);
+			mWorld.remove(this);
 			collidable = false;
 		}
 	}

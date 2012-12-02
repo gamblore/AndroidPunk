@@ -149,11 +149,9 @@ public class OgmoEditorWorld extends World {
 	public OgmoEditorWorld(int level) {
 		this(level, true);
 	}
+	
 	public OgmoEditorWorld(int level, boolean playIntro) {
-		mOgmo = null;
-		restart = false;
-		
-
+		mCurrentLevel = level;
 		switch(level) {
 		case 1:
 		case 11:
@@ -161,13 +159,14 @@ public class OgmoEditorWorld extends World {
 			mPlayIntro = playIntro;
 			break;
 		case 31:
+			Log.d(TAG, "Done game. Play Final Thing and return to the menu.");
 			mPlayIntro = playIntro;
 			return;
 		}
 		
 		FP.activity.setOnBackCallback(mGameOnBack);
 		
-		mCurrentLevel = level;
+		
 		String levels[] = FP.getAssetList(LEVEL_FOLDER);
 		mNumLevels = levels.length;
 		String theLevel = String.format("%d_", level);
@@ -229,6 +228,34 @@ public class OgmoEditorWorld extends World {
 		*/
 	}
 	
+	
+	@Override
+	public void begin() {
+		mOgmo = null;
+		restart = false;
+		if (mPlayIntro) {
+			switch(mCurrentLevel) {
+			case 1:
+				Log.d(TAG, "Story 1 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_begining, new OgmoEditorWorld(mCurrentLevel, false)));
+				break;
+			case 11:
+				Log.d(TAG, "Story 2 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_act1, new OgmoEditorWorld(mCurrentLevel, false)));
+				break;
+			case 21:
+				Log.d(TAG, "Story 3 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_act2, new OgmoEditorWorld(mCurrentLevel, false)));
+				break;
+			case 31:
+				Log.d(TAG, "Story 4 coming up");
+				FP.setWorld(new StoryWorld(R.string.story_final, new MenuWorld()));
+				return;
+			}
+			mPlayIntro = false;
+		}
+	}
+
 	private void parseOgmoEditorLevel(String assetFilename) {
 		Document doc = FP.getXML(assetFilename);
 		parseOgmoEditorLevel(doc);
@@ -478,34 +505,13 @@ public class OgmoEditorWorld extends World {
 	public void update() {
 		super.update();
 		
-		if (mPlayIntro) {
-			switch(mCurrentLevel) {
-			case 1:
-				Log.d(TAG, "Story 1 coming up");
-				FP.setWorld(new StoryWorld(R.string.story_begining, new OgmoEditorWorld(mCurrentLevel, false)));
-				break;
-			case 11:
-				Log.d(TAG, "Story 2 coming up");
-				FP.setWorld(new StoryWorld(R.string.story_act1, new OgmoEditorWorld(mCurrentLevel, false)));
-				break;
-			case 21:
-				Log.d(TAG, "Story 3 coming up");
-				FP.setWorld(new StoryWorld(R.string.story_act2, new OgmoEditorWorld(mCurrentLevel, false)));
-				break;
-			case 31:
-				Log.d(TAG, "Story 4 coming up");
-				FP.setWorld(new StoryWorld(R.string.story_final, new MenuWorld()));
-				return;
-			}
-			mPlayIntro = false;
-		}
-		
 		if (mOgmo != null) {
 			if (mOgmo.collideWith(mExit, mOgmo.x, mOgmo.y) != null) {
 				Log.d(TAG, "Level Compelete");
 				if (mCurrentLevel + 1 > mNumLevels) {
 					Data.getData().edit().remove(Main.DATA_CURRENT_LEVEL).commit();
-					FP.setWorld(new MenuWorld());
+					FP.setWorld(new OgmoEditorWorld(mCurrentLevel + 1));
+					//FP.setWorld(new MenuWorld());
 					//Main.mBGM.stopLooping();
 					//Main.mBGM.setVolume(0);
 				} else {
@@ -545,7 +551,7 @@ public class OgmoEditorWorld extends World {
 			if (restart) {
 				restart = false;
 				mOgmo = null;
-				FP.setWorld(new OgmoEditorWorld(mCurrentLevel));
+				FP.setWorld(new OgmoEditorWorld(mCurrentLevel, false));
 			}
 		}
 	}
