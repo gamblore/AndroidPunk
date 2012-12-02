@@ -220,8 +220,8 @@ public class Entity extends Tweener {
 		if (mWorld == null)
 			return null;
 		Entity e;
-		for (String type : types) {
-			if ((e = collide(type, x, y)) != null) 
+		for (int i = 0; i < types.size(); i++) {
+			if ((e = collide(types.get(i), x, y)) != null) 
 				return e;
 		}
 		return null;
@@ -385,8 +385,8 @@ public class Entity extends Tweener {
 	public void collideTypesInto(Vector<String> types, int x, int y, Vector<Entity> array) {
 		if (mWorld == null) 
 			return;
-		for (String type : types) {
-			collideInto(type, x, y, array);
+		for (int i = 0; i < types.size(); i++) {
+			collideInto(types.get(i), x, y, array);
 		}
 	}
 	

@@ -1,8 +1,12 @@
 package net.androidpunk.graphics.atlas;
 
+import java.nio.FloatBuffer;
+
 import net.androidpunk.FP;
 import net.androidpunk.flashcompat.OnEaseCallback;
+import net.androidpunk.graphics.opengl.GLGraphic;
 import net.androidpunk.graphics.opengl.SubTexture;
+import net.androidpunk.graphics.opengl.Texture;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -51,6 +55,10 @@ public class ParticleType {
 	
 	protected SubTexture mSubTexture;
 	
+
+	protected FloatBuffer mVertexBuffer = GLGraphic.getDirectFloatBuffer(8);
+	protected FloatBuffer mTextureBuffer;
+	
 	/**
 	 * Constructor.
 	 * @param	name			Name of the particle type.
@@ -70,6 +78,22 @@ public class ParticleType {
 			mFrameCount = frames.length;
 		} else {
 			mFrameCount = 0;
+		}
+		
+		GLGraphic.setGeometryBuffer(mVertexBuffer,0, 0, frameWidth, frameHeight);
+		mTextureBuffer = GLGraphic.getDirectFloatBuffer(8*frames.length);
+		
+		Rect r = FP.rect;
+		
+		mTextureBuffer.position(0);
+		Texture t = source.getTexture();
+		for( int i = 0; i < mFrameCount; i++) {
+			source.getFrame(r, i, frameWidth, frameHeight);
+			
+			mTextureBuffer.put((float)r.left/t.getWidth()).put((float)r.top/t.getHeight());
+			mTextureBuffer.put((float)(r.left + r.width())/t.getWidth()).put((float)r.top/t.getHeight());
+			mTextureBuffer.put((float)r.left/t.getWidth()).put((float)(r.top + r.height())/t.getHeight());
+			mTextureBuffer.put((float)(r.left + r.width())/t.getWidth()).put((float)(r.top + r.height())/t.getHeight());
 		}
 	}
 	

@@ -368,7 +368,7 @@ public class Engine {
 
 		// render loop
 		//FP.screen.swap();
-		Draw.resetTarget();
+		//Draw.resetTarget();
 		//FP.screen.refresh();
 		World world = FP.getWorld();
 		if (world.visible)

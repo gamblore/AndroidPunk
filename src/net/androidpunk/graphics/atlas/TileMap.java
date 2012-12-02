@@ -91,11 +91,11 @@ public class TileMap extends AtlasGraphic {
 		
 		Log.d(TAG, String.format("%d vertices", mVerticesCount));
 		
-		mIndexCount = mColumns * mRows * 6;
+		//mIndexCount = mColumns * mRows * 6;
 		mIndexBuffer = getDirectCharBuffer(mColumns * mRows * 6);
 		
 		setTileVerticesBuffer();
-		setTileIndexBuffer();
+		mIndexCount = setTileIndexBuffer();
 		
 		// load the tileset graphic
 		mSet = tileset;
@@ -180,13 +180,18 @@ public class TileMap extends AtlasGraphic {
 		mTextureBuffer.put(f).position(0);
 	}
 	
-	private void setTileIndexBuffer() {
-		char indices[] = new char[mIndexCount];
+	private int setTileIndexBuffer() {
+		char indices[] = new char[mColumns * mRows * 6];
 		mIndexBuffer.position(0);
 		int i = 0;
 		for (int y = 0; y < mRows; y++) {
 			final int indexY = y * 2;
 			for (int x = 0; x < mColumns; x++) {
+				int tile = getTile(x, y);
+				if (tile == 0x00ffffff) {
+					//Log.d(TAG, String.format("Skipping (%d, %d)", x, y));
+					continue;
+				}
 				final int indexX = x * 2;
 				char a = (char) (indexY * mVerticiesAcross + indexX);
 				char b = (char) (indexY * mVerticiesAcross + indexX + 1);
@@ -211,6 +216,8 @@ public class TileMap extends AtlasGraphic {
 			}
 		}
 		mIndexBuffer.put(indices).position(0);
+		Log.d(TAG, String.format("Tilemap is %d indicies down from %d", i, mColumns * mRows * 6));
+		return i;
 	}
 	
 	@Override
@@ -433,7 +440,9 @@ public class TileMap extends AtlasGraphic {
 				setTile(x+xp, y, Integer.parseInt(col[x]));
 			}
 		}
+		setTileVerticesBuffer();
 		setTileTextureBuffer();
+		mIndexCount = setTileIndexBuffer();
 	}
 	
 	/**

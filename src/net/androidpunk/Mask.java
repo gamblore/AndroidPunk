@@ -56,20 +56,84 @@ public class Mask {
     	checkRect.top = Math.max(0, r.top);
     	checkRect.right = Math.min(checkRect.left + r.width(), bm.getWidth());
     	checkRect.bottom = Math.min(checkRect.top + r.height(), bm.getHeight());
-    	int maxPixel = checkRect.width() * checkRect.height();
+    	
+    	int rectWidth = checkRect.width();
+    	int rectHeight = checkRect.height();
+    	
+    	/*
+    	// Box first
+    	int maxPixel = rectWidth * rectHeight;
+    	
     	if (mTempPixels == null || (mTempPixels != null && mTempPixels.length < maxPixel) ) {
-    		mTempPixels = new int[checkRect.width() * checkRect.height()];
+    		mTempPixels = new int[rectWidth * rectHeight];
     	}
     	
-        int alpha;
-        bm.getPixels(mTempPixels, 0, checkRect.width(), checkRect.left, checkRect.top, checkRect.width(), checkRect.height());
-        for (int i = 0; i < maxPixel; i++) {
-            alpha = Color.alpha(mTempPixels[i]);
+    	bm.getPixels(mTempPixels, 0, rectWidth, checkRect.left, checkRect.top, rectWidth, 1);
+    	for (int i = 0; i < rectWidth; i++) {
+    		if (Color.alpha(mTempPixels[i]) > alphaThreshold) {
+    			return true;
+    		}
+    	}
+    	
+    	bm.getPixels(mTempPixels, 0, rectWidth, checkRect.left, checkRect.bottom-1, rectWidth, 1);
+    	for (int i = 0; i < rectWidth; i++) {
+    		if (Color.alpha(mTempPixels[i]) > alphaThreshold) {
+    			return true;
+    		}
+    	}
+    	
+    	bm.getPixels(mTempPixels, 0, rectWidth, checkRect.left, checkRect.top, 1, rectHeight);
+    	for (int i = 0; i < rectHeight; i++) {
+    		if (Color.alpha(mTempPixels[i]) > alphaThreshold) {
+    			return true;
+    		}
+    	}
+    	
+    	bm.getPixels(mTempPixels, 0, rectWidth, checkRect.right-1, checkRect.top, 1, rectHeight);
+    	for (int i = 0; i < rectHeight; i++) {
+    		if (Color.alpha(mTempPixels[i]) > alphaThreshold) {
+    			return true;
+    		}
+    	}
+    	
+    	return false;
+    	*/
+    	
+    	//all at once
+    	 
+    	int maxPixel = rectWidth * rectHeight;
+    	if (mTempPixels == null || (mTempPixels != null && mTempPixels.length < maxPixel) ) {
+    		mTempPixels = new int[rectWidth * rectHeight];
+    	}
+    	int alpha;
+    	bm.getPixels(mTempPixels, 0, rectWidth, checkRect.left, checkRect.top, rectWidth, rectHeight);
+    	for (int i = 0; i < maxPixel; i++) {
+    		alpha = Color.alpha(mTempPixels[i]);
             if (alpha > alphaThreshold) {
                 return true;
             }
+    	}
+    	return false;
+    	
+    	/* 
+    	//check line by line
+    	 
+    	if (mTempPixels == null || (mTempPixels != null && mTempPixels.length < rectWidth) ) {
+    		mTempPixels = new int[rectWidth];
+    	}
+    	
+        int alpha;
+        for (int y = 0; y < rectHeight; y++) {
+	        bm.getPixels(mTempPixels, 0, rectWidth, checkRect.left, checkRect.top+y, rectWidth, 1);
+	        for (int i = 0; i < rectWidth; i++) {
+	            alpha = Color.alpha(mTempPixels[i]);
+	            if (alpha > alphaThreshold) {
+	                return true;
+	            }
+	        }
         }
         return false;
+        */
     }
     
     protected boolean hitTest(Bitmap bm, Point firstPoint, int alphaThreshold, Bitmap bm2, Point secondPoint, int secondAlphaThreshold) {

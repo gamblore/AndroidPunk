@@ -17,7 +17,7 @@ public class Draw {
 	 * The blending mode used by Draw functions. This will not
 	 * apply to Draw.line(), but will apply to Draw.linePlus().
 	 */
-	public static final Paint blend = new Paint();
+	//public static final Paint blend = new Paint();
 	private static final Paint resetPaint = new Paint();
 	
 	private static Bitmap mTarget;
@@ -25,36 +25,36 @@ public class Draw {
 	private static Canvas mCanvas = FP.canvas; 
 	private static Rect mRect = FP.rect;
 	
-	public static void setTarget(Bitmap target) {
-		setTarget(target, null, null);
-	}
-	
-	public static void setTarget(Bitmap target, Point camera) {
-		setTarget(target, camera, null);
-	}
-	
-	/**
-	 * Sets the drawing target for Draw functions.
-	 * @param	target		The buffer to draw to.
-	 * @param	camera		The camera offset (use null for none).
-	 * @param	blend		The blend mode to use.
-	 */
-	public static void setTarget(Bitmap target, Point camera, Paint blend) {
-		mTarget = target;
-		mCamera = (camera != null) ? camera : FP.zero;
-		if (blend != null) {
-			Draw.blend.set(blend);
-		}
-	}
-	
-	/**
-	 * Resets the drawing target to the default. The same as calling Draw.setTarget(FP.buffer, FP.camera).
-	 */
-	public static void resetTarget() {
-		mTarget = FP.buffer;
-		mCamera = FP.camera;
-		Draw.blend.set(resetPaint);
-	}
+//	public static void setTarget(Bitmap target) {
+//		setTarget(target, null, null);
+//	}
+//	
+//	public static void setTarget(Bitmap target, Point camera) {
+//		setTarget(target, camera, null);
+//	}
+//	
+//	/**
+//	 * Sets the drawing target for Draw functions.
+//	 * @param	target		The buffer to draw to.
+//	 * @param	camera		The camera offset (use null for none).
+//	 * @param	blend		The blend mode to use.
+//	 */
+//	public static void setTarget(Bitmap target, Point camera, Paint blend) {
+//		mTarget = target;
+//		mCamera = (camera != null) ? camera : FP.zero;
+//		if (blend != null) {
+//			Draw.blend.set(blend);
+//		}
+//	}
+//	
+//	/**
+//	 * Resets the drawing target to the default. The same as calling Draw.setTarget(FP.buffer, FP.camera).
+//	 */
+//	public static void resetTarget() {
+//		mTarget = FP.buffer;
+//		mCamera = FP.camera;
+//		Draw.blend.set(resetPaint);
+//	}
 	
 	
 	public static void line(int x1, int y1, int x2, int y2) {

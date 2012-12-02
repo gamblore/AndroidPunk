@@ -164,14 +164,18 @@ public class Emitter extends AtlasGraphic {
 			
 			gl.glPushMatrix(); 
 			{
-				setGeometryBuffer(QUAD_FLOAT_BUFFER_1, mP.x, mP.y, rect.width(), rect.height());
+//				setGeometryBuffer(QUAD_FLOAT_BUFFER_1, mP.x, mP.y, rect.width(), rect.height());
+//				if (type.mFrames != null) {
+//					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSubTexture, type.mFrames[(int)(td * type.mFrameCount)], rect.width(), rect.height());
+//				} else {
+//					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSubTexture, 0, rect.width(), rect.height());
+//				}
 				if (type.mFrames != null) {
-					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSubTexture, type.mFrames[(int)(td * type.mFrameCount)], rect.width(), rect.height());
+					type.mTextureBuffer.position(8 * type.mFrames[(int)(td * type.mFrameCount)]);
 				} else {
-					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSubTexture, 0, rect.width(), rect.height());
+					type.mTextureBuffer.position(0);
 				}
-				
-				setBuffers(gl, QUAD_FLOAT_BUFFER_1, QUAD_FLOAT_BUFFER_2);
+				setBuffers(gl, type.mVertexBuffer, type.mTextureBuffer);
 				
 				
 				// draw particle
@@ -184,6 +188,7 @@ public class Emitter extends AtlasGraphic {
 				float blue = (type.mBlue + type.mBlueRange * td) / 255.0f;
 				float alpha = (type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t))) / 255.0f;
 				gl.glColor4f(red, green, blue, alpha);
+				gl.glTranslatef(mP.x, mP.y, 0.0f);
 				gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 			}
 			gl.glPopMatrix();

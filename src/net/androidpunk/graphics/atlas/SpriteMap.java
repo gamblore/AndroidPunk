@@ -100,7 +100,7 @@ public class SpriteMap extends AtlasGraphic {
 		
 		setGeometryBuffer(mVertexBuffer, 0, 0, mFrameWidth, mFrameHeight);
 		
-		Rect r = new Rect();
+		Rect r = FP.rect;
 		
 		mTextureBuffer.position(0);
 		Texture t = subTexture.getTexture();

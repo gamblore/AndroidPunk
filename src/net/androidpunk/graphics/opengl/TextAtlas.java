@@ -185,8 +185,12 @@ public class TextAtlas {
 		return (int)(-mPaint.ascent() + mPaint.descent()) * split.length;
 	}
 	
-	public static final Typeface getFontFromRes(int resource)
-	{ 
+	public static final Typeface getFontFromAssets(String path) {
+		Typeface tf = Typeface.createFromAsset(FP.context.getAssets(), path);	
+		return tf;
+	}
+	
+	public static final Typeface getFontFromRes(int resource) {
 	    Typeface tf = null;
 	    InputStream is = null;
 	    try {
