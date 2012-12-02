@@ -177,7 +177,7 @@ public class MenuWorld extends World {
 		credits.setColor(0xff000000);
 		mCreditsEntity.x = mSoundEntity.x - (mSoundEntity.width + 8);
 		mCreditsEntity.setGraphic(credits);
-		mCreditsEntity.setHitbox(creditsTexture.getWidth(), creditsTexture.getHeight());
+		mCreditsEntity.setHitbox((int)(creditsTexture.getWidth() * credits.scale), (int)(creditsTexture.getHeight() * credits.scale));
 		mCreditsEntity.setType("credits");
 		add(mCreditsEntity);
 	}
