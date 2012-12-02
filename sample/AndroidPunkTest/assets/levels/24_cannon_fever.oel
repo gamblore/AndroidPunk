@@ -66,11 +66,6 @@
     <Cannon id="3" x="32" y="0" angle="90" interval="1.5" />
     <Cannon id="4" x="800" y="32" angle="180" interval="1.5" />
     <Cannon id="5" x="832" y="32" angle="180" interval="1.5" />
-    <Enemy id="6" x="960" y="416" speed="100">
-      <node x="512" y="416" />
-      <node x="1056" y="416" />
-      <node x="960" y="416" />
-    </Enemy>
     <Cannon id="7" x="32" y="32" angle="90" interval="1.5" />
     <Cannon id="8" x="32" y="64" angle="90" interval="1.5" />
     <Cannon id="10" x="1440" y="256" angle="180" interval="3" />
@@ -83,13 +78,18 @@
       <node x="608" y="352" />
       <node x="1056" y="352" />
     </Bird>
-    <Platform id="9" x="512" y="384" width="96" speed="100">
-      <node x="512" y="288" />
-      <node x="512" y="384" />
-    </Platform>
     <Platform id="2" x="1088" y="432" width="96" speed="100">
       <node x="1088" y="288" />
       <node x="1088" y="432" />
+    </Platform>
+    <Enemy id="6" x="672" y="416" speed="100">
+      <node x="1056" y="416" />
+      <node x="608" y="416" />
+      <node x="672" y="416" />
+    </Enemy>
+    <Platform id="9" x="512" y="432" width="96" speed="100">
+      <node x="512" y="288" />
+      <node x="512" y="432" />
     </Platform>
   </Objects>
 </level>

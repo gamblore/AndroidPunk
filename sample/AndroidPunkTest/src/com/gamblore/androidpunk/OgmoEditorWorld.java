@@ -374,8 +374,8 @@ public class OgmoEditorWorld extends World {
 					Log.d(TAG, String.format("New text %s at %d, %d", text, x, y));
 					
 					Entity e = new Entity(x, y);
-					e.setLayer(100);
-					AtlasText t = new AtlasText(text, 20, Main.mTypeface);
+					e.setLayer(-1);
+					AtlasText t = new AtlasText(text, 30, Main.mTypeface);
 					
 					e.setGraphic(t);
 					add(e);

@@ -13,7 +13,7 @@ public class GameText extends Entity {
 		super();
 		setLayer(99);
 		
-		mText = new AtlasText(text, 20, Main.mTypeface);
+		mText = new AtlasText(text, 35, Main.mTypeface);
 		setGraphic(mText);
 	}
 	
