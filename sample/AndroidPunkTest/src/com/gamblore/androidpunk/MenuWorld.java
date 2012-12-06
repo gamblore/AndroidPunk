@@ -92,7 +92,7 @@ public class MenuWorld extends World {
 		ogmo.add(ANIM_WALKING, FP.frames(0, 5), 20);
 		ogmo.setFrame(0);
 		
-		startText = new AtlasText("Tap to Start", 40, Main.mTypeface);
+		startText = new AtlasText("Tap to Start", 40);
 		startText.x = FP.screen.getWidth()/2 - startText.getWidth()/2;
 		startText.y = 3*FP.screen.getHeight()/4;
 		
@@ -138,13 +138,13 @@ public class MenuWorld extends World {
 		// Secondary options
 		mSecondDisplay.y = FP.screen.getHeight()/2;
 		
-		newGame = new AtlasText("New Game", 35, Main.mTypeface);
+		newGame = new AtlasText("New Game", 35);
 		newGame.relative = true;
 		newGame.x = FP.screen.getWidth()/4 - newGame.getWidth()/2;
 		newGame.y = 2*FP.screen.getHeight()/3;
 		Hitbox newHitbox = new Hitbox((int)(newGame.getWidth()+FP.dip(10)), (int)(newGame.getHeight()+FP.dip(10)), (int)(newGame.x-FP.dip(5)), (int)(newGame.y-FP.dip(5)));
 		
-		continueGame = new AtlasText("Continue", 35, Main.mTypeface);
+		continueGame = new AtlasText("Continue", 35);
 		continueGame.relative = true;
 		continueGame.x = 3*FP.screen.getWidth()/4 - continueGame.getWidth()/2;
 		continueGame.y = newGame.y;

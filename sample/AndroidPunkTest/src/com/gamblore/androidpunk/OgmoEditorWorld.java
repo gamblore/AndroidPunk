@@ -375,7 +375,7 @@ public class OgmoEditorWorld extends World {
 					
 					Entity e = new Entity(x, y);
 					e.setLayer(-1);
-					AtlasText t = new AtlasText(text, 30, Main.mTypeface);
+					AtlasText t = new AtlasText(text, 30);
 					
 					e.setGraphic(t);
 					add(e);

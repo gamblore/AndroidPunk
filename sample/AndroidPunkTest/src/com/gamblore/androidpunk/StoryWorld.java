@@ -92,7 +92,7 @@ public class StoryWorld extends World {
 			if ("".equals(mSections[i])) {
 				continue;
 			}
-			AtlasText line = new AtlasText(mSections[i], 30, Main.mTypeface);
+			AtlasText line = new AtlasText(mSections[i], 30);
 			line.visible = false;
 			line.x = 2;
 			line.y = i * 22;

@@ -24,14 +24,16 @@ public class Main extends Engine {
 	
 	public static final String MUTE_PREF = "mute";
 	public static Atlas mAtlas;
-	public static Typeface mTypeface;
+	//public static Typeface mTypeface;
 
 	public Main(int width, int height, float frameRate, boolean fixed) {
 		super(width, height, frameRate, fixed);
 		
 		mAtlas = new Atlas("textures/texture1.xml");
-		mTypeface = TextAtlas.getFontFromRes(R.raw.font_fixed_bold);
-		mTypeface = TextAtlas.getFontFromAssets("fonts/periodic_three/periodic_three.ttf");
+		//mTypeface = TextAtlas.getFontFromRes(R.raw.font_fixed_bold);
+		//mTypeface = TextAtlas.getFontFromAssets("fonts/periodic_three/periodic_three.ttf");
+		// Set typeface default.
+		FP.typeface = TextAtlas.getFontFromAssets("fonts/periodic_three/periodic_three.ttf");
 		
 		FP.setWorld(new MenuWorld());
 	

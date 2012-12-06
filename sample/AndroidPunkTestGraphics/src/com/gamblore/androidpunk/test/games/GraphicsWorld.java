@@ -157,16 +157,28 @@ public class GraphicsWorld extends World {
 		Shape circle = Shape.circle(100, 100, 15);
 		circle.setColor(0xff00ff00);
 		
-		Shape rect2 = Shape.rect(0, 0, 30, 30);
-		rect2.setColor(0xff0000ff);
+		Shape rect2 = Shape.rect(0, 0, 50, 50);
+		rect2.setColor(0xffffffff);
 		rect2.x = 85;
 		rect2.y = 85;
+		int colorIdx = 0;
+		float colors[] = new float[4*4];
+		colors[colorIdx++] = 1.0f; colors[colorIdx++] = 0.0f; colors[colorIdx++] = 0.0f; colors[colorIdx++] = 1.0f;
+		colors[colorIdx++] = 0.0f; colors[colorIdx++] = 1.0f; colors[colorIdx++] = 0.0f; colors[colorIdx++] = 1.0f;
+		colors[colorIdx++] = 0.0f; colors[colorIdx++] = 0.0f; colors[colorIdx++] = 1.0f; colors[colorIdx++] = 1.0f;
+		colors[colorIdx++] = 1.0f; colors[colorIdx++] = 1.0f; colors[colorIdx++] = 1.0f; colors[colorIdx++] = .1f;
+		rect2.setColorVertices(colors);
 		
 		Shape rect = Shape.rect(0, 0, 150, 25);
 		rect.x = 100;
 		rect.setColor(0xff0000ff);
 		
-		mEntities[10].setGraphic(new GraphicList(line, rect2, circle, rect, shapeText));
+		Shape triangle = Shape.triangle(0, 5f, 5f, 0f, -5f, 0f);
+		triangle.setColor(0xffffdd33);
+		triangle.x = 100;
+		triangle.y = 100;
+		
+		mEntities[10].setGraphic(new GraphicList(line, rect2, circle, rect, triangle, shapeText));
 		
 		
 		add(mEntities[mCurrentEntity]);

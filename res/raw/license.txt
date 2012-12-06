@@ -1,0 +1,14 @@
+﻿The FontStruction “NovaMono”
+(http://fontstruct.com/fontstructions/show/196231) by “fontcollector” is
+licensed under a Creative Commons Attribution Non-commercial No Derivatives
+license (http://creativecommons.org/licenses/by-nc-nd/3.0/).
+“NovaMono” was originally cloned (copied) from the FontStruction
+“PortraitTextMono” (http://fontstruct.com/fontstructions/show/75756) by
+“fontcollector”, which is licensed under a Creative Commons Attribution
+Non-commercial No Derivatives license
+(http://creativecommons.org/licenses/by-nc-nd/3.0/).
+“PortraitTextMono” was in turn cloned (copied) from the FontStruction
+“PortraitMono” (http://fontstruct.com/fontstructions/show/75322) by
+“fontcollector”, which is licensed under a Creative Commons Attribution
+Non-commercial No Derivatives license
+(http://creativecommons.org/licenses/by-nc-nd/3.0/).
