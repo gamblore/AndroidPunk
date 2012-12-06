@@ -6,13 +6,15 @@ import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.FP;
 import net.androidpunk.graphics.opengl.GLGraphic;
-
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.util.Log;
 
 public class Shape extends GLGraphic {
-
+	
+	private static final String TAG = "Shape";
+	
 	protected FloatBuffer mVertexBuffer;
 	protected FloatBuffer mVertexColorBuffer;
 	protected int mVertices = 0;
@@ -64,6 +66,66 @@ public class Shape extends GLGraphic {
 		setRect(x, y, width, height, v);
 		
 		s.setVertices(v);
+		
+		return s;
+	}
+	
+	/**
+	 * Create a shape based on the three Point objects given.
+	 * @param points
+	 * @return A shape Graphic
+	 */
+	public static Shape triangle(Point[] points) {
+		if (points.length < 3 * 2) {
+			Log.e(TAG, "Not enough points for triangle");
+			return null;
+		}
+		
+		int idx = 0;
+		float[] verticies = new float[3*2];
+		for (int i = 0; i < 3; i++) {
+			verticies[idx++] = points[i].x;
+			verticies[idx++] = points[i].y;
+		}
+		
+		return triangle(verticies);
+	}
+	
+	/**
+	 * Create a shape based on the three Point given.
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @return A shape Graphic
+	 */
+	public static Shape triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
+		int idx = 0;
+		float[] verticies = new float[3*2];
+		
+		verticies[idx++] = x1;
+		verticies[idx++] = y1;
+		
+		verticies[idx++] = x2;
+		verticies[idx++] = y2;
+		
+		verticies[idx++] = x3;
+		verticies[idx++] = y3;
+		
+		return triangle(verticies);
+	}
+	
+	/**
+	 * Create a shape based on the vertices given.
+	 * @param verticies
+	 * @return A shape Graphic
+	 */
+	public static Shape triangle(float[] verticies) {
+		Shape s = new Shape();
+		
+		s.setVertices(verticies);
 		
 		return s;
 	}
@@ -133,6 +195,16 @@ public class Shape extends GLGraphic {
 		return CircleShape.circle(cx, cy, radius);
 	}
 	
+	
+	/**
+	 * Sets the color of the vertices. Float format 4 per vertex.
+	 * @param v
+	 */
+	public void setColorVertices(float v[]) {
+		mVertexColorBuffer = GLGraphic.getDirectFloatBuffer(v.length);
+		mVertexColorBuffer.put(v).position(0);
+	}
+	
 	/**
 	 * Set custom vertices will be set as a triangle strip. You can override this method to do more other rendering types.
 	 * @param v vertices to set into the native buffer for drawing.
@@ -160,6 +232,13 @@ public class Shape extends GLGraphic {
 		mHeight = (int)(maxY - minY);
 	}
 	
+	/**
+	 * Get the number of vertices in the buffer.
+	 * @return 
+	 */
+	public int getVertexCount() {
+		return mVertices / 2;
+	}
 	/**
 	 * Get the width of the vertices put in.
 	 * @return
@@ -191,7 +270,9 @@ public class Shape extends GLGraphic {
 		if (mVertexColorBuffer != null) {
 			gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 			gl.glColorPointer(4, GL10.GL_FLOAT, 0, mVertexColorBuffer);
-
+			gl.glShadeModel(GL10.GL_SMOOTH);
+		} else {
+			gl.glShadeModel(GL10.GL_FLAT);
 		}
 		GLGraphic.setBuffers(gl, mVertexBuffer, null);
 		
@@ -210,6 +291,7 @@ public class Shape extends GLGraphic {
 		
 		if (mVertexColorBuffer != null) {
 			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+			gl.glShadeModel(GL10.GL_FLAT);
 		}
 	}
 }

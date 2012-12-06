@@ -18,6 +18,7 @@ import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.opengl.Atlas;
+import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.utils.Input;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -361,6 +362,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		
+		FP.typeface = TextAtlas.getFontFromRes(R.raw.novamono);
 	}
 	
 	@Override

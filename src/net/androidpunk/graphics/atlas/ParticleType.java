@@ -77,12 +77,12 @@ public class ParticleType {
 		if (frames != null) {
 			mFrameCount = frames.length;
 		} else {
-			mFrameCount = 0;
+			mFrameCount = 1;
 		}
 		
 		GLGraphic.setGeometryBuffer(mVertexBuffer,0, 0, frameWidth, frameHeight);
-		mTextureBuffer = GLGraphic.getDirectFloatBuffer(8*frames.length);
 		
+		mTextureBuffer = GLGraphic.getDirectFloatBuffer(8*mFrameCount);
 		Rect r = FP.rect;
 		
 		mTextureBuffer.position(0);

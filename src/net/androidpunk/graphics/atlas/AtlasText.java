@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.androidpunk.FP;
 import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.graphics.opengl.Atlas;
 import net.androidpunk.graphics.opengl.TextAtlas;
@@ -34,7 +35,7 @@ public class AtlasText extends AtlasGraphic {
 	
 	
 	public AtlasText(String s, int fontSize) {
-		this(s, fontSize, Typeface.DEFAULT);
+		this(s, fontSize, FP.typeface);
 	}
 	
 	public AtlasText(String s, int fontSize, Typeface typeface) {

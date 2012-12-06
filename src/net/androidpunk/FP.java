@@ -30,6 +30,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.opengl.Matrix;
@@ -43,6 +44,11 @@ public class FP {
      * The FlashPunk major version.
      */
     public static final String VERSION = "1.6";
+    
+    /**
+     * The default Typeface to use.
+     */
+    public static Typeface typeface = Typeface.DEFAULT;
     
     /**
      * Width of the game.
