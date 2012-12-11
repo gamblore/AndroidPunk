@@ -13,6 +13,8 @@ import net.androidpunk.Graphic;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 public class GLGraphic extends Graphic {
 
@@ -44,7 +46,26 @@ public class GLGraphic extends Graphic {
 	protected static final FloatBuffer QUAD_FLOAT_BUFFER_1 = getDirectFloatBuffer(8);
 	protected static final FloatBuffer QUAD_FLOAT_BUFFER_2 = getDirectFloatBuffer(8);
 	protected int mColor = 0xffffffff;
+	
+	private float[] mMatrix = new float[16];
+	private int mProgram = -1;
+	
+	private static int DEFAULT_PROGRAM = -1; 
+	
+	private final String DEFAULT_VERTEX_SHADER_CODE =
+		    "attribute vec4 vPosition;" +
+		    "uniform mat4 uMVPMatrix;" +
+		    "void main() {" +
+		    "  gl_Position = vPosition * uMVPMatrix;" +
+		    "}";
 
+	private final String DEFAULT_FRAGMENT_SHADER_CODE =
+		    "precision mediump float;" +
+		    "uniform vec4 vColor;" +
+		    "void main() {" +
+		    "  gl_FragColor = vColor;" +
+		    "}";
+	
 	/**
 	 * Get a char direct buffer that is native order. This is to be used in OpenGL calls.
 	 * @param numFloats the number of chars you want.
@@ -126,8 +147,41 @@ public class GLGraphic extends Graphic {
 				return setTextureBuffer(fb, t.getTexture(), mRect);
 			}
 
+	public static int loadShader(int type, String code) {
+		int shader = GLES20.glCreateShader(type);
+
+	    // add the source code to the shader and compile it
+	    GLES20.glShaderSource(shader, code);
+	    GLES20.glCompileShader(shader);
+
+	    return shader;
+	}
+	
 	public GLGraphic() {
 		super();
+		
+		if (DEFAULT_PROGRAM == -1) {
+			int geometry = loadShader(GLES20.GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER_CODE);
+			int fragment = loadShader(GLES20.GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER_CODE);
+			
+			DEFAULT_PROGRAM = GLES20.glCreateProgram();
+			GLES20.glAttachShader(DEFAULT_PROGRAM, geometry);
+			GLES20.glAttachShader(DEFAULT_PROGRAM, fragment);
+			GLES20.glLinkProgram(DEFAULT_PROGRAM);
+		}
+		mProgram = DEFAULT_PROGRAM;
+	}
+	
+	public GLGraphic(String geometryShader, String fragmentShader) {
+		super();
+		
+		int geometry = loadShader(GLES20.GL_VERTEX_SHADER, geometryShader);
+		int fragment = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader);
+		
+		mProgram = GLES20.glCreateProgram();
+		GLES20.glAttachShader(mProgram, geometry);
+		GLES20.glAttachShader(mProgram, fragment);
+		GLES20.glLinkProgram(mProgram);
 	}
 
 	protected void setMatrix(GL10 gl) {
@@ -135,20 +189,29 @@ public class GLGraphic extends Graphic {
 		// scale the sprite
 		// rotate the sprite
 		// translate to position + origin.
-		float sX = scaleX * scale;
-		float sY = scaleY * scale;
+		float sX = scaleX * scale * FP.scale;
+		float sY = scaleY * scale * FP.scale;
+		Matrix.orthoM(mMatrix, 0, 0, FP.width, FP.height, 0, 1, -1);
 		
-		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x, (originY * Math.abs(sY)) + mPoint.y, 0f);
+		Matrix.translateM(mMatrix, 0, 
+				(originX * Math.abs(sX)) + mPoint.x * Math.abs(sX), (originY * Math.abs(sY)) + mPoint.y * Math.abs(sY), 0f);
+		//gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x * Math.abs(sX), (originY * Math.abs(sY)) + mPoint.y * Math.abs(sY), 0f);
 		
 		
 		if (angle != 0) {
-			gl.glRotatef(angle, 0, 0, 1.0f);
+			Matrix.rotateM(mMatrix, 0, angle, 0, 0, 1.0f);
+			//gl.glRotatef(angle, 0, 0, 1.0f);
 			//mMatrix.postRotate(angle);
 		}
 		
-		gl.glScalef(sX, sY, 1.0f);
-		gl.glTranslatef(-originX, -originY, 0.0f);
+		Matrix.scaleM(mMatrix, 0, sX, sY, 1.0f);
+		//gl.glScalef(sX, sY, 1.0f);
+		Matrix.translateM(mMatrix, 0, -originX, -originY, 1.0f);
+		//gl.glTranslatef(-originX, -originY, 0.0f);
 		
+		
+		int mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMatrix, 0);
 	}
 	
 	public void applyColor(GL10 gl) {
@@ -157,7 +220,9 @@ public class GLGraphic extends Graphic {
 		float blue = Color.blue(mColor) / 255f;
 		float alpha = Color.alpha(mColor) / 255f;
 		
-		gl.glColor4f(red, green, blue, alpha);
+		int colorLocation = GLES20.glGetUniformLocation(mProgram, "vColor");
+		GLES20.glUniform1i(colorLocation, mColor);
+		//gl.glColor4f(red, green, blue, alpha);
 	}
 	
 	/**

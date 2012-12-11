@@ -33,6 +33,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -105,12 +106,13 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		}
 		
 		public void onDrawFrame(GL10 gl) {
-			OpenGLSystem.setGL(gl);
+			//OpenGLSystem.setGL(gl);
 			
 			mRenderTime = SystemClock.uptimeMillis();
 			// process queue runnables for a max of 8ms.
 			synchronized (mUpdateLock) {
 				
+				GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 				gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 	
 				OpenGLSystem.processQueue(14);
@@ -159,20 +161,25 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        final int viewportWidth = (int)(mScreenRect.width());
 	        final int viewportHeight = (int)(mScreenRect.height());
 	        
+	        GLES20.glViewport(0, 0, viewportWidth, viewportHeight);
+	        
+	        /*
 	        gl.glViewport(0, 0, viewportWidth, viewportHeight);
 	        gl.glScissor(0, 0, viewportWidth, viewportHeight);
-	        
+	        */
 	        mScaleX = scaleX;
 	        mScaleY = scaleY;
 	        
+	        /*
 	        gl.glMatrixMode(GL10.GL_MODELVIEW);
 	        gl.glLoadIdentity();
 	        
 	        gl.glMatrixMode(GL10.GL_PROJECTION);
 	        gl.glLoadIdentity();
+	        */
 	        
-	        gl.glOrthof(0, viewportWidth, viewportHeight, 0, -1, 1);
-	        gl.glScalef(mScaleX, mScaleY, 0.0f);
+	        //gl.glOrthof(0, viewportWidth, viewportHeight, 0, -1, 1);
+	        //gl.glScalef(mScaleX, mScaleY, 0.0f);
 	        mStarted = true;
 	        
 	        //This should give it a bit of time to setup anything created during initial surface load.
@@ -187,6 +194,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	         * on features of this particular context
 	         */
 			
+			GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+			/*
 	        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 
 	        gl.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -197,12 +206,13 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        
 	        gl.glEnable(GL10.GL_TEXTURE_2D);
 	        gl.glEnable(GL10.GL_SCISSOR_TEST);
-
+			*/
 	        /*
 	         * By default, OpenGL enables features that improve quality but reduce
 	         * performance. One might want to tweak that especially on software
 	         * renderer.
 	         */
+			/*
 	        gl.glDisable(GL10.GL_CULL_FACE);
 	        gl.glDisable(GL10.GL_DITHER);
 	        gl.glDisable(GL10.GL_LIGHTING);
@@ -223,6 +233,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        boolean isOpenGL10 = version.contains("1.0");
 	        boolean supportsDrawTexture = extensions.contains("draw_texture");
 	        
+	        
 	        // VBOs are standard in GLES1.1
 	        // No use using VBOs when software renderering, esp. since older versions of the software renderer
 	        // had a crash bug related to freeing VBOs.
@@ -232,6 +243,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        FP.supportsVBOs = supportsVBOs;
 	        
 	        Log.d(TAG, "Graphics Support" + version + " (" + renderer + "): " +(supportsDrawTexture ?  "draw texture," : "") + (supportsVBOs ? "vbos" : ""));
+	        */
 	        if (mEngine == null) {
 		        try {
 			        mEngine = engine_class.getConstructor(Integer.TYPE, Integer.TYPE, Float.TYPE, Boolean.TYPE).newInstance(static_width, static_height, FP.assignedFrameRate, FP.fixed);

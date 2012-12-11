@@ -11,6 +11,7 @@ import net.androidpunk.android.OpenGLSystem.OpenGLRunnable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
@@ -180,28 +181,28 @@ public class Texture {
 	 * @param bm The bitmap to put it. 
 	 */
 	private boolean createTexture(GL10 gl, Bitmap bm) {
-		gl.glEnable(GL10.GL_TEXTURE_2D);
+		GLES20.glEnable(GL10.GL_TEXTURE_2D);
 				
 		int textures[] = new int[1];
-		gl.glGenTextures(1, textures, 0);
+		GLES20.glGenTextures(1, textures, 0);
 		
 		mTextureName = textures[0];
 		
 		// Select this OpenGL texture
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureName);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureName);
 		//Log.d(TAG, "Texture is bound to " + mTextureName);
 		if (mTextureName == 0) { 
 			return false;
 		}
 		// Set the texture parameters
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 		
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE); 
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE); 
+		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 		
 		// Upload the texture to texture memory
-		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, mSource, 0);
+		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mSource, 0);
 		mLoaded = true;
 		return mLoaded;
 	}
@@ -218,7 +219,7 @@ public class Texture {
 		}
 		int textures[] = new int[1];
 		textures[0] = mTextureName;
-		//gl.glDeleteTextures(1, textures, 0);
+		GLES20.glDeleteTextures(1, textures, 0);
 		mLoaded = false;
 	}
 	

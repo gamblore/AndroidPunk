@@ -134,6 +134,10 @@ public class AtlasText extends AtlasGraphic {
 		mIndexCount = mText.length() * 6;
 	}
 	
+	public String getText() {
+		return mText;
+	}
+	
 	@Override
 	public void render(GL10 gl, Point point, Point camera) {
 		super.render(gl, point, camera);
