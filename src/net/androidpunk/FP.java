@@ -81,6 +81,11 @@ public class FP {
     public static float halfHeight;
     
     /**
+     * Global scale of the game graphics.
+     */
+    public static float scale = 1.0f;
+    
+    /**
      * If the game is running at a fixed framerate.
      */
     public static boolean fixed;

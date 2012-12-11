@@ -44,6 +44,7 @@ public class AtlasGraphic extends GLGraphic {
 
 	}
 	
+	/*
 	protected void setMatrix(GL10 gl) {
 		// Translate to origin
 		// scale the sprite
@@ -62,7 +63,7 @@ public class AtlasGraphic extends GLGraphic {
 		gl.glTranslatef(-originX, -originY, 0.0f);
 		
 	}
-	
+	*/
 	/**
 	 * Get the width of the graphic.
 	 * @return width

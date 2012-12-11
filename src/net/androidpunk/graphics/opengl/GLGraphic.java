@@ -135,20 +135,17 @@ public class GLGraphic extends Graphic {
 		// scale the sprite
 		// rotate the sprite
 		// translate to position + origin.
-		float sX = scaleX * scale;
-		float sY = scaleY * scale;
-		
-		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x, (originY * Math.abs(sY)) + mPoint.y, 0f);
+		float sX = scaleX * scale * FP.scale;
+		float sY = scaleY * scale * FP.scale;
+		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x * Math.abs(sX), (originY * Math.abs(sY)) + mPoint.y * Math.abs(sY), 0f);
 		
 		
 		if (angle != 0) {
 			gl.glRotatef(angle, 0, 0, 1.0f);
-			//mMatrix.postRotate(angle);
 		}
 		
 		gl.glScalef(sX, sY, 1.0f);
 		gl.glTranslatef(-originX, -originY, 0.0f);
-		
 	}
 	
 	public void applyColor(GL10 gl) {
