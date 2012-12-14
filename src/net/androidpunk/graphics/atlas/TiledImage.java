@@ -80,7 +80,7 @@ public class TiledImage extends Image {
 		
 		gl.glPushMatrix(); 
 		{
-			setMatrix(gl);
+			setMatrix();
 			//gl.glTranslatef(mPoint.x, mPoint.y, 0);
 			while (yy  < mPoint.y + mHeight) {
 				while (xx < mPoint.x + mWidth) {

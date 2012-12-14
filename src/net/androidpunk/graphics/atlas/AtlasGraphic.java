@@ -39,11 +39,11 @@ public class AtlasGraphic extends GLGraphic {
 	 * Sets the color filter and loads the texture if it is not already loaded.
 	 */
 	public void render(GL10 gl, Point point, Point camera) {
-		applyColor(gl);
-		OpenGLSystem.setTexture(gl, getAtlas());
+		applyColor();
+		OpenGLSystem.setTexture(mProgram, getAtlas());
 
 	}
-	
+	/*
 	protected void setMatrix(GL10 gl) {
 		// Translate to origin
 		// scale the sprite
@@ -62,7 +62,7 @@ public class AtlasGraphic extends GLGraphic {
 		gl.glTranslatef(-originX, -originY, 0.0f);
 		
 	}
-	
+	*/
 	/**
 	 * Get the width of the graphic.
 	 * @return width

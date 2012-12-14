@@ -18,6 +18,7 @@ import net.androidpunk.graphics.Text;
 import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.opengl.Atlas;
+import net.androidpunk.graphics.opengl.GLGraphic;
 import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.utils.Input;
 import android.app.Activity;
@@ -35,6 +36,7 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -113,7 +115,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			synchronized (mUpdateLock) {
 				
 				GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-				gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+				//gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 	
 				OpenGLSystem.processQueue(14);
 				
@@ -162,7 +164,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        final int viewportHeight = (int)(mScreenRect.height());
 	        
 	        GLES20.glViewport(0, 0, viewportWidth, viewportHeight);
-	        
+	        GLES20.glScissor(0, 0, viewportWidth, viewportHeight);
 	        /*
 	        gl.glViewport(0, 0, viewportWidth, viewportHeight);
 	        gl.glScissor(0, 0, viewportWidth, viewportHeight);
@@ -178,6 +180,11 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        gl.glLoadIdentity();
 	        */
 	        
+	        
+	        Matrix.setIdentityM(GLGraphic.MODELVIEW_MATRIX, 0);
+	        Matrix.setIdentityM(GLGraphic.PROJECTION_MATRIX, 0);
+	        Matrix.orthoM(GLGraphic.PROJECTION_MATRIX, 0, 0, viewportWidth, viewportHeight, 0, -1, 1);
+	        //Matrix.scaleM(GLGraphic.PROJECTION_MATRIX, 0, mScaleX, mScaleY, 0.0f);
 	        //gl.glOrthof(0, viewportWidth, viewportHeight, 0, -1, 1);
 	        //gl.glScalef(mScaleX, mScaleY, 0.0f);
 	        mStarted = true;
@@ -194,7 +201,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	         * on features of this particular context
 	         */
 			
-			GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+			GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			/*
 	        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 
@@ -207,6 +214,10 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        gl.glEnable(GL10.GL_TEXTURE_2D);
 	        gl.glEnable(GL10.GL_SCISSOR_TEST);
 			*/
+			GLES20.glEnable(GLES20.GL_TEXTURE_2D);
+			GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
+			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			
 	        /*
 	         * By default, OpenGL enables features that improve quality but reduce
 	         * performance. One might want to tweak that especially on software

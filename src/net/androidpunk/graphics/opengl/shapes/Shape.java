@@ -9,6 +9,7 @@ import net.androidpunk.graphics.opengl.GLGraphic;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.opengl.GLES20;
 import android.util.Log;
 
 public class Shape extends GLGraphic {
@@ -22,8 +23,8 @@ public class Shape extends GLGraphic {
 	private int mWidth = 0;
 	private int mHeight = 0;
 	
-	public Shape() {
-		
+	protected Shape() {
+		super();
 	}
 	
 	private static void setRect(float x, float y, float w, float h, float v[]) {
@@ -263,35 +264,37 @@ public class Shape extends GLGraphic {
 	public void render(GL10 gl, Point point, Point camera) {
 		super.render(gl, point, camera);
 
-		if (mVertices == 0) {
+		if (mProgram < 0) {
 			return;
 		}
 		
-		if (mVertexColorBuffer != null) {
-			gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-			gl.glColorPointer(4, GL10.GL_FLOAT, 0, mVertexColorBuffer);
-			gl.glShadeModel(GL10.GL_SMOOTH);
-		} else {
-			gl.glShadeModel(GL10.GL_FLAT);
+		if (mVertices == 0) {
+			return;
 		}
-		GLGraphic.setBuffers(gl, mVertexBuffer, null);
+		int mColorHandle = GLES20.glGetAttribLocation(mProgram, "Color");
+		if (mVertexColorBuffer != null) {
+			GLES20.glEnableVertexAttribArray(mColorHandle);
+			GLES20.glVertexAttribPointer(mColorHandle, 4, GLES20.GL_FLOAT, false, 0, mVertexColorBuffer);
+		}
 		
-		gl.glDisable(GL10.GL_TEXTURE_2D);
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
 		
-		gl.glPushMatrix(); 
+		int mUseTexture = GLES20.glGetUniformLocation(mProgram, "uHasTextureAttribute");
+		GLES20.glUniform1i(mUseTexture, 0);
+		
+		
+		//GLES20.glPushMatrix(); 
 		{
-			setMatrix(gl);
-			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, mVertices/2);
+			setMatrix();
+			GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mVertices/2);
 		}
-		gl.glPopMatrix();
-		
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		//GLES20.glPopMatrix();
 		
 		if (mVertexColorBuffer != null) {
-			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
-			gl.glShadeModel(GL10.GL_FLAT);
+			GLES20.glDisableVertexAttribArray(mColorHandle);
 		}
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
 	}
 }

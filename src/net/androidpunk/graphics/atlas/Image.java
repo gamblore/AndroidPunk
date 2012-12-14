@@ -54,7 +54,7 @@ public class Image extends AtlasGraphic {
 		
 		gl.glPushMatrix(); 
 		{
-			setMatrix(gl);
+			setMatrix();
 			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		}
 		gl.glPopMatrix();

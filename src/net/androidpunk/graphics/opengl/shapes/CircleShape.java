@@ -4,16 +4,13 @@ import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.graphics.opengl.GLGraphic;
 import android.graphics.Point;
+import android.opengl.GLES20;
 
 public class CircleShape extends Shape {
 	
 	private int mWidth = 0;
 	private int mHeight = 0;
-	
-	public CircleShape() {
 		
-	}
-	
 	// http://slabode.exofire.net/circle_draw.shtml
 	private static void setCircle(float cx, float cy, float r, float vertices[]) {
 		
@@ -76,23 +73,25 @@ public class CircleShape extends Shape {
 	public void render(GL10 gl, Point point, Point camera) {
 		superRender(gl, point, camera);
 		
+		if (mProgram == -1) {
+			return;
+		}
+		
 		if (mVertices == 0) {
 			return;
 		}
 		
-		GLGraphic.setBuffers(gl, mVertexBuffer, null);
+		int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
 		
-		gl.glDisable(GL10.GL_TEXTURE_2D);
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		int mUseTexture = GLES20.glGetUniformLocation(mProgram, "uHasTextureAttribute");
+		GLES20.glUniform1i(mUseTexture, 0);
 		
-		gl.glPushMatrix(); 
 		{
-			setMatrix(gl);
-			gl.glDrawArrays(GL10.GL_TRIANGLE_FAN, 0, mVertices/2);
+			setMatrix();
+			GLES20.glDrawArrays(GL10.GL_TRIANGLE_FAN, 0, mVertices/2);
 		}
-		gl.glPopMatrix();
-		
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
 	}
 }

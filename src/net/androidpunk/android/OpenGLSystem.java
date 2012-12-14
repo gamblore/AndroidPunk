@@ -9,6 +9,7 @@ import java.util.Queue;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.graphics.opengl.Texture;
+import android.opengl.GLES20;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -108,6 +109,15 @@ public class OpenGLSystem {
     	mCurrentTexture = texture.mTextureName;
     	gl.glEnable(GL10.GL_TEXTURE_2D);
     	gl.glBindTexture(GL10.GL_TEXTURE_2D, mCurrentTexture);
+    }
+    
+    public static void setTexture(int program, Texture texture) {
+    	mCurrentTexture = texture.mTextureName;
+    	
+    	int mUseTexture = GLES20.glGetUniformLocation(program, "uHasTextureAttribute");
+		GLES20.glUniform1i(mUseTexture, 1);
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mCurrentTexture);
     }
 
     public void reset() {

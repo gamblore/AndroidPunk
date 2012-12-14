@@ -113,7 +113,7 @@ public class TiledSpriteMap extends SpriteMap {
 		
 		gl.glPushMatrix();
 		{
-			setMatrix(gl);
+			setMatrix();
 			//gl.glTranslatef(mPoint.x, mPoint.y, 0);
 			while (yy  < mPoint.y + mImageHeight) {
 				while (xx < mPoint.x + mImageWidth) {

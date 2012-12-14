@@ -161,7 +161,7 @@ public class AtlasText extends AtlasGraphic {
     	
     	gl.glPushMatrix();
     	{
-    		setMatrix(gl);
+    		setMatrix();
     		gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
     	}
     	gl.glPopMatrix();
