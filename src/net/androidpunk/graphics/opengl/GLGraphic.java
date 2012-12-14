@@ -137,7 +137,7 @@ public class GLGraphic extends Graphic {
 		// translate to position + origin.
 		float sX = scaleX * scale * FP.scale;
 		float sY = scaleY * scale * FP.scale;
-		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x * Math.abs(sX), (originY * Math.abs(sY)) + mPoint.y * Math.abs(sY), 0f);
+		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x * Math.abs(FP.scale), (originY * Math.abs(sY)) + mPoint.y * Math.abs(FP.scale), 0f);
 		
 		
 		if (angle != 0) {
