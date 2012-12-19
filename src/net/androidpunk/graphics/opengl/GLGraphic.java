@@ -55,7 +55,6 @@ public class GLGraphic extends Graphic {
 	protected int mColor = 0xffffffff;
 	
 	public static final float[] PROJECTION_MATRIX = new float[16];
-	public static final float[] MODELVIEW_MATRIX = new float[16];
 	
 	private float[] mMatrix = new float[16];
 	protected int mProgram = -1;
@@ -272,9 +271,11 @@ public class GLGraphic extends Graphic {
 		// translate to position + origin.
 		float sX = scaleX * scale * FP.scale;
 		float sY = scaleY * scale * FP.scale;
+		Matrix.setIdentityM(mMatrix, 0);
 		
-		Matrix.translateM(mMatrix, 0, PROJECTION_MATRIX, 0, 
-				(originX * Math.abs(sX)) + mPoint.x * Math.abs(sX), (originY * Math.abs(sY)) + mPoint.y * Math.abs(sY), 0f);
+		Matrix.translateM(mMatrix, 0, 
+				(originX * Math.abs(sX)) + mPoint.x * Math.abs(sX),
+				(originY * Math.abs(sY)) + mPoint.y * Math.abs(sY), 0f);
 		
 		if (angle != 0) {
 			Matrix.rotateM(mMatrix, 0, angle, 0, 0, 1.0f);
@@ -283,8 +284,11 @@ public class GLGraphic extends Graphic {
 		Matrix.scaleM(mMatrix, 0, sX, sY, 1.0f);
 		Matrix.translateM(mMatrix, 0, -originX, -originY, 1.0f);
 		
-		int mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMatrix, 0);
+		int modelViewHandle = GLES20.glGetUniformLocation(mProgram, "uModelView");
+		GLES20.glUniformMatrix4fv(modelViewHandle, 1, false, mMatrix, 0);
+		
+		int projectionViewHandle = GLES20.glGetUniformLocation(mProgram, "uProjectionView");
+		GLES20.glUniformMatrix4fv(projectionViewHandle, 1, false, PROJECTION_MATRIX, 0);
 	}
 	
 	public void applyColor() {

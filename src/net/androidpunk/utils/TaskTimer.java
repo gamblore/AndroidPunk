@@ -1,9 +1,8 @@
 package net.androidpunk.utils;
-
 public class TaskTimer {
 
 	public static abstract class OnTimeup implements Runnable {
-		public abstract void run();
+ 		public abstract void run();
 	}
 	
 	private OnTimeup mTimeupFunction;

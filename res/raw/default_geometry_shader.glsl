@@ -7,7 +7,8 @@ attribute vec2 TexCoord;
 varying vec4 vColor;
 varying vec2 vTexCoord;
 		    
-uniform mat4 uMVPMatrix;
+uniform mat4 uProjectionView;
+uniform mat4 uModelView;
 
 //Shared between vertex and fragment shader
 uniform mediump int uHasColorAttribute;
@@ -24,6 +25,6 @@ void main() {
 		vTexCoord = TexCoord;
 	}
 
-	gl_Position = vec4(Position, 0.0, 1.0) * uMVPMatrix;
+	gl_Position = uProjectionView * uModelView * vec4(Position, 0.0, 1.0);
 	//gl_Position = vec4(Position, 0.0, 1.0);
 }

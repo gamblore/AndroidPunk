@@ -16,7 +16,8 @@ public class Main extends Engine {
 		
 		mAtlas = new Atlas("textures/texture1.xml");
 		
-		FP.setWorld(new GraphicsWorld());
+		//FP.setWorld(new GraphicsWorld());
+		FP.setWorld(new GL20World());
 
 	}
 

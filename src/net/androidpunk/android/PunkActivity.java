@@ -180,11 +180,9 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	        gl.glLoadIdentity();
 	        */
 	        
-	        
-	        Matrix.setIdentityM(GLGraphic.MODELVIEW_MATRIX, 0);
 	        Matrix.setIdentityM(GLGraphic.PROJECTION_MATRIX, 0);
 	        Matrix.orthoM(GLGraphic.PROJECTION_MATRIX, 0, 0, viewportWidth, viewportHeight, 0, -1, 1);
-	        //Matrix.scaleM(GLGraphic.PROJECTION_MATRIX, 0, mScaleX, mScaleY, 0.0f);
+	        Matrix.scaleM(GLGraphic.PROJECTION_MATRIX, 0, mScaleX, mScaleY, 0.0f);
 	        //gl.glOrthof(0, viewportWidth, viewportHeight, 0, -1, 1);
 	        //gl.glScalef(mScaleX, mScaleY, 0.0f);
 	        mStarted = true;
