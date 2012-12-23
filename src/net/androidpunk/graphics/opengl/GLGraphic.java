@@ -237,8 +237,19 @@ public class GLGraphic extends Graphic {
 		mProgram = DEFAULT_PROGRAM;
 	}
 	
+	public GLGraphic(int geometryRes, int fragmentRes) {
+		this(convertStreamToString(FP.context.getResources().openRawResource(geometryRes)), convertStreamToString(FP.context.getResources().openRawResource(fragmentRes)));
+	}
+	
 	public GLGraphic(String geometryShader, String fragmentShader) {
+		useShaders(geometryShader, fragmentShader);
 		
+	}
+	protected void useShaders(int geometryRes, int fragmentRes) {
+		useShaders(convertStreamToString(FP.context.getResources().openRawResource(geometryRes)), convertStreamToString(FP.context.getResources().openRawResource(fragmentRes)));
+	}
+	
+	protected void useShaders(String geometryShader, String fragmentShader) {
 		final String geoShaderString = geometryShader;
 		final String fragShaderString = fragmentShader;
 		
@@ -255,13 +266,12 @@ public class GLGraphic extends Graphic {
 				GLES20.glLinkProgram(mProgram);
 				
 				int status[] = new int[1];
-				GLES20.glGetProgramiv(DEFAULT_PROGRAM, GLES20.GL_LINK_STATUS, status, 0);
+				GLES20.glGetProgramiv(mProgram, GLES20.GL_LINK_STATUS, status, 0);
 				Log.d(TAG, "Link Status: " + status[0]);
-				Log.d(TAG, GLES20.glGetProgramInfoLog(DEFAULT_PROGRAM));
+				Log.d(TAG, GLES20.glGetProgramInfoLog(mProgram));
 				
 			}
 		});
-		
 	}
 
 	protected void setMatrix() {

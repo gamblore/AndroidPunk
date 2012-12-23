@@ -27,7 +27,7 @@ public class Shape extends GLGraphic {
 		super();
 	}
 	
-	private static void setRect(float x, float y, float w, float h, float v[]) {
+	protected static void setRect(float x, float y, float w, float h, float v[]) {
 		v[0] = x;
 		v[1] = y;
 		
