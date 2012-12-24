@@ -17,7 +17,7 @@ public class GL20World extends World {
 			
 			float v[] = new float[8];
 			
-			setRect(x, y, FP.width, FP.height, v);
+			setRect(0, 0, FP.width, FP.height, v);
 			
 			setVertices(v);
 			
@@ -26,9 +26,11 @@ public class GL20World extends World {
 		@Override
 		public void render(GL10 gl, Point point, Point camera) {
 			GLES20.glUseProgram(mProgram);
+			GLES20.glEnable(GLES20.GL_BLEND);
+			GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 			
 			int resolutionHandler = GLES20.glGetUniformLocation(mProgram, "resolution");
-			GLES20.glUniform2f(resolutionHandler, FP.width, FP.height);
+			GLES20.glUniform2f(resolutionHandler, FP.displayWidth, FP.displayHeight);
 			
 			super.render(gl, point, camera);
 		}
@@ -44,10 +46,10 @@ public class GL20World extends World {
 		Shape bg = Shape.rect(0, 0, FP.width, FP.height);
 		bg.setColor(0xffff0000);
 		
-		add(new Entity(0, 0, rect));
-		
 		add(new Entity(0, 0, bg));
 		
+		add(new Entity(250, 250, rect));		
+
 		add(new Entity(0, 0, new VignetteFilter()));
 	}
 
