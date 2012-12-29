@@ -19,6 +19,7 @@ import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.GraphicList;
 import net.androidpunk.graphics.opengl.Atlas;
 import net.androidpunk.graphics.opengl.GLGraphic;
+import net.androidpunk.graphics.opengl.Shader;
 import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.utils.Input;
 import android.app.Activity;
@@ -92,19 +93,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		private AtlasText mFPS, mUpdate, mRender;
 		
 		public APRenderer() {
-			if (FP.debug) {
-				Paint p = new Paint();
-				int fpsWidth = (int)p.measureText("FPS:   0");
-				mFPS = new AtlasText("FPS:  0", 0);
-				mUpdate = new AtlasText("update:  0ms", 0);
-				mUpdate.x = fpsWidth + FP.dip(5);
-				mRender = new AtlasText("render:  0ms", 0);
-				mRender.x = mUpdate.x;
-				mRender.y = -p.ascent() + p.descent() + FP.dip(2);
-				
-				mDebug = new GraphicList(mFPS, mUpdate, mRender);
-				mDebugUpdateCount = 0;
-			}
+			
 		}
 		
 		public void onDrawFrame(GL10 gl) {
@@ -198,6 +187,23 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	         * Some one-time OpenGL initialization can be made here probably based
 	         * on features of this particular context
 	         */
+			
+			Shader.getProgram(R.raw.shader_g_flat, R.raw.shader_f_flat);
+			Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
+			
+			if (FP.debug) {
+				Paint p = new Paint();
+				int fpsWidth = (int)p.measureText("FPS:   0");
+				mFPS = new AtlasText("FPS:  0", 20);
+				mUpdate = new AtlasText("update:  0ms", 20);
+				mUpdate.x = fpsWidth + FP.dip(5);
+				mRender = new AtlasText("render:  0ms", 20);
+				mRender.x = mUpdate.x;
+				mRender.y = -p.ascent() + p.descent() + FP.dip(2);
+				
+				mDebug = new GraphicList(mFPS, mUpdate, mRender);
+				mDebugUpdateCount = 0;
+			}
 			
 			GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			/*

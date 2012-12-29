@@ -14,6 +14,7 @@ import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.graphics.opengl.Texture;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.opengl.GLES20;
 import android.util.Log;
 
 public class AtlasText extends AtlasGraphic {
@@ -81,13 +82,13 @@ public class AtlasText extends AtlasGraphic {
 			} else {
 				
 				// Existing TextAtlas
-				Log.d(TAG, "Existing Atlas" + fontSize);
+				Log.d(TAG, "Existing Atlas " + fontSize);
 				builtAtlas = existingAtlas.getAtlas();
 			}
 		} else {
 			
 			//New Typeface
-			Log.d(TAG, "New Typeface" + fontSize);
+			Log.d(TAG, "New Typeface " + fontSize);
 			Map<Integer, TextAtlas> sizeMap = new HashMap<Integer, TextAtlas>();
 			TextAtlas newAtlas = new TextAtlas(fontSize, typeface);
 			sizeMap.put(fontSize, newAtlas);
@@ -145,26 +146,32 @@ public class AtlasText extends AtlasGraphic {
 			return;
 		}
 		
-		mTexture.mColorFilter.setColor(mColor);
-		mTexture.mColorFilter.applyColorFilter(gl);
-		OpenGLSystem.setTexture(gl, mTexture);
+		//mTexture.mColorFilter.setColor(mColor);
+		//mTexture.mColorFilter.applyColorFilter(gl);
+		//OpenGLSystem.setTexture(gl, mTexture);
 		
-		mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		//mPoint.x = (int)(point.x + x - camera.x * scrollX);
+		//mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		
-		
-		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
-    	gl.glVertexPointer(2, GL10.GL_FLOAT, 0, mGeometryBuffer);
+		GLES20.glEnable(GL10.GL_TEXTURE_2D);
     	
-    	gl.glPushMatrix();
+    	int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mGeometryBuffer);
+		
+		int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		GLES20.glEnableVertexAttribArray(mTextureHandle);
+		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+    	
+    	//gl.glPushMatrix();
     	{
-    		setMatrix();
+    		//setMatrix();
     		gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
     	}
-    	gl.glPopMatrix();
+    	//gl.glPopMatrix();
+    	
+    	GLES20.glDisableVertexAttribArray(mPositionHandle);
+		GLES20.glDisableVertexAttribArray(mTextureHandle);
 	}
 	
 	public int getWidth() {

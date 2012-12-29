@@ -3,12 +3,15 @@ package net.androidpunk.graphics.atlas;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.androidpunk.R;
 import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.graphics.opengl.Atlas;
 import net.androidpunk.graphics.opengl.GLGraphic;
+import net.androidpunk.graphics.opengl.Shader;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.graphics.opengl.Texture;
 import android.graphics.Point;
+import android.opengl.GLES20;
 
 public class AtlasGraphic extends GLGraphic {
 	
@@ -20,11 +23,13 @@ public class AtlasGraphic extends GLGraphic {
 
 	public AtlasGraphic(Atlas atlas) {
 		mAtlas = atlas;
+		mProgram = Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
 	}
 	
 	public AtlasGraphic(SubTexture subTexture) {
 		mSubTexture = subTexture;
 		mAtlas = subTexture.getTexture();
+		mProgram = Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
 	}
 	
 	public void setAtlas(Atlas atlas) {
@@ -39,30 +44,12 @@ public class AtlasGraphic extends GLGraphic {
 	 * Sets the color filter and loads the texture if it is not already loaded.
 	 */
 	public void render(GL10 gl, Point point, Point camera) {
-		applyColor();
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		OpenGLSystem.setTexture(mProgram, getAtlas());
-
+		super.render(gl, point, camera);
 	}
-	/*
-	protected void setMatrix(GL10 gl) {
-		// Translate to origin
-		// scale the sprite
-		// rotate the sprite
-		// translate to position + origin * scale.
-		float sX = scaleX * scale;
-		float sY = scaleY * scale;
-		
-		gl.glTranslatef((originX * Math.abs(sX)) + mPoint.x, (originY * Math.abs(sY)) + mPoint.y, 0f);
-		
-		if (angle != 0) {
-			gl.glRotatef(angle, 0, 0, 1.0f);
-		}
-		
-		gl.glScalef(sX, sY, 1.0f);
-		gl.glTranslatef(-originX, -originY, 0.0f);
-		
-	}
-	*/
+	
 	/**
 	 * Get the width of the graphic.
 	 * @return width

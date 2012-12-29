@@ -12,7 +12,6 @@ uniform mat4 uModelView;
 
 //Shared between vertex and fragment shader
 uniform mediump int uHasColorAttribute;
-uniform mediump int uHasTextureAttribute;
 		    
 void main() {
 	vColor = vec4(1.0);
@@ -20,11 +19,7 @@ void main() {
 		vColor = Color;
 	}
 
-	vTexCoord = vec2(0.0);
-	if (uHasTextureAttribute != 0) {
-		vTexCoord = TexCoord;
-	}
+	vTexCoord = TexCoord;
 
 	gl_Position = uProjectionView * uModelView * vec4(Position, 0.0, 1.0);
-	//gl_Position = vec4(Position, 0.0, 1.0);
 }

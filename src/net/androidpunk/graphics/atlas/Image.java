@@ -7,6 +7,7 @@ import javax.microedition.khronos.opengles.GL10;
 import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.opengl.GLES20;
 
 public class Image extends AtlasGraphic {
 
@@ -46,18 +47,29 @@ public class Image extends AtlasGraphic {
 		if (!getAtlas().isLoaded()) {
 			return;
 		}
-		mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		//mPoint.x = (int)(point.x + x - camera.x * scrollX);
+		//mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		
+		int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
+		
+		int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		GLES20.glEnableVertexAttribArray(mTextureHandle);
+		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
 		
 		
-		setBuffers(gl, mVertexBuffer, mTextureBuffer);
+		//setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		
-		gl.glPushMatrix(); 
+		//gl.glPushMatrix(); 
 		{
 			setMatrix();
-			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+			GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 		}
-		gl.glPopMatrix();
+		//gl.glPopMatrix();
+		
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
+		GLES20.glDisableVertexAttribArray(mTextureHandle);
 	}
 
 	@Override

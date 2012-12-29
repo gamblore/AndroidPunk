@@ -11,6 +11,7 @@ import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.graphics.opengl.Texture;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.opengl.GLES20;
 import android.util.Log;
 
 /**
@@ -122,21 +123,33 @@ public class SpriteMap extends AtlasGraphic {
 			return;
 		}
 		
-		mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		//mPoint.x = (int)(point.x + x - camera.x * scrollX);
+		//mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
 		originX = mFrameWidth/2;
 		originY = mFrameHeight/2;
 		
 		mTextureBuffer.position(8 * mFrame);
-		setBuffers(gl, mVertexBuffer, mTextureBuffer);
 		
-		gl.glPushMatrix(); 
+		int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
+		
+		int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		GLES20.glEnableVertexAttribArray(mTextureHandle);
+		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+		
+		//setBuffers(gl, mVertexBuffer, mTextureBuffer);
+		
+		//gl.glPushMatrix(); 
 		{
-			setMatrix();
-			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+			//setMatrix();
+			GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 		}
-		gl.glPopMatrix();
+		//gl.glPopMatrix();
+		
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
+		GLES20.glDisableVertexAttribArray(mTextureHandle);
 	}
 
 	/** @private Updates the animation. */

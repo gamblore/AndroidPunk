@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.FP;
+import net.androidpunk.R;
 import net.androidpunk.graphics.opengl.GLGraphic;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -24,7 +25,7 @@ public class Shape extends GLGraphic {
 	private int mHeight = 0;
 	
 	protected Shape() {
-		super();
+		super(R.raw.shader_g_flat, R.raw.shader_f_flat);
 	}
 	
 	protected static void setRect(float x, float y, float w, float h, float v[]) {
@@ -271,6 +272,7 @@ public class Shape extends GLGraphic {
 		if (mVertices == 0) {
 			return;
 		}
+		
 		int mColorHandle = GLES20.glGetAttribLocation(mProgram, "Color");
 		if (mVertexColorBuffer != null) {
 			GLES20.glEnableVertexAttribArray(mColorHandle);
@@ -281,13 +283,9 @@ public class Shape extends GLGraphic {
 		GLES20.glEnableVertexAttribArray(mPositionHandle);
 		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
 		
-		int mUseTexture = GLES20.glGetUniformLocation(mProgram, "uHasTextureAttribute");
-		GLES20.glUniform1i(mUseTexture, 0);
-		
-		
 		//GLES20.glPushMatrix(); 
 		{
-			setMatrix();
+			//setMatrix();
 			GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mVertices/2);
 		}
 		//GLES20.glPopMatrix();

@@ -49,6 +49,8 @@ public class GLGraphic extends Graphic {
 	 * Y origin of the image, determines transformation point.
 	 */
 	public int originY;
+	
+	
 	private static Rect mRect = FP.rect;
 	protected static final FloatBuffer QUAD_FLOAT_BUFFER_1 = getDirectFloatBuffer(8);
 	protected static final FloatBuffer QUAD_FLOAT_BUFFER_2 = getDirectFloatBuffer(8);
@@ -60,52 +62,6 @@ public class GLGraphic extends Graphic {
 	protected int mProgram = -1;
 	
 	private static int DEFAULT_PROGRAM = -1; 
-	
-	private final String DEFAULT_VERTEX_SHADER_CODE =
-		    "attribute vec2 Position;" +
-		    "attribute vec4 Color;" +
-		    "attribute vec4 TexCoord;" +
-		    		
-		    "varying vec4 vColor;" +
-		    "varying vec4 vTexCoord;" +
-		    
-		    "uniform mat4 uMVPMatrix;" +
-		    "uniform int uHasColorAttribute;" +
-		    "uniform int uHasTextureAttribute;" +
-		    
-		    "void main() {" +
-		    "  vColor = vec4(1.0);" +
-		    "  if (uHasColorAttribute != 0) {" +
-		    "    vColor = Color;"+
-		    "  }" +
-		    "" +
-		    "  vTexCoord = vec2(0.0);" +
-		    "  if (uHasTextureAttribute != 0) {" +
-		    "    vTexCoord = TexCoord;" +
-		    "  }" +
-		    "" +
-		    "  gl_Position = uMVPMatrix * vec4(vPosition, 0.0, 1.0);" +
-		    "}";
-
-	private final String DEFAULT_FRAGMENT_SHADER_CODE =
-		    "precision mediump float;" +
-	
-		    "uniform sampler2D uTexture;" +
-		    "uniform vec4 blendColor;" +
-		    "uniform boolean uHasColorAttribute;" +
-		    "uniform boolean uHasTextureAttribute;" +
-		    
-		    "varying vec4 vColor;" +
-		    "varying vec4 vTexCoord;" +
-		    
-		    "void main() {" +
-		    "  vec4 texColor = vec4(1.0);" +
-		    "  if (uHasTextureAttribute) {" +
-		    "    texColor = texture2D(uTexture, vTexCoord);" +
-		    "  }" +
-		    "" +
-		    "  gl_FragColor = vColor * texColor * uBlendColor;" +
-		    "}";
 	
 	/**
 	 * Get a char direct buffer that is native order. This is to be used in OpenGL calls.
@@ -205,71 +161,26 @@ public class GLGraphic extends Graphic {
 	    return s.hasNext() ? s.next() : "";
 	}
 	
-	public GLGraphic() {
-		super();
-		
+	public GLGraphic() {		
 		if (DEFAULT_PROGRAM == -1) {
-			DEFAULT_PROGRAM = -2;
-			OpenGLSystem.postRunnable(new OpenGLRunnable() {
-				
-				@Override
-				public void run(GL10 gl) {
-					
-					Log.d(TAG, "Compiling default shader");
-					String vertexShader = convertStreamToString(FP.context.getResources().openRawResource(R.raw.default_geometry_shader));
-					int geometry = loadShader(GLES20.GL_VERTEX_SHADER, vertexShader);
-					String fragmentShader = convertStreamToString(FP.context.getResources().openRawResource(R.raw.default_fragment_shader));
-					int fragment = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShader);
-					
-					DEFAULT_PROGRAM = GLES20.glCreateProgram();
-					GLES20.glAttachShader(DEFAULT_PROGRAM, geometry);
-					GLES20.glAttachShader(DEFAULT_PROGRAM, fragment);
-					GLES20.glLinkProgram(DEFAULT_PROGRAM);
-					
-					int status[] = new int[1];
-					GLES20.glGetProgramiv(DEFAULT_PROGRAM, GLES20.GL_LINK_STATUS, status, 0);
-					Log.d(TAG, "Link Status: " + status[0]);
-					Log.d(TAG, GLES20.glGetProgramInfoLog(DEFAULT_PROGRAM));
-					
-				}
-			});
+			DEFAULT_PROGRAM = Shader.getProgram(R.raw.shader_g_flat, R.raw.shader_f_flat);
 		}
 		mProgram = DEFAULT_PROGRAM;
 	}
 	
 	public GLGraphic(int geometryRes, int fragmentRes) {
-		this(convertStreamToString(FP.context.getResources().openRawResource(geometryRes)), convertStreamToString(FP.context.getResources().openRawResource(fragmentRes)));
+		useShaders(geometryRes, fragmentRes);
 	}
 	
-	public GLGraphic(String geometryShader, String fragmentShader) {
-		useShaders(geometryShader, fragmentShader);
-		
-	}
+	
 	protected void useShaders(int geometryRes, int fragmentRes) {
-		useShaders(convertStreamToString(FP.context.getResources().openRawResource(geometryRes)), convertStreamToString(FP.context.getResources().openRawResource(fragmentRes)));
-	}
-	
-	protected void useShaders(String geometryShader, String fragmentShader) {
-		final String geoShaderString = geometryShader;
-		final String fragShaderString = fragmentShader;
+		final int geoShader = geometryRes;
+		final int fragShader = fragmentRes;
 		
 		OpenGLSystem.postRunnable(new OpenGLRunnable() {
-			
 			@Override
 			public void run(GL10 gl) {
-				int geometry = loadShader(GLES20.GL_VERTEX_SHADER, geoShaderString);
-				int fragment = loadShader(GLES20.GL_FRAGMENT_SHADER, fragShaderString);
-				
-				mProgram = GLES20.glCreateProgram();
-				GLES20.glAttachShader(mProgram, geometry);
-				GLES20.glAttachShader(mProgram, fragment);
-				GLES20.glLinkProgram(mProgram);
-				
-				int status[] = new int[1];
-				GLES20.glGetProgramiv(mProgram, GLES20.GL_LINK_STATUS, status, 0);
-				Log.d(TAG, "Link Status: " + status[0]);
-				Log.d(TAG, GLES20.glGetProgramInfoLog(mProgram));
-				
+				mProgram = Shader.getProgram(geoShader, fragShader);
 			}
 		});
 	}
