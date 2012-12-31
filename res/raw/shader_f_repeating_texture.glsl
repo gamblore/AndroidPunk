@@ -5,33 +5,30 @@ uniform vec4 uBlendColor;
 		    
 varying vec2 vTexCoord;
 
-// Pixel of top left of texture
+// Top-left of texture in texcoord units 
 uniform vec2 uTopLeft;
 
-// Size of subTexture
+// Size of subTexture in texcoord units
 uniform vec2 uFrameSize;
 
-// Size to tile in
+// number of times to repeat in each direction
 uniform vec2 uRepeat;
 
 void main() {
 	
-	// subtract the actualTopLeft
+	// subtract the TopLeft
 	vec2 baseTexCoord = (vTexCoord - uTopLeft);
 	
-	// Multiply by the ratio that the repeating texture has to do.
+	// Multiply by the rate that the repeating has to do.
 	vec2 adjustedTexCoord = (baseTexCoord * uRepeat);
 	
-	// mod the value
+	// mod the value to the frame size
 	vec2 moddedAdjustedTexCoord = mod(adjustedTexCoord, uFrameSize);
 	
-	// add the actualTopLeft
+	// add the TopLeft
 	vec2 newTexCoord = (moddedAdjustedTexCoord + uTopLeft); 
 	
 	vec4 texColor = texture2D(uTexture, newTexCoord);
-	//texColor = texture2D(uTexture, baseTexCoord);
-	//if (baseTexCoord.x < 0.85) {
-	//	texColor = vec4(vec3(uTopLeft, 0.0), 1.0);
-	//}
+
 	gl_FragColor = texColor * uBlendColor;
 }
