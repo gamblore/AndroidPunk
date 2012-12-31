@@ -64,8 +64,8 @@ public class Shader {
 	    GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, status, 0);
 	    
 	    if (status[0] == GLES20.GL_FALSE) {
-	    	Log.d(TAG, "Compile Status: " + status[0]);
-	    	Log.d(TAG, GLES20.glGetShaderInfoLog(shader));
+	    	Log.e(TAG, "Compile Status: " + status[0]);
+	    	Log.e(TAG, GLES20.glGetShaderInfoLog(shader));
 	    }
 
 	    return shader;
@@ -102,10 +102,11 @@ public class Shader {
 		if (status[0] == GLES20.GL_TRUE) {
 			Shader store = new Shader(geometryRes, fragmentRes);
 			SHADERS.put(store, program);
+			Log.d(TAG, "Link Successful");
 			return program;
 		} else {
-			Log.d(TAG, "Link Status: " + status[0]);
-			Log.d(TAG, GLES20.glGetProgramInfoLog(program));
+			Log.e(TAG, "Link Status: " + status[0]);
+			Log.e(TAG, GLES20.glGetProgramInfoLog(program));
 		}
 		return -1;
 		

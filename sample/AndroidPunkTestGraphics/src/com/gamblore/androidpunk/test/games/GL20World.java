@@ -7,6 +7,8 @@ import net.androidpunk.FP;
 import net.androidpunk.World;
 import net.androidpunk.graphics.atlas.Image;
 import net.androidpunk.graphics.atlas.SpriteMap;
+import net.androidpunk.graphics.atlas.TiledImage;
+import net.androidpunk.graphics.atlas.TiledSpriteMap;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.graphics.opengl.shapes.Shape;
 import android.graphics.Point;
@@ -19,6 +21,8 @@ public class GL20World extends World {
 			useShaders(R.raw.shader_g_flat, R.raw.vignette_fragment_shader);
 			
 			float v[] = new float[8];
+			
+			setColor(0xff000000);
 			
 			setRect(0, 0, FP.width, FP.height, v);
 			
@@ -37,9 +41,8 @@ public class GL20World extends World {
 			
 			super.render(gl, point, camera);
 		}
-		
-		
 	}
+	
 	@Override
 	public void begin() {
 		Shape rect = Shape.rect(0,0,50,50);
@@ -65,6 +68,17 @@ public class GL20World extends World {
 		sm.play("run");
 		
 		add(new Entity(300, 218, sm));
+		
+		SubTexture newGame = Main.getAtlas().getSubTexture("menu_newgame");
+		add(new Entity(300, 300, new TiledImage(newGame, newGame.getWidth()*2, newGame.getHeight()*3)));
+		
+		SubTexture lightning = Main.getAtlas().getSubTexture("lightning");
+		TiledSpriteMap tsm = new TiledSpriteMap(lightning, lightning.getWidth()/5, lightning.getHeight(), (lightning.getWidth()/5)*4, lightning.getHeight());
+		tsm.add("run", FP.frames(0,4), 10);
+		tsm.play("run");
+		tsm.angle = 270;
+		
+		add(new Entity(348, 218, tsm));
 	}
 
 	

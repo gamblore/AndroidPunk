@@ -113,9 +113,6 @@ public class OpenGLSystem {
     
     public static void setTexture(int program, Texture texture) {
     	mCurrentTexture = texture.mTextureName;
-    	
-    	int mUseTexture = GLES20.glGetUniformLocation(program, "uHasTextureAttribute");
-		GLES20.glUniform1i(mUseTexture, 1);
 		
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mCurrentTexture);
     }

@@ -24,6 +24,6 @@ void main( void ) {
 	
 	// apply to buffer
 	//gl_FragColor = vec4(mix(gl_FragColor.rgb, gl_FragColor.rgb * vignette, .5), 1.0) * uBlendColor;
-	gl_FragColor = vec4(vec3(0.0), 1.0 - vignette);
+	gl_FragColor = vec4(uBlendColor.rgb, 1.0 - vignette);
 
 }

@@ -172,7 +172,11 @@ public class GLGraphic extends Graphic {
 		useShaders(geometryRes, fragmentRes);
 	}
 	
-	
+	/**
+	 * Safely load a shader.
+	 * @param geometryRes
+	 * @param fragmentRes
+	 */
 	protected void useShaders(int geometryRes, int fragmentRes) {
 		final int geoShader = geometryRes;
 		final int fragShader = fragmentRes;

@@ -2,9 +2,14 @@ package net.androidpunk.graphics.atlas;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.androidpunk.FP;
+import net.androidpunk.R;
 import net.androidpunk.android.OpenGLSystem;
+import net.androidpunk.graphics.opengl.Shader;
 import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.opengl.GLES20;
 
 public class TiledSpriteMap extends SpriteMap {
 
@@ -58,6 +63,10 @@ public class TiledSpriteMap extends SpriteMap {
 		super(source, frameWidth, frameHeight, callback);
 		mImageWidth = width;
 		mImageHeight = height;
+		
+		mProgram = Shader.getProgram(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);
+		
+		AtlasGraphic.setGeometryBuffer(mVertexBuffer, 0, 0, mImageWidth, mImageHeight);
 	}
 	/**
 	 * The x-offset of the texture.
@@ -92,44 +101,28 @@ public class TiledSpriteMap extends SpriteMap {
 	}
 
 	@Override
-	public void render(GL10 gl, Point point, Point camera) {
-		// Need to pull out AtlasGraphic instead of rendering the spritemap.
-		// For optimisation
-		getAtlas().mColorFilter.setColor(mColor);
-		getAtlas().mColorFilter.applyColorFilter(gl);
-		OpenGLSystem.setTexture(gl, getAtlas());
+	public void render(GL10 gl, Point point, Point camera) {	
+		GLES20.glUseProgram(mProgram);
 		
-		if (!getAtlas().isLoaded()) {
-			return;
-		}
-		mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		mPoint.y = (int)(point.y + y - camera.y * scrollY);
-
-		int xx = mPoint.x;
-		int yy = mPoint.y;
+		Rect subTextureBounds = FP.rect;
+		mSubTexture.getFrame(subTextureBounds, mFrame, mFrameWidth, mFrameHeight);
 		
-		mTextureBuffer.position(8 * mFrame);
-		setBuffers(gl, mVertexBuffer, mTextureBuffer);
+		//int atlasSizeHandle = GLES20.glGetUniformLocation(mProgram, "uAtlasSize");
+		//GLES20.glUniform2f(atlasSizeHandle, getAtlas().getWidth(), getAtlas().getHeight());
+		float atlasWidth = mSubTexture.getTexture().getWidth();
+		float atlasHeight = mSubTexture.getTexture().getHeight();
 		
-		gl.glPushMatrix();
-		{
-			setMatrix();
-			//gl.glTranslatef(mPoint.x, mPoint.y, 0);
-			while (yy  < mPoint.y + mImageHeight) {
-				while (xx < mPoint.x + mImageWidth) {
-					gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-					
-					xx += mFrameWidth;
-					gl.glTranslatef(mFrameWidth, 0, 0);
-					
-				}
-				
-				yy += mFrameHeight;
-				gl.glTranslatef(mPoint.x - xx, mFrameHeight, 0);
-				xx = mPoint.x;
-			}
-		}
-		gl.glPopMatrix();
+		int topLeftHandle = GLES20.glGetUniformLocation(mProgram, "uTopLeft");
+		//Log.d(TAG, String.format("%.3f, %.3f", subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight));
+		GLES20.glUniform2f(topLeftHandle, subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight);
+		
+		int repeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
+		GLES20.glUniform2f(repeatHandle, mImageWidth/subTextureBounds.width(), mImageHeight/subTextureBounds.height());
+		
+		int frameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
+		GLES20.glUniform2f(frameSizeHandle, subTextureBounds.width()/atlasWidth, subTextureBounds.height()/atlasHeight);
+		
+		super.render(gl, point, camera);
 	}
 	
 

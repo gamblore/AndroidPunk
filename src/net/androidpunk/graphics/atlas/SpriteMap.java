@@ -123,9 +123,6 @@ public class SpriteMap extends AtlasGraphic {
 			return;
 		}
 		
-		//mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		//mPoint.y = (int)(point.y + y - camera.y * scrollY);
-		
 		originX = mFrameWidth/2;
 		originY = mFrameHeight/2;
 		
