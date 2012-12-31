@@ -188,6 +188,7 @@ public class PunkActivity extends Activity implements OnTouchListener {
 	         * on features of this particular context
 	         */
 			
+			Shader.flushCache();
 			Shader.getProgram(R.raw.shader_g_flat, R.raw.shader_f_flat);
 			Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
 			Shader.getProgram(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);

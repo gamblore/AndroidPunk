@@ -14,9 +14,9 @@ public class Shader {
 	
 	private static final String TAG = "Shader";
 	
-	public static final Map<Shader, Integer> SHADERS = new HashMap<Shader, Integer>();
+	private static final Map<Shader, Integer> SHADERS = new HashMap<Shader, Integer>();
 	
-	public static final Shader SHADER = new Shader();
+	private static final Shader SHADER = new Shader();
 	
 	private int mGeometryRes, mFragmentRes;
 	
@@ -110,5 +110,9 @@ public class Shader {
 		}
 		return -1;
 		
+	}
+	
+	public static void flushCache() {
+		SHADERS.clear();
 	}
 }
