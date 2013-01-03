@@ -50,6 +50,12 @@ public class GLGraphic extends Graphic {
 	 */
 	public int originY;
 	
+	private int mModelViewHandle;
+	private int mProjectionViewHandle;
+	
+	protected int mBlendColorHandle;
+	protected int mPositionHandle;
+	protected int mTextureHandle;
 	
 	private static Rect mRect = FP.rect;
 	protected static final FloatBuffer QUAD_FLOAT_BUFFER_1 = getDirectFloatBuffer(8);
@@ -57,6 +63,8 @@ public class GLGraphic extends Graphic {
 	protected int mColor = 0xffffffff;
 	
 	public static final float[] PROJECTION_MATRIX = new float[16];
+	public static final float[] IDENTITY_MATRIX = new float[16];
+
 	
 	private float[] mMatrix = new float[16];
 	protected int mProgram = -1;
@@ -166,6 +174,13 @@ public class GLGraphic extends Graphic {
 			DEFAULT_PROGRAM = Shader.getProgram(R.raw.shader_g_flat, R.raw.shader_f_flat);
 		}
 		mProgram = DEFAULT_PROGRAM;
+		GLES20.glUseProgram(mProgram);
+		mModelViewHandle = GLES20.glGetUniformLocation(mProgram, "uModelView");
+		mProjectionViewHandle = GLES20.glGetUniformLocation(mProgram, "uProjectionView");
+		mBlendColorHandle = GLES20.glGetUniformLocation(mProgram, "uBlendColor");
+		
+		mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
 	}
 	
 	public GLGraphic(int geometryRes, int fragmentRes) {
@@ -185,6 +200,14 @@ public class GLGraphic extends Graphic {
 			@Override
 			public void run(GL10 gl) {
 				mProgram = Shader.getProgram(geoShader, fragShader);
+				GLES20.glUseProgram(mProgram);
+				mModelViewHandle = GLES20.glGetUniformLocation(mProgram, "uModelView");
+				mProjectionViewHandle = GLES20.glGetUniformLocation(mProgram, "uProjectionView");
+				mBlendColorHandle = GLES20.glGetUniformLocation(mProgram, "uBlendColor");
+				
+				mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+				mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+				
 			}
 		});
 	}
@@ -196,34 +219,36 @@ public class GLGraphic extends Graphic {
 		// translate to position + origin.
 		float sX = scaleX * scale * FP.scale;
 		float sY = scaleY * scale * FP.scale;
-		Matrix.setIdentityM(mMatrix, 0);
-		
-		Matrix.translateM(mMatrix, 0, 
-				(originX * Math.abs(sX)) + mPoint.x * Math.abs(sX),
-				(originY * Math.abs(sY)) + mPoint.y * Math.abs(sY), 0f);
+		//Matrix.setIdentityM(mMatrix, 0);
+		Matrix.translateM(mMatrix, 0, IDENTITY_MATRIX, 0, 
+				(originX * Math.abs(sX)) + mPoint.x,// * Math.abs(sX),
+				(originY * Math.abs(sY)) + mPoint.y,// * Math.abs(sY),
+				0f);
 		
 		if (angle != 0) {
 			Matrix.rotateM(mMatrix, 0, angle, 0, 0, 1.0f);
 		}
-		
-		Matrix.scaleM(mMatrix, 0, sX, sY, 1.0f);
+		if (sX != 1 || sY != 1) {
+			Matrix.scaleM(mMatrix, 0, sX, sY, 1.0f);
+		}
 		Matrix.translateM(mMatrix, 0, -originX, -originY, 1.0f);
 		
-		int modelViewHandle = GLES20.glGetUniformLocation(mProgram, "uModelView");
-		GLES20.glUniformMatrix4fv(modelViewHandle, 1, false, mMatrix, 0);
+		GLES20.glUniformMatrix4fv(mModelViewHandle, 1, false, mMatrix, 0);
 		
-		int projectionViewHandle = GLES20.glGetUniformLocation(mProgram, "uProjectionView");
-		GLES20.glUniformMatrix4fv(projectionViewHandle, 1, false, PROJECTION_MATRIX, 0);
+		GLES20.glUniformMatrix4fv(mProjectionViewHandle, 1, false, PROJECTION_MATRIX, 0);
 	}
 	
 	public void applyColor() {
-		float red = Color.red(mColor) / 255f;
-		float green = Color.green(mColor) / 255f;
-		float blue = Color.blue(mColor) / 255f;
-		float alpha = Color.alpha(mColor) / 255f;
+		if (mColor == 0xffffffff) {
+			GLES20.glUniform4f(mBlendColorHandle, 1.0f, 1.0f, 1.0f, 1.0f);
+		} else {
+			float red = Color.red(mColor) / 255f;
+			float green = Color.green(mColor) / 255f;
+			float blue = Color.blue(mColor) / 255f;
+			float alpha = Color.alpha(mColor) / 255f;
 		
-		int colorLocation = GLES20.glGetUniformLocation(mProgram, "uBlendColor");
-		GLES20.glUniform4f(colorLocation, red, green, blue, alpha);
+			GLES20.glUniform4f(mBlendColorHandle, red, green, blue, alpha);
+		}
 		//gl.glColor4f(red, green, blue, alpha);
 	}
 	
@@ -241,10 +266,12 @@ public class GLGraphic extends Graphic {
 		GLES20.glUseProgram(mProgram);
 		
 		applyColor();
-		setMatrix();
-		
+
 		mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		
+		setMatrix();
+		
 	}
 
 	/**

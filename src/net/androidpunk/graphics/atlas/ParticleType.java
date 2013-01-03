@@ -181,6 +181,7 @@ public class ParticleType {
 	public ParticleType setMotionVector(float x, float y, float duration, float durationRange, OnEaseCallback ease) {
 		mAngle = (float)Math.atan2(y, x);
 		mAngleRange = 0;
+		mDistance = (float)Math.sqrt(x * x + y * y);
 		mDuration = duration;
 		mDurationRange = durationRange;
 		mEase = ease;

@@ -23,13 +23,16 @@ public class AtlasGraphic extends GLGraphic {
 
 	public AtlasGraphic(Atlas atlas) {
 		mAtlas = atlas;
-		mProgram = Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
+		//mProgram = Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
+		useShaders(R.raw.shader_g_texture, R.raw.shader_f_texture);
 	}
 	
 	public AtlasGraphic(SubTexture subTexture) {
 		mSubTexture = subTexture;
 		mAtlas = subTexture.getTexture();
-		mProgram = Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
+		//mProgram = Shader.getProgram(R.raw.shader_g_texture, R.raw.shader_f_texture);
+		useShaders(R.raw.shader_g_texture, R.raw.shader_f_texture);
+
 	}
 	
 	public void setAtlas(Atlas atlas) {

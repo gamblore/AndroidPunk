@@ -12,6 +12,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.opengl.GLES20;
 import android.util.Log;
 
 /**
@@ -227,40 +228,16 @@ public class TileMap extends AtlasGraphic {
 			return;
 		}
 		
-		mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		//int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
 		
-		setBuffers(gl, mVertexBuffer, mTextureBuffer);
+		//int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		GLES20.glEnableVertexAttribArray(mTextureHandle);
+		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
 		
-		gl.glPushMatrix(); 
-		{
-			setMatrix();
-			
-			gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
-		}
-		gl.glPopMatrix();
-
-		/*
-		for (int y = 0; y < mRows; y++) {
-			gl.glPushMatrix(); 
-			gl.glTranslatef(mPoint.x, mPoint.y + y * mTile.height(), 0);
-			
-			for (int x = 0; x < mColumns && mPoint.x + x * mTile.width() < FP.screen.getWidth(); x++) {
-				int color = mMap.getPixel(x, y) & 0x00ffffff;
-				if (color != -1) {
-					
-					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSet, color, mTile.width(), mTile.height());
-				
-					setBuffers(gl, mVertexBuffer, QUAD_FLOAT_BUFFER_2);
-				
-					gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-					gl.glTranslatef(mTile.width(), 0, 0);
-					
-				}
-			}
-			gl.glPopMatrix();
-		}
-		*/
+		GLES20.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
+		
 	}
 
 
@@ -440,6 +417,13 @@ public class TileMap extends AtlasGraphic {
 				setTile(x+xp, y, Integer.parseInt(col[x]));
 			}
 		}
+		setTileVerticesBuffer();
+		setTileTextureBuffer();
+		mIndexCount = setTileIndexBuffer();
+	}
+	
+	@Override
+	public void reload() {
 		setTileVerticesBuffer();
 		setTileTextureBuffer();
 		mIndexCount = setTileIndexBuffer();

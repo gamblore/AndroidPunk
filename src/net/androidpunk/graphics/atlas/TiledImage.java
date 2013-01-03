@@ -27,7 +27,8 @@ public class TiledImage extends Image {
 	public TiledImage(SubTexture subTexture, int width, int height, Rect clipRect) {
 		super(subTexture, clipRect);
 		
-		mProgram = Shader.getProgram(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);
+		//mProgram = Shader.getProgram(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);
+		useShaders(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);
 		
 		mWidth = width;
 		mHeight = height;

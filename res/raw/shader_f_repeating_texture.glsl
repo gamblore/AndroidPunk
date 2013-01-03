@@ -14,6 +14,9 @@ uniform vec2 uFrameSize;
 // number of times to repeat in each direction
 uniform vec2 uRepeat;
 
+// The offset into the texture to start
+uniform vec2 uOffset;
+
 void main() {
 	
 	// subtract the TopLeft
@@ -23,7 +26,7 @@ void main() {
 	vec2 adjustedTexCoord = (baseTexCoord * uRepeat);
 	
 	// mod the value to the frame size
-	vec2 moddedAdjustedTexCoord = mod(adjustedTexCoord, uFrameSize);
+	vec2 moddedAdjustedTexCoord = mod(adjustedTexCoord + uOffset, uFrameSize);
 	
 	// add the TopLeft
 	vec2 newTexCoord = (moddedAdjustedTexCoord + uTopLeft); 

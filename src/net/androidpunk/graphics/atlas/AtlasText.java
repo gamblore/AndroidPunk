@@ -153,20 +153,20 @@ public class AtlasText extends AtlasGraphic {
 		//mPoint.x = (int)(point.x + x - camera.x * scrollX);
 		//mPoint.y = (int)(point.y + y - camera.y * scrollY);
 		
-		GLES20.glEnable(GL10.GL_TEXTURE_2D);
+		//GLES20.glEnable(GL10.GL_TEXTURE_2D);
     	
-    	int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+    	//int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
 		GLES20.glEnableVertexAttribArray(mPositionHandle);
 		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mGeometryBuffer);
 		
-		int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		//int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
 		GLES20.glEnableVertexAttribArray(mTextureHandle);
 		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
     	
     	//gl.glPushMatrix();
     	{
     		//setMatrix();
-    		gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
+    		GLES20.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
     	}
     	//gl.glPopMatrix();
     	

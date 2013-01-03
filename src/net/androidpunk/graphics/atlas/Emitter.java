@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.opengl.GLES20;
 import android.util.Log;
 
 /**
@@ -139,15 +140,25 @@ public class Emitter extends AtlasGraphic {
 			return;
 		
 		// get rendering position
-		mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		mPoint.y = (int)(point.y + y - camera.y * scrollY);
+		int tmpX = (int)(point.x + x - camera.x * scrollX);
+		int tmpY = (int)(point.y + y - camera.y * scrollY);
+		//mPoint.x = (int)(point.x + x - camera.x * scrollX);
+		//mPoint.y = (int)(point.y + y - camera.y * scrollY);
 
 		// particle info
 		float t, td;
 		Particle p = mParticle;
 		ParticleType type;
 		Rect rect;
-
+		
+		//int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		
+		//int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		GLES20.glEnableVertexAttribArray(mTextureHandle);
+		
+		//int mBlendColor = GLES20.glGetUniformLocation(mProgram, "uBlendColor");
+		
 		// loop through the particles
 		while (p != null) {
 			// get time scale
@@ -159,11 +170,15 @@ public class Emitter extends AtlasGraphic {
 
 			// get position
 			td = (type.mEase == null) ? t : type.mEase.ease(t);
-			mP.x = (int)(mPoint.x + p.mX + p.mMoveX * td);
-			mP.y = (int)(mPoint.y + p.mY + p.mMoveY * td);
 			
-			gl.glPushMatrix(); 
-			{
+			mPoint.x = (int)(tmpX + p.mX + p.mMoveX * td);
+			mPoint.y = (int)(tmpY + p.mY + p.mMoveY * td);
+			setMatrix();
+			
+			//mPoint.x = (int)(point.x + x - camera.x * scrollX);
+			//mPoint.y = (int)(point.y + y - camera.y * scrollY);
+			//gl.glPushMatrix(); 
+			//{
 //				setGeometryBuffer(QUAD_FLOAT_BUFFER_1, mP.x, mP.y, rect.width(), rect.height());
 //				if (type.mFrames != null) {
 //					setTextureBuffer(QUAD_FLOAT_BUFFER_2, mSubTexture, type.mFrames[(int)(td * type.mFrameCount)], rect.width(), rect.height());
@@ -175,7 +190,14 @@ public class Emitter extends AtlasGraphic {
 				} else {
 					type.mTextureBuffer.position(0);
 				}
-				setBuffers(gl, type.mVertexBuffer, type.mTextureBuffer);
+				//setBuffers(gl, type.mVertexBuffer, type.mTextureBuffer);
+				
+				
+				GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, type.mVertexBuffer);
+
+				GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, type.mTextureBuffer);
+				
+				
 				
 				
 				// draw particle
@@ -187,15 +209,21 @@ public class Emitter extends AtlasGraphic {
 				float green = (type.mGreen + type.mGreenRange * td) / 255.0f;
 				float blue = (type.mBlue + type.mBlueRange * td) / 255.0f;
 				float alpha = (type.mAlpha + type.mAlphaRange * ((type.mAlphaEase == null) ? t : type.mAlphaEase.ease(t))) / 255.0f;
-				gl.glColor4f(red, green, blue, alpha);
-				gl.glTranslatef(mP.x, mP.y, 0.0f);
-				gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-			}
-			gl.glPopMatrix();
+				
+				GLES20.glUniform4f(mBlendColorHandle, red, green, blue, alpha);
+				GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+				
+				//gl.glColor4f(red, green, blue, alpha);
+				//gl.glTranslatef(mP.x, mP.y, 0.0f);
+				//gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+			//}
+			//gl.glPopMatrix();
 			
 			// get next particle
 			p = p.mNext;
 		}
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
+		GLES20.glDisableVertexAttribArray(mTextureHandle);
 	}
 	
 	/**

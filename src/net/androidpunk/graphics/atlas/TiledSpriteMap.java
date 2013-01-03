@@ -64,7 +64,8 @@ public class TiledSpriteMap extends SpriteMap {
 		mImageWidth = width;
 		mImageHeight = height;
 		
-		mProgram = Shader.getProgram(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);
+		//mProgram = Shader.getProgram(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);
+		useShaders(R.raw.shader_g_repeating_texture, R.raw.shader_f_repeating_texture);
 		
 		AtlasGraphic.setGeometryBuffer(mVertexBuffer, 0, 0, mImageWidth, mImageHeight);
 	}
@@ -117,7 +118,9 @@ public class TiledSpriteMap extends SpriteMap {
 		GLES20.glUniform2f(topLeftHandle, subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight);
 		
 		int repeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
-		GLES20.glUniform2f(repeatHandle, mImageWidth/subTextureBounds.width(), mImageHeight/subTextureBounds.height());
+		int repeatX = mImageWidth/subTextureBounds.width();
+		int repeatY = mImageHeight/subTextureBounds.height();
+		GLES20.glUniform2f(repeatHandle, repeatX, repeatY);
 		
 		int frameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
 		GLES20.glUniform2f(frameSizeHandle, subTextureBounds.width()/atlasWidth, subTextureBounds.height()/atlasHeight);

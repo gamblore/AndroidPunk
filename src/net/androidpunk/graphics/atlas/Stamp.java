@@ -6,6 +6,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.graphics.opengl.SubTexture;
 import android.graphics.Point;
+import android.opengl.GLES20;
 
 /**
  * A simple non-transformed, non-animated graphic.
@@ -46,13 +47,20 @@ public class Stamp extends AtlasGraphic {
 			return;
 		}
 		
-		mPoint.x = (int)(point.x + x - camera.x * scrollX);
-		mPoint.y = (int)(point.y + y - camera.y * scrollY);
-		
 		setGeometryBuffer(QUAD_FLOAT_BUFFER_1, mPoint.x, mPoint.y, mSubTexture.getWidth(), mSubTexture.getHeight());
-		setBuffers(gl, QUAD_FLOAT_BUFFER_1, mTextureBuffer);
 		
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		//int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, QUAD_FLOAT_BUFFER_1);
+		
+		//int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		GLES20.glEnableVertexAttribArray(mTextureHandle);
+		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+		
+		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+		
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
+		GLES20.glDisableVertexAttribArray(mTextureHandle);
 		
 	}
 	
