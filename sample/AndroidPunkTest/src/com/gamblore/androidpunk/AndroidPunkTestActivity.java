@@ -21,7 +21,7 @@ public class AndroidPunkTestActivity extends PunkActivity {
         // Turn on exceptions for opengl errors. Slows down render.
         //FP.debugOpenGL = true;
         
-        FP.debug = true;
+        //FP.debug = true;
 	}
 	
     /** Called when the activity is first created. */

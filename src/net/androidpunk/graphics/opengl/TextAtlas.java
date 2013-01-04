@@ -156,17 +156,18 @@ public class TextAtlas {
 			texture.put((float)r.left/textureWidth).put((float)(r.top + r.height())/textureHeight);
 			texture.put((float)(r.left + r.width())/textureWidth).put((float)(r.top + r.height())/textureHeight);
 			
-			indexBuffer.put((short)(i*4));
-			indexBuffer.put((short)((i*4)+1));
-			indexBuffer.put((short)((i*4)+2));
-			
-			indexBuffer.put((short)((i*4)+1));
-			indexBuffer.put((short)((i*4)+3));
-			indexBuffer.put((short)((i*4)+2));
-			
+			if (character.charAt(0) != ' ') {
+				indexBuffer.put((short)(i*4));
+				indexBuffer.put((short)((i*4)+1));
+				indexBuffer.put((short)((i*4)+2));
+				
+				indexBuffer.put((short)((i*4)+1));
+				indexBuffer.put((short)((i*4)+3));
+				indexBuffer.put((short)((i*4)+2));
+			}
 			x += r.width();
 		}
-		indexBuffer.position(0);
+		//indexBuffer.position(0);
 		vertex.position(0);
 		texture.position(0);
 		return indexBuffer;

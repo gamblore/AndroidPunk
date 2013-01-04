@@ -16,6 +16,12 @@ public class Backdrop extends AtlasGraphic {
 
 	private boolean mRepeatX, mRepeatY;
 	
+	private boolean mLoaded = false;
+	private int mOffsetHandle = -1;
+	private int mTopLeftHandle = -1;
+	private int mRepeatHandle = -1;
+	private int mFrameSizeHandle = -1;
+	
 	private FloatBuffer mVertexBuffer = AtlasGraphic.getDirectFloatBuffer(8);
 	private FloatBuffer mTextureBuffer = AtlasGraphic.getDirectFloatBuffer(8);
 	
@@ -60,43 +66,51 @@ public class Backdrop extends AtlasGraphic {
 		}
 		super.render(gl, point, camera);
 		
+		if (!mLoaded) {
+			mOffsetHandle = GLES20.glGetUniformLocation(mProgram, "uOffset");
+			mTopLeftHandle = GLES20.glGetUniformLocation(mProgram, "uTopLeft");
+			mRepeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
+			mFrameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
+			mLoaded = true;
+		}
 		Rect subTextureBounds = mSubTexture.getBounds();
 		
 		float atlasWidth = mSubTexture.getTexture().getWidth();
 		float atlasHeight = mSubTexture.getTexture().getHeight();
 		
-		int offsetHandle = GLES20.glGetUniformLocation(mProgram, "uOffset");
+		//int offsetHandle = GLES20.glGetUniformLocation(mProgram, "uOffset");
 		
 		
-		int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
+		//int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
 		GLES20.glEnableVertexAttribArray(mPositionHandle);
 		GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
 		
-		int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		//int mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
 		GLES20.glEnableVertexAttribArray(mTextureHandle);
 		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
 		
-		int topLeftHandle = GLES20.glGetUniformLocation(mProgram, "uTopLeft");
+		//int topLeftHandle = GLES20.glGetUniformLocation(mProgram, "uTopLeft");
 		//Log.d(TAG, String.format("%.3f, %.3f", subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight));
-		GLES20.glUniform2f(topLeftHandle, subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight);
+		GLES20.glUniform2f(mTopLeftHandle, subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight);
+		//GLES20.glUniform2f(mRepeatHandle, 1, 1);
 		
-		int repeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
+		//int repeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
 		if (mRepeatX && mRepeatY) {
-			GLES20.glUniform2f(offsetHandle, (xx % mSubTexture.getWidth()) / atlasWidth, (yy % mSubTexture.getWidth()) / atlasHeight);
-			GLES20.glUniform2f(repeatHandle, FP.width/subTextureBounds.width(), FP.height/subTextureBounds.height());
+			GLES20.glUniform2f(mOffsetHandle, (xx % mSubTexture.getWidth()) / atlasWidth, (yy % mSubTexture.getWidth()) / atlasHeight);
+			GLES20.glUniform2f(mRepeatHandle, FP.width/subTextureBounds.width(), FP.height/subTextureBounds.height());
 		} else if (mRepeatX && !mRepeatY) {
-			GLES20.glUniform2f(offsetHandle, -(xx % mSubTexture.getWidth()) / atlasWidth, 0);
-			GLES20.glUniform2f(repeatHandle, FP.width/subTextureBounds.width(), 1);
+			GLES20.glUniform2f(mOffsetHandle, (xx % mSubTexture.getWidth()) / atlasWidth, 0);
+			GLES20.glUniform2f(mRepeatHandle, FP.width/subTextureBounds.width(), 1);
 		} else if (!mRepeatX && mRepeatY) {
-			GLES20.glUniform2f(offsetHandle, 0, (yy % mSubTexture.getWidth()) / atlasHeight);
-			GLES20.glUniform2f(repeatHandle, 1, FP.height/subTextureBounds.height());
+			GLES20.glUniform2f(mOffsetHandle, 0, (yy % mSubTexture.getWidth()) / atlasHeight);
+			GLES20.glUniform2f(mRepeatHandle, 1, FP.height/subTextureBounds.height());
 		} else {
-			GLES20.glUniform2f(offsetHandle, 0, 0);
-			GLES20.glUniform2f(repeatHandle, 1, 1);
+			GLES20.glUniform2f(mOffsetHandle, 0, 0);
+			GLES20.glUniform2f(mRepeatHandle, 1, 1);
 		}
 		
-		int frameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
-		GLES20.glUniform2f(frameSizeHandle, subTextureBounds.width()/atlasWidth, subTextureBounds.height()/atlasHeight);
+		//int frameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
+		GLES20.glUniform2f(mFrameSizeHandle, subTextureBounds.width()/atlasWidth, subTextureBounds.height()/atlasHeight);
 		
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 		

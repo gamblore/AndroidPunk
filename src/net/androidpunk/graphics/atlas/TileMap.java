@@ -107,6 +107,8 @@ public class TileMap extends AtlasGraphic {
 		mSetColumns = (int)(mSet.getWidth() / tileWidth);
 		mSetRows = (int)(mSet.getHeight() / tileHeight);
 		mSetCount = mSetColumns * mSetRows;
+		
+		alphablend = false;
 	}
 	
 	private void setTileVerticesBuffer() {
@@ -236,8 +238,10 @@ public class TileMap extends AtlasGraphic {
 		GLES20.glEnableVertexAttribArray(mTextureHandle);
 		GLES20.glVertexAttribPointer(mTextureHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
 		
-		GLES20.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mIndexCount, GLES20.GL_UNSIGNED_SHORT, mIndexBuffer);
 		
+		GLES20.glDisableVertexAttribArray(mTextureHandle);
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
 	}
 
 

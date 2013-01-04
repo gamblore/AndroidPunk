@@ -26,7 +26,7 @@ void main() {
 	vec2 adjustedTexCoord = (baseTexCoord * uRepeat);
 	
 	// mod the value to the frame size
-	vec2 moddedAdjustedTexCoord = mod(adjustedTexCoord + uOffset, uFrameSize);
+	vec2 moddedAdjustedTexCoord = mod(adjustedTexCoord + uFrameSize + uOffset, uFrameSize);
 	
 	// add the TopLeft
 	vec2 newTexCoord = (moddedAdjustedTexCoord + uTopLeft); 

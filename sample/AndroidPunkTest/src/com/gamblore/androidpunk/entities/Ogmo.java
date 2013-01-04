@@ -151,7 +151,8 @@ public class Ogmo extends Entity {
 			if (mVelocity.y >= 0) {
 				mCanJump = true;
 			} else {
-				Main.mBonk.play();
+				if (!Main.mBonk.getPlaying())
+					Main.mBonk.play();
 			}
 			mVelocity.y = 0;
 		} else { // falling

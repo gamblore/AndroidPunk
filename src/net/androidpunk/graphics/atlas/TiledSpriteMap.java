@@ -20,6 +20,11 @@ public class TiledSpriteMap extends SpriteMap {
 	private int mOffsetX = 0;
 	private int mOffsetY = 0;
 			
+	private boolean mLoaded = false;
+	private int mTopLeftHandle = -1;
+	private int mRepeatHandle = -1;
+	private int mFrameSizeHandle = -1;
+	
 	/**
 	 * Constructs the tiled spritemap.
 	 * @param	source			Source image.
@@ -105,6 +110,13 @@ public class TiledSpriteMap extends SpriteMap {
 	public void render(GL10 gl, Point point, Point camera) {	
 		GLES20.glUseProgram(mProgram);
 		
+		if (!mLoaded) {
+			mTopLeftHandle = GLES20.glGetUniformLocation(mProgram, "uTopLeft");
+			mRepeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
+			mFrameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
+			mLoaded = true;
+		}
+		
 		Rect subTextureBounds = FP.rect;
 		mSubTexture.getFrame(subTextureBounds, mFrame, mFrameWidth, mFrameHeight);
 		
@@ -113,17 +125,17 @@ public class TiledSpriteMap extends SpriteMap {
 		float atlasWidth = mSubTexture.getTexture().getWidth();
 		float atlasHeight = mSubTexture.getTexture().getHeight();
 		
-		int topLeftHandle = GLES20.glGetUniformLocation(mProgram, "uTopLeft");
+		//int topLeftHandle = GLES20.glGetUniformLocation(mProgram, "uTopLeft");
 		//Log.d(TAG, String.format("%.3f, %.3f", subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight));
-		GLES20.glUniform2f(topLeftHandle, subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight);
+		GLES20.glUniform2f(mTopLeftHandle, subTextureBounds.left / atlasWidth, subTextureBounds.top / atlasHeight);
 		
-		int repeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
+		//int repeatHandle = GLES20.glGetUniformLocation(mProgram, "uRepeat");
 		int repeatX = mImageWidth/subTextureBounds.width();
 		int repeatY = mImageHeight/subTextureBounds.height();
-		GLES20.glUniform2f(repeatHandle, repeatX, repeatY);
+		GLES20.glUniform2f(mRepeatHandle, repeatX, repeatY);
 		
-		int frameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
-		GLES20.glUniform2f(frameSizeHandle, subTextureBounds.width()/atlasWidth, subTextureBounds.height()/atlasHeight);
+		//int frameSizeHandle = GLES20.glGetUniformLocation(mProgram, "uFrameSize");
+		GLES20.glUniform2f(mFrameSizeHandle, subTextureBounds.width()/atlasWidth, subTextureBounds.height()/atlasHeight);
 		
 		super.render(gl, point, camera);
 	}

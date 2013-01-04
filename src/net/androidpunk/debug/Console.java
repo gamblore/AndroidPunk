@@ -284,6 +284,15 @@ public class Console {
 			}
 		};
 		registerCommand("step", step);
+		
+		Command screenshot = new Command() {
+			@Override
+			public String execute(String... args) {
+				String filename = FP.screen.capture();
+				return "Screenshot saved to " + filename;
+			}
+		};
+		registerCommand("screenshot", screenshot);
 	}
 	
 	/**

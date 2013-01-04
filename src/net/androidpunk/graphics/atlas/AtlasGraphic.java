@@ -47,8 +47,12 @@ public class AtlasGraphic extends GLGraphic {
 	 * Sets the color filter and loads the texture if it is not already loaded.
 	 */
 	public void render(GL10 gl, Point point, Point camera) {
-		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		if(alphablend) {
+			GLES20.glEnable(GLES20.GL_BLEND);
+			GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		} else {
+			GLES20.glDisable(GLES20.GL_BLEND);
+		}
 		OpenGLSystem.setTexture(mProgram, getAtlas());
 		super.render(gl, point, camera);
 	}

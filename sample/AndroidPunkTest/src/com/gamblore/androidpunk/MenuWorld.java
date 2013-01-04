@@ -71,6 +71,7 @@ public class MenuWorld extends World {
 		int level = Data.getData().getInt(Main.DATA_CURRENT_LEVEL, 1);
 		Log.d(TAG, "Level: " +level);
 		Backdrop bd = Main.getLevelBackdrop(level);
+		bd.alphablend = false;
 		bd.setColor(0xb0ffffff);
 		
 		Backdrop bd2 = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"), true, false);
@@ -136,6 +137,7 @@ public class MenuWorld extends World {
 		add(mDisplay);
 		
 		// Secondary options
+		mSecondDisplay.visible = false;
 		mSecondDisplay.y = FP.screen.getHeight()/2;
 		
 		newGame = new AtlasText("New Game", 35);
@@ -217,6 +219,7 @@ public class MenuWorld extends World {
 			
 			if (!hitTarget && mTextTween.active) {
 				if (Data.getData().contains(Main.DATA_CURRENT_LEVEL)) {
+					mSecondDisplay.visible = true;
 					FP.tween(mSecondDisplay, FP.tweenmap("y", 0), 1.0f, new TweenOptions(ONESHOT, null, Ease.quadIn, this));
 					mTextTween.active = false;
 					startText.visible = false;

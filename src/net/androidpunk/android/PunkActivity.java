@@ -117,13 +117,16 @@ public class PunkActivity extends Activity implements OnTouchListener {
 						mFPS.setText(String.format("FPS: %3.0f", Math.min(FP.frameRate, 60)));
 						mUpdate.setText(String.format("update: %2dms", FP.updateTime));
 						mRender.setText(String.format("render: %2dms", FP.renderTime));
-						mDebugUpdateCount = 0;
 					}
-					mDebugUpdateCount++;
 					FP.point.set(0,0);
 					OpenGLSystem.processQueue(4);
 					mDebug.render(gl, FP.point, FP.point);
 				}
+				if (mDebugUpdateCount % 120 == 0) {
+					Log.d(TAG, String.format("render time: %2dms", FP.renderTime));
+					mDebugUpdateCount = 0;
+				}
+				mDebugUpdateCount++;
 			}
 			
 			FP.renderTime = SystemClock.uptimeMillis() - mRenderTime;
@@ -226,6 +229,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 			GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			GLES20.glDisable(GLES20.GL_DITHER);
+			
 			
 	        /*
 	         * By default, OpenGL enables features that improve quality but reduce

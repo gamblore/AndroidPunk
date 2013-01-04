@@ -127,12 +127,13 @@ public class AtlasText extends AtlasGraphic {
 		}
 		
 		mText = s;
-		
 		mGeometryBuffer = mTextAtlas.getStringGeometryBuffer(mText);
 		mTextureBuffer = mTextAtlas.getStringTextureBuffer(mText);
 		
 		mIndexBuffer = mTextAtlas.setBuffers(mText, mGeometryBuffer, mTextureBuffer);
-		mIndexCount = mText.length() * 6;
+		mIndexCount = mIndexBuffer.position();
+		mIndexBuffer.position(0);
+		//mIndexCount = mText.length() * 6;
 	}
 	
 	public String getText() {
@@ -166,7 +167,7 @@ public class AtlasText extends AtlasGraphic {
     	//gl.glPushMatrix();
     	{
     		//setMatrix();
-    		GLES20.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, mIndexBuffer);
+    		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mIndexCount, GLES20.GL_UNSIGNED_SHORT, mIndexBuffer);
     	}
     	//gl.glPopMatrix();
     	

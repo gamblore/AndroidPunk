@@ -25,6 +25,8 @@ public class GLGraphic extends Graphic {
 	
 	private static final String TAG = "GLGraphic";
 	
+	public boolean alphablend = true;
+	
 	/**
 	 * Rotation of the image, in degrees.
 	 */
@@ -181,6 +183,8 @@ public class GLGraphic extends Graphic {
 		
 		mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
 		mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
+		
+		GLES20.glUniformMatrix4fv(mProjectionViewHandle, 1, false, PROJECTION_MATRIX, 0);
 	}
 	
 	public GLGraphic(int geometryRes, int fragmentRes) {
@@ -208,6 +212,7 @@ public class GLGraphic extends Graphic {
 				mPositionHandle = GLES20.glGetAttribLocation(mProgram, "Position");
 				mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoord");
 				
+				GLES20.glUniformMatrix4fv(mProjectionViewHandle, 1, false, PROJECTION_MATRIX, 0);
 			}
 		});
 	}
@@ -231,11 +236,10 @@ public class GLGraphic extends Graphic {
 		if (sX != 1 || sY != 1) {
 			Matrix.scaleM(mMatrix, 0, sX, sY, 1.0f);
 		}
+		
 		Matrix.translateM(mMatrix, 0, -originX, -originY, 1.0f);
 		
 		GLES20.glUniformMatrix4fv(mModelViewHandle, 1, false, mMatrix, 0);
-		
-		GLES20.glUniformMatrix4fv(mProjectionViewHandle, 1, false, PROJECTION_MATRIX, 0);
 	}
 	
 	public void applyColor() {

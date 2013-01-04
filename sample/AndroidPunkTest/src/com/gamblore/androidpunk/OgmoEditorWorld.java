@@ -181,6 +181,7 @@ public class OgmoEditorWorld extends World {
 		
 		mBackdropEntity = new Entity();
 		Backdrop bd = Main.getLevelBackdrop(mCurrentLevel);
+		bd.alphablend = false;
 		
 		Backdrop clouds = new Backdrop(Main.mAtlas.getSubTexture("jumper_clouds"), true, false);
 		bd.scale = 2.0f;

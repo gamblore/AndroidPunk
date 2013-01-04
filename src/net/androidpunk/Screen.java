@@ -1,13 +1,24 @@
 package net.androidpunk;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+
+import javax.microedition.khronos.opengles.GL10;
+
+import net.androidpunk.android.OpenGLSystem;
+import net.androidpunk.android.OpenGLSystem.OpenGLRunnable;
 import net.androidpunk.android.PunkActivity;
 import net.androidpunk.utils.Input;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.opengl.GLES20;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -372,10 +383,41 @@ public class Screen {
 	
 	/**
 	 * Captures the current screen as an Image object.
-	 * @return	A new Image object.
+	 * @return	Path to the screenshot
 	 */
-	public Bitmap capture() {
-		return mBitmap[mCurrent].copy(Config.ARGB_8888, false);
+	public String capture() {
+		File tmpFilePath = null;
+		try {
+			tmpFilePath = File.createTempFile("ss"+Long.toString(System.currentTimeMillis()).toString(), ".png", FP.context.getExternalFilesDir(null));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		final File file = tmpFilePath;
+		final String filepath = file.toString();
+		
+		OpenGLSystem.postRunnable(new OpenGLRunnable() {
+			
+			@Override
+			public void run(GL10 gl) {
+				Buffer b = ByteBuffer.allocate(FP.displayWidth*FP.displayHeight*4);
+				GLES20.glReadPixels(0, 0, FP.displayWidth, FP.displayHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, b);
+				try {
+					FileOutputStream os = new FileOutputStream(file);
+					//OutputStream os = FP.context.openFileOutput(filepath, 0);
+					
+					Bitmap bm = Bitmap.createBitmap(FP.displayWidth, FP.displayHeight, Bitmap.Config.ARGB_8888);
+					bm.copyPixelsFromBuffer(b);
+					bm.compress(Bitmap.CompressFormat.PNG, 85, os);
+					
+					Log.i(TAG, "Screenshot saved to " +filepath);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		
+		return filepath;
 	}
 	
 }
