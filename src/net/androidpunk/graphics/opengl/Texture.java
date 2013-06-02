@@ -128,7 +128,7 @@ public class Texture {
 		public void run(GL10 gl) {
 			if (mLoaded) {
 				Log.e(TAG, "Texture already loaded");
-				Thread.dumpStack();
+				//Thread.dumpStack();
 				return;
 			}
 			if (createTexture(gl, mSource)) {
@@ -167,10 +167,11 @@ public class Texture {
 	}
 	
 	public void reload() {
-		release();
+		
 		if (mTexturePath != null) {
 			setTextureBitmap(mTexturePath);
 		} else {
+			release();
 			load();
 		}
 	}
@@ -187,13 +188,13 @@ public class Texture {
 		GLES20.glGenTextures(1, textures, 0);
 		
 		mTextureName = textures[0];
-		
-		// Select this OpenGL texture
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureName);
-		//Log.d(TAG, "Texture is bound to " + mTextureName);
 		if (mTextureName == 0) { 
 			return false;
 		}
+		// Select this OpenGL texture
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureName);
+		//Log.d(TAG, "Texture is bound to " + mTextureName);
+		
 		// Set the texture parameters
 		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
@@ -213,8 +214,8 @@ public class Texture {
 	 */
 	private void releaseTexture(GL10 gl) {
 		if (!mLoaded) {
-			Log.e(TAG, "Texture wasn't loaded");
-			Thread.dumpStack();
+			Log.w(TAG, "Texture wasn't loaded probably in resume");
+			//Thread.dumpStack();
 			return;
 		}
 		int textures[] = new int[1];

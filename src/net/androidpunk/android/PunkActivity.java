@@ -361,12 +361,12 @@ public class PunkActivity extends Activity implements OnTouchListener {
 				synchronized (mUpdateLock) {
 					Engine.checkEvents();
 				}
-				mSurfaceView.requestRender();
+				//mSurfaceView.requestRender();
 				long delta = SystemClock.uptimeMillis() - now;
 				
-				if (delta < 16) {
+				if (delta < 8) {
 					try {
-						Thread.sleep(16-delta);
+						Thread.sleep(8-delta);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -388,9 +388,9 @@ public class PunkActivity extends Activity implements OnTouchListener {
 		mSurfaceView.setOnTouchListener(this);
 		mRenderer = new APRenderer();
 		mSurfaceView.setRenderer(mRenderer);
-		mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 		if (FP.debugOpenGL) {
-			mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+			mSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR | GLSurfaceView.DEBUG_LOG_GL_CALLS);
 		}
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -456,20 +456,8 @@ public class PunkActivity extends Activity implements OnTouchListener {
 			count = v.size();
 			for (int i = 0; i < count; i++) {
 				Entity e = v.get(i);
-				Graphic g = e.getGraphic();
-				if (g instanceof Text) {
-					g.reload();
-				} else if (g instanceof GraphicList) {
-					GraphicList list = (GraphicList)g;
-					Vector<Graphic> glist = list.getChildren();
-					int glistCount = glist.size();
-					for (int k = 0; k < glistCount; k++ ) {
-						Graphic listGraphic = glist.get(k);
-						if (listGraphic instanceof Text) {
-							listGraphic.reload();
-						}
-					}
-				}
+				GLGraphic g = e.getGraphic();
+				g.reload();
 			}
 		}
 	}

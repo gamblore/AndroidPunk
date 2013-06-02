@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import net.androidpunk.graphics.opengl.GLGraphic;
 import android.graphics.Point;
 
 public class World extends Tweener {
@@ -227,11 +228,11 @@ public class World extends Tweener {
 		}
 	}
 
-	public Entity addGraphic(Graphic graphic) {
+	public Entity addGraphic(GLGraphic graphic) {
 		return addGraphic(graphic, 0, 0, 0);
 	}
 
-	public Entity addGraphic(Graphic graphic, int layer) {
+	public Entity addGraphic(GLGraphic graphic, int layer) {
 		return addGraphic(graphic, layer, 0, 0);
 	}
 
@@ -248,7 +249,7 @@ public class World extends Tweener {
 	 *            Layer of the Entity.
 	 * @return The Entity that was added.
 	 */
-	public Entity addGraphic(Graphic graphic, int layer, int x, int y) {
+	public Entity addGraphic(GLGraphic graphic, int layer, int x, int y) {
 		Entity e = new Entity(x, y, graphic);
 		if (layer != 0)
 			e.setLayer(layer);

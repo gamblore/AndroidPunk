@@ -19,7 +19,7 @@ public class AndroidPunkTestActivity extends PunkActivity {
         //FP.assignedFrameRate = 30;
         
         // Turn on exceptions for opengl errors. Slows down render.
-        //FP.debugOpenGL = true;
+        FP.debugOpenGL = true;
         
         //FP.debug = true;
 	}

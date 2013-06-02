@@ -2,7 +2,6 @@ package com.gamblore.androidpunk.test.games;
 
 import net.androidpunk.Entity;
 import net.androidpunk.FP;
-import net.androidpunk.Graphic;
 import net.androidpunk.World;
 import net.androidpunk.graphics.atlas.AtlasText;
 import net.androidpunk.graphics.atlas.Backdrop;
@@ -14,6 +13,7 @@ import net.androidpunk.graphics.atlas.Stamp;
 import net.androidpunk.graphics.atlas.TileMap;
 import net.androidpunk.graphics.atlas.TiledImage;
 import net.androidpunk.graphics.atlas.TiledSpriteMap;
+import net.androidpunk.graphics.opengl.GLGraphic;
 import net.androidpunk.graphics.opengl.SubTexture;
 import net.androidpunk.graphics.opengl.TextAtlas;
 import net.androidpunk.graphics.opengl.shapes.Shape;
@@ -52,7 +52,7 @@ public class GraphicsWorld extends World {
 		SubTexture spritemap = Main.getAtlas().getSubTexture("ogmo");
 		
 		//Backdrop
-		Graphic mBackdrop = new AwesomeBackdrop();
+		GLGraphic mBackdrop = new AwesomeBackdrop();
 		//mBackdrop = new Backdrop(Main.getAtlas().getSubTexture("jumper_background"));
 		//mBackdrop.scrollX = 0.25f;
 		

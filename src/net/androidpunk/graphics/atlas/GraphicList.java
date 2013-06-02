@@ -5,17 +5,18 @@ import java.util.Vector;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.androidpunk.Graphic;
+import net.androidpunk.graphics.opengl.GLGraphic;
 import android.graphics.Point;
 
 /**
  * A Graphic that can contain multiple Graphics of one or various types.
  * Useful for drawing sprites with multiple different parts, etc.
  */
-public class GraphicList extends Graphic {
+public class GraphicList extends GLGraphic {
 
 	// List information.
-	private Vector<Graphic> mGraphics = new Vector<Graphic>();
-	private Vector<Graphic> mTemp = new Vector<Graphic>();
+	private Vector<GLGraphic> mGraphics = new Vector<GLGraphic>();
+	private Vector<GLGraphic> mTemp = new Vector<GLGraphic>();
 	private int mCount;
 	private Point mCamera = new Point();
 	
@@ -23,7 +24,7 @@ public class GraphicList extends Graphic {
 	 * Constructor.
 	 * @param	...graphic		Graphic objects to add to the list.
 	 */
-	public GraphicList(Graphic... graphics) {
+	public GraphicList(GLGraphic... graphics) {
 		for (int i = 0; i < graphics.length; i++) {
 			add(graphics[i]);
 		}
@@ -70,7 +71,7 @@ public class GraphicList extends Graphic {
 	 * @param	graphic		The Graphic to add.
 	 * @return	The added Graphic.
 	 */
-	public Graphic add(Graphic graphic) {
+	public GLGraphic add(GLGraphic graphic) {
 		mGraphics.add(graphic);
 		if (!active)
 			active = graphic.active;
@@ -82,19 +83,19 @@ public class GraphicList extends Graphic {
 	 * @param	graphic		The Graphic to remove.
 	 * @return	The removed Graphic.
 	 */
-	public Graphic remove(Graphic graphic) {
+	public GLGraphic remove(GLGraphic graphic) {
 		if(mGraphics.indexOf(graphic)< 0)
 			return graphic;
 		mTemp.clear();
 		int size = mGraphics.size();
 		for (int i = 0; i < size; i++) {
-			Graphic g = mGraphics.get(i);
+			GLGraphic g = mGraphics.get(i);
 			if (g == graphic) 
 				mCount--;
 			else
 				mTemp.add(g);
 		}
-		Vector<Graphic> temp = mGraphics; 
+		Vector<GLGraphic> temp = mGraphics; 
 		mGraphics = mTemp;
 		mTemp = temp;
 		updateCheck();
@@ -129,7 +130,7 @@ public class GraphicList extends Graphic {
 	/**
 	 * All Graphics in this list.
 	 */
-	public Vector<Graphic> getChildren() { return mGraphics; }
+	public Vector<GLGraphic> getChildren() { return mGraphics; }
 	
 	/**
 	 * Amount of Graphics in this list.
@@ -148,6 +149,14 @@ public class GraphicList extends Graphic {
 				active = true;
 				return;
 			}
+		}
+	}
+	
+	@Override
+	public void reload() {
+		int size = mGraphics.size();
+		for (int i = 0; i < size; i++) {
+			mGraphics.get(i).reload();
 		}
 	}
 }

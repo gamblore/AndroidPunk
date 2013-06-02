@@ -7,6 +7,7 @@ import net.androidpunk.FP;
 import net.androidpunk.Graphic;
 import net.androidpunk.graphics.atlas.AtlasGraphic;
 import net.androidpunk.graphics.atlas.GraphicList;
+import net.androidpunk.graphics.opengl.GLGraphic;
 import net.androidpunk.masks.Hitbox;
 import net.androidpunk.utils.TaskTimer;
 
@@ -56,13 +57,13 @@ public class StaticDanger extends Entity {
 	}
 
 	@Override
-	public void setGraphic(Graphic g) {
+	public void setGraphic(GLGraphic g) {
 		super.setGraphic(g);
 		if (g instanceof AtlasGraphic) {
 			((AtlasGraphic)g).angle = mAngle;
 		} else if (g instanceof GraphicList) {
 			GraphicList list = (GraphicList)g;
-			Vector<Graphic> vector = list.getChildren();
+			Vector<GLGraphic> vector = list.getChildren();
 			for (int i = 0; i <  vector.size(); i++) {
 				Graphic item = vector.get(i);
 				if (item instanceof AtlasGraphic) {

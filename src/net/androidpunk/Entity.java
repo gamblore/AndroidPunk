@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import net.androidpunk.android.OpenGLSystem;
 import net.androidpunk.graphics.atlas.GraphicList;
+import net.androidpunk.graphics.opengl.GLGraphic;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -80,7 +81,7 @@ public class Entity extends Tweener {
     private float mMoveY;
     
     // Rendering information.
-    private Graphic mGraphic;
+    private GLGraphic mGraphic;
     private Point mPoint = FP.point;
     private Point mCamera = FP.point2;
     
@@ -91,11 +92,11 @@ public class Entity extends Tweener {
     public Entity(int x, int y) {
         this(x, y, null, null);
     }
-    public Entity(int x, int y, Graphic graphic) {
+    public Entity(int x, int y, GLGraphic graphic) {
         this(x, y, graphic, null);
     }
     
-    public Entity(int x, int y, Graphic graphic, Mask mask) {
+    public Entity(int x, int y, GLGraphic graphic, Mask mask) {
         this.x = x;
         this.y = y;
         if (graphic != null) { 
@@ -501,8 +502,8 @@ public class Entity extends Tweener {
 			mMask.assignTo(this);
 	}
 	
-	public Graphic getGraphic() { return mGraphic; }
-    public void setGraphic(Graphic g) {
+	public GLGraphic getGraphic() { return mGraphic; }
+    public void setGraphic(GLGraphic g) {
     	if (g != null) { 
             mGraphic = g;
             mGraphic.mAssign.assigned(this);
@@ -510,8 +511,8 @@ public class Entity extends Tweener {
         }
     }
     
-    public Graphic addGraphic(Graphic g) {
-    	Graphic graphic = getGraphic();
+    public GLGraphic addGraphic(GLGraphic g) {
+    	GLGraphic graphic = getGraphic();
     	if (graphic instanceof GraphicList) {
     		((GraphicList)graphic).add(g);	
     	} else {

@@ -67,7 +67,7 @@ public class GLGraphic extends Graphic {
 	public static final float[] PROJECTION_MATRIX = new float[16];
 	public static final float[] IDENTITY_MATRIX = new float[16];
 
-	
+	private int mGeomShader, mFragShader;
 	private float[] mMatrix = new float[16];
 	protected int mProgram = -1;
 	
@@ -171,7 +171,8 @@ public class GLGraphic extends Graphic {
 	    return s.hasNext() ? s.next() : "";
 	}
 	
-	public GLGraphic() {		
+	public GLGraphic() {	
+		useShaders(R.raw.shader_g_flat, R.raw.shader_f_flat);
 		if (DEFAULT_PROGRAM == -1) {
 			DEFAULT_PROGRAM = Shader.getProgram(R.raw.shader_g_flat, R.raw.shader_f_flat);
 		}
@@ -197,13 +198,15 @@ public class GLGraphic extends Graphic {
 	 * @param fragmentRes
 	 */
 	protected void useShaders(int geometryRes, int fragmentRes) {
-		final int geoShader = geometryRes;
-		final int fragShader = fragmentRes;
+		mGeomShader = geometryRes;
+		mFragShader = fragmentRes;
+		//final int geoShader = geometryRes;
+		//final int fragShader = fragmentRes;
 		
 		OpenGLSystem.postRunnable(new OpenGLRunnable() {
 			@Override
 			public void run(GL10 gl) {
-				mProgram = Shader.getProgram(geoShader, fragShader);
+				mProgram = Shader.getProgram(mGeomShader, mFragShader);
 				GLES20.glUseProgram(mProgram);
 				mModelViewHandle = GLES20.glGetUniformLocation(mProgram, "uModelView");
 				mProjectionViewHandle = GLES20.glGetUniformLocation(mProgram, "uProjectionView");
@@ -292,4 +295,8 @@ public class GLGraphic extends Graphic {
 		mColor = value;
 	}
 
+	@Override
+	public void reload() {
+    	useShaders(mGeomShader, mFragShader);
+    }
 }
